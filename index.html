@@ -135,6 +135,11 @@
   .btn:hover{filter:brightness(1.08)} .btn:active{transform:translateY(1px)}
   .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--ink)}
   .btn.ghost.on{border-color:var(--gold);color:var(--gold)}
+  /* device lock screen */
+  #lockscreen{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+  #lockscreen.hidden{display:none}
+  .lockcard{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+  .lockbrand{font-family:'Bebas Neue';letter-spacing:1.5px;font-size:26px;color:var(--gold);text-align:center;margin-bottom:14px}
 
   .lift{display:grid;grid-template-columns:1fr 70px 60px;gap:8px;align-items:center;margin-top:8px}
   .lift .ln{font-size:13.5px} .lift .ln small{display:block;color:var(--faint);font-size:11px;font-family:'Space Mono'}
@@ -350,6 +355,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
+<div id="lockscreen"><div class="lockcard"><div class="lockbrand">🔒 ALTER SCHWEDE</div><div id="lock-body"><div class="lead" style="text-align:center">Lädt…</div></div></div></div>
 <div class="wrap">
 
   <header>
@@ -693,6 +699,13 @@
       <div class="note">Das Backup ist eine <b>.json-Datei</b> (kein HTML). Zum Wiederherstellen entweder „Backup-Datei laden“ und die gespeicherte <code>alter-schwede-backup-….json</code> auswählen — oder den Text unten einfügen und „Aus Text importieren“.</div>
       <div class="note warn"><b>Mehrere Geräte (iCloud &amp; Co.):</b> Die Datei in iCloud zu legen teilt nur die <i>App</i> — <b>nicht deine Einträge</b>. Jedes Gerät speichert lokal im Browser. Zum Übertragen: auf Gerät A „Backup exportieren (.json)“ (Datei z. B. in iCloud sichern), auf Gerät B „Backup-Datei laden“. Tipp: nach längeren Sessions exportieren, dann hast du überall denselben Stand.</div>
       <textarea id="io-area" placeholder="Backup-Text erscheint hier (zum Kopieren) – oder hier einfügen und „Aus Text importieren“ tippen." style="width:100%;margin-top:10px;min-height:80px;display:none"></textarea>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>🔒 Gerätesperre</h2>
+      <div class="role">Privatsphäre auf diesem Gerät · Passwort beim Öffnen</div>
+      <div class="lead">Schützt die App auf <b>diesem</b> Gerät mit einem Passwort. Wird pro Gerät gesetzt und nur als gesalzener Hash lokal gespeichert (nicht im Code). <span style="color:var(--warn)">Hinweis: ein Privatsphäre-Riegel gegen neugierige Blicke — kein vollwertiger Schutz gegen technisch versierte Personen mit Geräte-Zugriff.</span></div>
+      <div id="lock-settings" style="margin-top:10px"></div>
     </div>
   </section>
 
@@ -1408,7 +1421,7 @@
       if(b.dataset.t==='turniere') renderTurniere();
       if(b.dataset.t==='koerper'){ renderNiggles(); renderHRzones(); renderBlood(); renderAppts(); }
       if(b.dataset.t==='ernaehrung'){ renderShop(); renderMealLog(); }
-      if(b.dataset.t==='daten'){ renderDash(); renderW(); renderTrends(); renderBackupStatus(); document.getElementById('p-name').value=DB.profile.name||''; document.getElementById('p-kg').value=DB.profile.startKg||''; document.getElementById('p-hr').value=DB.profile.maxHR||''; }
+      if(b.dataset.t==='daten'){ renderDash(); renderW(); renderTrends(); renderBackupStatus(); renderLockSettings(); document.getElementById('p-name').value=DB.profile.name||''; document.getElementById('p-kg').value=DB.profile.startKg||''; document.getElementById('p-hr').value=DB.profile.maxHR||''; }
     });
     var navEl=document.getElementById('tabs');
     if(navEl){
@@ -2375,11 +2388,57 @@
       '<div class="chartwrap" style="margin-top:10px"><div class="cap"><span>Trainingslast (LE/Tag)</span><span>sRPE</span></div>'+ld+'</div>';
   }
 
+  /* ---------- Gerätesperre (Privatsphäre-Riegel, pro Gerät; nur Hash lokal) ---------- */
+  function _crypto(){ try{ return (window.crypto&&window.crypto.subtle)?window.crypto:null; }catch(e){ return null; } }
+  function _hex(bytes){ return Array.prototype.map.call(bytes,function(b){return ('0'+b.toString(16)).slice(-2);}).join(''); }
+  async function sha256hex(s){ var c=_crypto(); var buf=await c.subtle.digest('SHA-256', new TextEncoder().encode(s)); return _hex(new Uint8Array(buf)); }
+  function randSalt(){ var a=new Uint8Array(16); var c=_crypto(); if(c&&c.getRandomValues) c.getRandomValues(a); else for(var i=0;i<16;i++) a[i]=Math.floor(Math.random()*256); return _hex(a); }
+  async function lockGet(){ return await getJSON('as_lock',null); }
+  async function lockSet(pw){ var salt=randSalt(); var hash=await sha256hex(salt+'::'+pw); save('as_lock',{salt:salt,hash:hash,v:1}); }
+  async function lockVerify(pw){ var l=await lockGet(); if(!l||!l.hash) return true; var h=await sha256hex(l.salt+'::'+pw); return h===l.hash; }
+  function lockClear(){ save('as_lock',null); }
+  async function initLock(){
+    var ls=document.getElementById('lockscreen'), body=document.getElementById('lock-body'); if(!ls) return;
+    var l=await lockGet();
+    if(!l||!l.hash){ ls.classList.add('hidden'); return; }
+    body.innerHTML='<div class="lead" style="text-align:center;margin-bottom:10px">Gesperrt — bitte Passwort eingeben.</div>'+
+      '<input type="password" id="lock-pw" autocomplete="current-password" placeholder="Passwort" aria-label="Passwort" style="width:100%">'+
+      '<button class="btn" id="lock-go" style="width:100%;margin-top:10px">Entsperren</button>'+
+      '<div class="note" id="lock-msg" style="margin-top:10px;display:none"></div>'+
+      '<div class="note" style="margin-top:8px;font-size:11.5px">Passwort vergessen? Es lässt sich nicht wiederherstellen. Du kannst die Website-Daten dieses Geräts im Browser löschen und danach dein <b>.json-Backup</b> wieder importieren.</div>';
+    var pw=document.getElementById('lock-pw'), go=document.getElementById('lock-go'), msg=document.getElementById('lock-msg');
+    async function attempt(){ var ok=await lockVerify(pw.value); if(ok){ ls.classList.add('hidden'); } else { if(msg){ msg.style.display='block'; msg.textContent='Falsches Passwort.'; } pw.value=''; pw.focus(); } }
+    if(go) go.addEventListener('click',attempt);
+    if(pw){ pw.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); attempt(); } }); try{ pw.focus(); }catch(e){} }
+  }
+  async function renderLockSettings(){
+    var el=document.getElementById('lock-settings'); if(!el) return;
+    if(!_crypto()){ el.innerHTML='<div class="note warn">Die Gerätesperre braucht eine sichere Verbindung (https). Über deine GitHub-Pages-Adresse ist das gegeben; als lokal geöffnete Datei evtl. nicht.</div>'; return; }
+    var l=await lockGet();
+    if(l&&l.hash){
+      el.innerHTML='<div class="note" style="border-color:rgba(55,211,155,.4);color:var(--good)">🔒 <b>Aktiv</b> auf diesem Gerät — beim Öffnen wird das Passwort abgefragt.</div>'+
+        '<div class="inrow" style="margin-top:10px"><button class="btn ghost" id="lock-remove">Sperre entfernen</button></div>';
+      var rm=document.getElementById('lock-remove'); if(rm) rm.addEventListener('click',function(){ lockClear(); renderLockSettings(); });
+    } else {
+      el.innerHTML='<div class="bgrid"><div class="bf" style="grid-column:1/-1"><label>Neues Passwort (min. 4 Zeichen)</label><input type="password" id="lock-new" autocomplete="new-password"></div><div class="bf" style="grid-column:1/-1"><label>Wiederholen</label><input type="password" id="lock-new2" autocomplete="new-password"></div></div>'+
+        '<div class="inrow" style="margin-top:10px"><button class="btn" id="lock-save">Sperre aktivieren</button></div>'+
+        '<div class="note" id="lock-set-msg" style="margin-top:8px;display:none"></div>';
+      var sv2=document.getElementById('lock-save'); if(sv2) sv2.addEventListener('click',async function(){
+        var a=document.getElementById('lock-new').value, b=document.getElementById('lock-new2').value, m=document.getElementById('lock-set-msg');
+        function show(t){ if(m){ m.style.display='block'; m.innerHTML=t; } }
+        if(!a||a.length<4){ show('Bitte ein Passwort mit mindestens 4 Zeichen wählen.'); return; }
+        if(a!==b){ show('Die Passwörter stimmen nicht überein.'); return; }
+        await lockSet(a); renderLockSettings(); var m2=document.getElementById('lock-set-msg'); if(m2){ m2.style.display='block'; m2.innerHTML='✓ Gerätesperre aktiviert. Beim nächsten Öffnen wird das Passwort abgefragt.'; }
+      });
+    }
+  }
+
   function renderAll(){ renderReadiness(); renderCoach(); renderHeute(); renderTaperGuard(); renderCompProtocol(); renderHRzones(); renderOnboard(); }
 
   /* ---------- init ---------- */
   (async function(){
     await loadDB();
+    await initLock();
     tickCountdown(); bindAccordions(); bind(); renderAll(); renderBlood(); renderShop();
     drawGuides(document.getElementById('w-chart'));
     updateNavFades();
