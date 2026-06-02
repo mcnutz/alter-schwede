@@ -972,10 +972,6 @@
     esn:{A:[['squat','Back Squat'],['rdl','RDL'],['bench','Schrägbankdrücken']],B:[['pull','Klimmzug/Latzug'],['row','Rudern'],['ohp','Schulterdrücken']]},
     home:{A:[['squat','Front/Back Squat'],['rdl','RDL'],['floor','KB Floor Press']],B:[['row','Bent-over Row'],['pull','Klimmzug'],['ohp','Overhead Press']]}
   };
-  var STRENGTH_VARIANT={
-    esn:'<h3>JUNI · ESN Primetime (volles Equipment)</h3><div class="lead" style="line-height:1.9"><b>A:</b> Back Squat 4×8–10 · RDL 3×10–12 · Beinpresse/Split Squat 3×12 · Schrägbank-KH 4×8–10 · Beincurl 3×12 · Trizeps<br><b>B:</b> Klimmzug/Latzug 4×8–10 · Rudern 4×10 · Schulterdrücken 4×6–8 · Face Pulls 3×15 · Arme 3×12 · Griff/Nacken</div>',
-    home:'<h3>AB JULI · Heim-Setup (KB + 90-kg-Rack)</h3><div class="lead" style="line-height:1.9"><b>A:</b> Tempo Squat 4×8–10 · RDL 3×10–12 · Bulgarian Split Squat 3×10/S · KB Floor Press 4×10 · KB Swing 4×12 · Carry<br><b>B:</b> Bent-over Row 4×8–10 · Klimmzüge 4× (RIR2) · OHP 4×6–8 · KB Clean&Press 3×6/S · Arme 3×12 · Grip/Nacken</div>'
-  };
   var SAY={
     strength:['Heute Eisen. Saubere Wiederholungen, 1–2 in Reserve. Kein Ego an der Stange.','Volumen schlägt Maximallast. Schlag deine letzte Einheit im Log.','Beine und Griff — die gewinnen die Scrambles.'],
     bjj:['Matte ruft. Technik vor Tempo, atme durch die Nase.','Lebe heute in schlechten Positionen und arbeite dich raus.','Weniger Kraft, mehr Hebel. Lass die anderen sich verausgaben.'],
@@ -1881,7 +1877,8 @@
     legcurl:{n:'Beincurl',cue:'Hamstrings isoliert anbeugen, langsam zurück. Schützt das Knie als Gegenspieler zum Quadrizeps.',url:sURL('leg curl hamstring technique'),ch:'Suche'},
     facepull:{n:'Face Pulls',cue:'Seil zur Stirn ziehen, Ellbogen hoch, am Ende außenrotieren. Hält die Schulter im BJJ gesund.',url:sURL('face pull technique shoulder'),ch:'Suche'},
     carry:{n:'Farmer-Carry',cue:'Schwer in beiden Händen tragen, Schultern hinten/unten, Rumpf fest, ruhig gehen. Griff plus Core.',url:sURL('farmers carry how to'),ch:'Suche'},
-    arms:{n:'Arme (Bizeps/Trizeps)',cue:'Saubere Curls und Trizeps-Extensions, 2–3 Sätze. Ellbogen-Gesundheit und Zug-/Druckkraft.',url:sURL('biceps triceps basics'),ch:'Suche'},
+    biceps:{n:'Bizeps (Curls)',cue:'Saubere Curls über vollen Bewegungsumfang, Ellbogen fixiert, kein Schwung. 2–3 Sätze 10–12. Indirekt schon durch Rudern/Klimmzüge — hier gezielt für Ellbogengesundheit & Zugkraft.',url:sURL('biceps curl proper form'),ch:'Suche'},
+    triceps:{n:'Trizeps (Extensions/Dips)',cue:'Trizeps-Extensions (Seil/KH) oder Dips, 2–3 Sätze 10–12. Stützt das Pressen und stabilisiert den Ellbogen — relevant fürs Framing/Strecken im BJJ.',url:sURL('triceps extension proper form'),ch:'Suche'},
     grip:{n:'Griff & Nacken',cue:'Dead Hangs, Reverse Wrist Curls, Nacken-Iso. Direkt BJJ-relevant — der Griff ermüdet zuerst.',url:sURL('grip training for bjj'),ch:'Suche'},
     ramp:{n:'RAMP Warm-up',cue:'Raise → Activate → Mobilise → Potentiate, 8–10 min vor jeder Einheit. Bringt Puls, Ansteuerung und Gelenke hoch.',url:sURL('RAMP warm up protocol'),ch:'Suche'},
     neck:{n:'Nacken (Iso/CARs)',cue:'Iso-Holds in 4 Richtungen je 10 s ×2, langsame Neck CARs. Keine harten Brücken bei Beschwerden.',url:sURL('neck strengthening grappling'),ch:'Suche'},
@@ -1891,10 +1888,10 @@
     spine:{n:'Wirbelsäule & Rumpf',cue:'Cat-Cow 2×8, Dead Bug und Bird-Dog je 2×8, segmentale Rotation. Stabiler Rücken beim Stacking.',url:sURL('dead bug bird dog core'),ch:'Suche'}
   };
   var SESS={
-    esn:{A:[['backsquat','4×8–10'],['rdl','3×10–12'],['legpress','3×12'],['incline','4×8–10'],['legcurl','3×12'],['arms','3×12']],
-         B:[['pullup','4×8–10'],['row','4×10'],['ohp','4×6–8'],['facepull','3×15'],['arms','3×12'],['grip','—']]},
-    home:{A:[['tempo','4×8–10'],['rdl','3×10–12'],['split','3×10/S'],['floorpress','4×10'],['swing','4×12'],['carry','3× schwer']],
-          B:[['row','4×8–10'],['pullup','4× RIR2'],['ohp','4×6–8'],['cleanpress','3×6/S'],['arms','3×12'],['grip','—']]}
+    esn:{A:[['backsquat','4×5–8'],['rdl','3×8–10'],['split','3×8/S'],['incline','3×8–10'],['triceps','3×10–12'],['carry','3× schwer']],
+         B:[['pullup','4×6–10'],['row','4×8–10'],['ohp','4×5–8'],['facepull','3×15'],['biceps','3×10–12'],['grip','—']]},
+    home:{A:[['tempo','4×8–10'],['rdl','3×8–10'],['split','3×8/S'],['floorpress','4×10'],['swing','4×12'],['carry','3× schwer']],
+          B:[['row','4×8–10'],['pullup','4× RIR2'],['ohp','4×6–8'],['cleanpress','3×6/S'],['biceps','3×10–12'],['triceps','3×10–12'],['grip','—']]}
   };
   function exItem(slug,sets){
     var e=EX[slug]; if(!e) return '';
@@ -1910,7 +1907,7 @@
   var EXLIB=[
     {g:'Grundübungen (Langhantel/Maschine)',ex:['backsquat','frontsquat','tempo','rdl','incline','row','ohp','pullup','latpull','legpress','legcurl','floorpress']},
     {g:'Kettlebell',ex:['swing','tgu','cleanpress','goblet','carry']},
-    {g:'Akzessorisch & Griff',ex:['split','facepull','arms','grip']},
+    {g:'Akzessorisch & Griff',ex:['split','facepull','biceps','triceps','grip']},
     {g:'Prehab & Mobility',ex:['ramp','neck','shoulderp','hipp','gripp','spine']}
   ];
 
