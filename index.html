@@ -490,17 +490,19 @@
     </div>
 
     <div class="card">
-      <h2><span class="dot"></span>Sätze loggen — live im Training</h2>
-      <div class="role">Trainerteam · Satz für Satz · für jede Übung</div>
-      <div class="lead">Während des Trainings: Übung wählen, Gewicht &amp; Wdh. eintragen, „+ Satz". Beliebig viele Sätze pro Übung — direkt auf dem Handy an der Hantel. PR wird automatisch erkannt.</div>
+      <h2><span class="dot"></span>Trainingsplan heute — geführt</h2>
+      <div class="role" id="wk-role">Trainerteam · dein Plan für heute · Satz für Satz abhaken</div>
+      <div class="lead">Wähle die Einheit, arbeite die Übungen der Reihe nach ab und tippe nach jedem Satz „✓ Satz". Fortschritt (Sätze X/Ziel), Volumen und PRs laufen automatisch mit — direkt fürs Handy an der Hantel.</div>
+      <div class="inrow" id="wk-daysel" style="margin-top:8px"></div>
+      <div id="wk-list" style="margin-top:10px"></div>
+      <div class="note" id="wk-status"></div>
+      <h3 style="margin-top:14px">Weitere / freie Übung</h3>
       <div class="bgrid">
-        <div class="bf" style="grid-column:1/-1"><label>Übung</label><select id="st-ex"></select></div>
-        <div class="bf"><label>Gewicht (kg)</label><input type="text" inputmode="decimal" id="st-kg" placeholder="z. B. 100"></div>
-        <div class="bf"><label>Wiederholungen</label><input type="text" inputmode="numeric" id="st-reps" placeholder="z. B. 5"></div>
+        <div class="bf" style="grid-column:1/-1"><label>Übung</label><select id="wk-ex"></select></div>
+        <div class="bf"><label>Gewicht (kg)</label><input type="text" inputmode="decimal" id="wk-xkg" placeholder="kg"></div>
+        <div class="bf"><label>Wiederholungen</label><input type="text" inputmode="numeric" id="wk-xreps" placeholder="Wdh."></div>
       </div>
-      <div class="inrow" style="margin-top:10px"><button class="btn" id="st-add">+ Satz</button></div>
-      <div class="note" id="st-status">Gewicht/Wdh. bleiben stehen — für gleiche Folgesätze einfach wieder „+ Satz".</div>
-      <div id="st-list" style="margin-top:12px"></div>
+      <div class="inrow" style="margin-top:10px"><button class="btn ghost" id="wk-xadd">+ Satz (frei)</button></div>
     </div>
 
     <div class="card">
@@ -1263,39 +1265,50 @@
     var btn=document.getElementById('strength-save'); var o='Einheit speichern';
     btn.textContent= prs.length?('🎉 PR: '+prs.join(' · ')):'Gespeichert ✓'; setTimeout(function(){btn.textContent=o;}, prs.length?2400:1200);
   }
-  /* ---------- Sätze loggen (set-by-set, live im Training) ---------- */
-  function initStEx(){
-    var s=document.getElementById('st-ex'); if(!s||s._b) return; s._b=1;
-    s.innerHTML=EXLIB.map(function(grp){ return '<optgroup label="'+esc(grp.g)+'">'+grp.ex.map(function(slug){ var e=EX[slug]; return e?'<option value="'+slug+'">'+esc(e.n)+'</option>':''; }).join('')+'</optgroup>'; }).join('');
-    s.addEventListener('change',prefillSt);
-  }
+  /* ---------- Geführter Trainingsplan (Plan + Logging je Tag) ---------- */
+  var wkDay=null;
+  function targetSets(t){ var m=(''+t).match(/^(\d+)/); return m?parseInt(m[1],10):3; }
+  function targetReps(t){ var m=(''+t).match(/×\s*([\d–\-]+)/); return m?m[1]:''; }
   function lastSetFor(slug){ for(var i=(DB.strengthsets||[]).length-1;i>=0;i--){ if(DB.strengthsets[i].ex===slug) return DB.strengthsets[i]; } return null; }
-  function prefillSt(){ var l=lastSetFor(pv('st-ex')); if(l){ sv('st-kg',l.kg); sv('st-reps',l.reps); } }
-  function addStrengthSet(){
-    initStEx(); var slug=pv('st-ex')||EXLIB[0].ex[0]; var kg=num(pv('st-kg')), reps=parseInt(num(pv('st-reps')),10); var st=document.getElementById('st-status');
-    if(isNaN(kg)||kg<=0||isNaN(reps)||reps<=0){ if(st) st.textContent='Bitte Gewicht (kg) und Wiederholungen eintragen.'; return; }
-    var e=EX[slug]||{n:slug};
-    DB.strengthsets=DB.strengthsets||[];
-    var nowE=kg*(1+reps/30), prev=0;
+  function logSet(slug,kg,reps){
+    var e=EX[slug]||{n:slug}; if(isNaN(kg)||kg<=0||isNaN(reps)||reps<=0) return null;
+    DB.strengthsets=DB.strengthsets||[]; var nowE=kg*(1+reps/30),prev=0;
     DB.strengthsets.forEach(function(s){ if(s.ex===slug){ var pe=s.kg*(1+s.reps/30); if(pe>prev)prev=pe; } });
-    DB.strengthsets.push({id:'ss'+Date.now(),date:TODAY,ex:slug,name:e.n,kg:kg,reps:reps});
+    DB.strengthsets.push({id:'ss'+Date.now()+'_'+Math.floor(Math.random()*1e4),date:TODAY,ex:slug,name:e.n,kg:kg,reps:reps});
     save('as_strengthsets',DB.strengthsets);
-    if(st) st.textContent=(prev>0&&nowE>prev+0.01)?('🎉 PR bei '+e.n+'! '+kg+' kg × '+reps):('✓ Satz gespeichert: '+e.n+' '+kg+' kg × '+reps+'.');
-    renderStrengthSets();
+    return (prev>0&&nowE>prev+0.01)?'pr':'ok';
   }
-  function renderStrengthSets(){
-    initStEx();
-    var el=document.getElementById('st-list'); if(!el) return;
-    var today=(DB.strengthsets||[]).filter(function(s){ return s.date===TODAY; });
-    if(!today.length){ el.innerHTML='<div class="note">Heute noch keine Sätze geloggt.</div>'; }
-    else{
-      var order=[],groups={},vol=0; today.forEach(function(s){ if(!groups[s.ex]){ groups[s.ex]=[]; order.push(s.ex); } groups[s.ex].push(s); vol+=s.kg*s.reps; });
-      el.innerHTML=order.map(function(ex){ var arr=groups[ex];
-        var sets=arr.map(function(s){ return '<span class="rchip">'+s.kg+'×'+s.reps+'<button data-ssdel="'+s.id+'" aria-label="Satz löschen" style="background:none;border:none;color:var(--bad);cursor:pointer;padding:0 0 0 5px;font-size:12px">✕</button></span>'; }).join(' ');
-        return '<div class="course" style="display:block"><b style="font-size:13px;color:var(--ink)">'+esc(arr[0].name)+'</b> <span style="color:var(--faint);font-size:11px">'+arr.length+' Satz'+(arr.length>1?'·e':'')+'</span><div style="margin-top:4px">'+sets+'</div></div>';
-      }).join('')+'<div class="note">Heute gesamt: <b style="color:var(--gold)">'+today.length+'</b> Sätze · Volumen <b>'+Math.round(vol)+'</b> kg·Wdh.</div>';
-    }
-    if(!el._b){ el._b=1; el.addEventListener('click',function(e){ var x=e.target.closest('[data-ssdel]'); if(!x) return; DB.strengthsets=(DB.strengthsets||[]).filter(function(s){ return s.id!==x.dataset.ssdel; }); save('as_strengthsets',DB.strengthsets); renderStrengthSets(); }); }
+  function initWkEx(){ var s=document.getElementById('wk-ex'); if(!s||s._b) return; s._b=1; s.innerHTML=EXLIB.map(function(grp){ return '<optgroup label="'+esc(grp.g)+'">'+grp.ex.map(function(slug){ var e=EX[slug]; return e?'<option value="'+slug+'">'+esc(e.n)+'</option>':''; }).join('')+'</optgroup>'; }).join(''); }
+  function renderWorkoutDaysel(){ var el=document.getElementById('wk-daysel'); if(!el) return; var tday=todayStrengthDay();
+    el.innerHTML=['A','B'].map(function(d){ return '<button class="btn ghost'+(wkDay===d?' on':'')+'" data-wd="'+d+'">Einheit '+d+(tday===d?' · heute':'')+'</button>'; }).join('')+'<span class="chip" style="margin-left:6px">'+(LOC.variant==='esn'?'ESN Primetime':'Heim · KB+Rack')+'</span>'; }
+  function exBlock(slug,target){
+    var e=EX[slug]||{n:slug,cue:'',url:'',ch:''};
+    var sets=(DB.strengthsets||[]).filter(function(s){ return s.date===TODAY && s.ex===slug; });
+    var prog = target ? ('Sätze '+sets.length+'/'+targetSets(target)+(sets.length>=targetSets(target)?' ✓':'')) : (sets.length+' Sätze');
+    var last=lastSetFor(slug); var pkg=last?last.kg:''; var preps=last?last.reps:(targetReps(target)||'');
+    var chips=sets.map(function(s){ return '<span class="rchip">'+s.kg+'×'+s.reps+'<button data-ssdel="'+s.id+'" aria-label="Satz löschen" style="background:none;border:none;color:var(--bad);cursor:pointer;padding:0 0 0 5px;font-size:12px">✕</button></span>'; }).join(' ');
+    return '<div style="padding:12px 14px;margin-top:10px;background:var(--card2);border-radius:14px;border:1px solid var(--line)'+(target&&sets.length>=targetSets(target)?';border-color:rgba(55,211,155,.45)':'')+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:14px">'+esc(e.n)+'</b>'+(target?'<span class="rchip" style="color:var(--gold)">'+esc(target)+'</span>':'<span class="rchip">Zusatz</span>')+'</div>'+
+      (e.cue?'<div class="exc" style="margin-top:4px">'+esc(e.cue)+(e.url?' <a class="exl" style="margin-top:0" href="'+e.url+'" target="_blank" rel="noopener">▶ Video</a>':'')+'</div>':'')+
+      (chips?'<div style="margin-top:8px">'+chips+'</div>':'')+
+      '<div class="inrow" style="margin-top:8px;gap:6px;align-items:center"><input type="text" inputmode="decimal" id="wk-kg-'+slug+'" value="'+pkg+'" placeholder="kg" style="width:74px"><span style="color:var(--faint)">×</span><input type="text" inputmode="numeric" id="wk-reps-'+slug+'" value="'+preps+'" placeholder="Wdh." style="width:74px"><button class="btn" data-wlog="'+slug+'" style="padding:8px 14px">✓ Satz</button><span class="role" style="margin:0 0 0 auto">'+prog+'</span></div>'+
+      '</div>';
+  }
+  function renderWorkout(){
+    var el=document.getElementById('wk-list'); if(!el) return;
+    if(wkDay==null) wkDay=todayStrengthDay()||'A';
+    renderWorkoutDaysel(); initWkEx();
+    var v=LOC.variant, plan=(SESS[v]&&SESS[v][wkDay])?SESS[v][wkDay]:[];
+    var planSlugs=plan.map(function(p){return p[0];});
+    var todaySets=(DB.strengthsets||[]).filter(function(s){return s.date===TODAY;});
+    var extra=[]; todaySets.forEach(function(s){ if(planSlugs.indexOf(s.ex)<0 && extra.indexOf(s.ex)<0) extra.push(s.ex); });
+    el.innerHTML=(plan.map(function(p){ return exBlock(p[0],p[1]); }).join('')+extra.map(function(slug){ return exBlock(slug,null); }).join(''))||'<div class="note">Kein Plan für diese Einheit.</div>';
+    var vol=0; todaySets.forEach(function(s){ vol+=s.kg*s.reps; });
+    var st=document.getElementById('wk-status'); if(st) st.innerHTML=todaySets.length?('Heute gesamt: <b style="color:var(--gold)">'+todaySets.length+'</b> Sätze · Volumen <b>'+Math.round(vol)+'</b> kg·Wdh.'):'Noch keine Sätze geloggt — leg los.';
+    if(!el._b){ el._b=1; el.addEventListener('click',function(e){
+      var lg=e.target.closest('[data-wlog]'); if(lg){ var slug=lg.dataset.wlog; var r=logSet(slug,num(pv('wk-kg-'+slug)),parseInt(num(pv('wk-reps-'+slug)),10)); if(r==null){ var s0=document.getElementById('wk-status'); if(s0) s0.textContent='Bitte Gewicht (kg) und Wiederholungen eintragen.'; return; } var pr=(r==='pr'); renderWorkout(); if(pr){ var s1=document.getElementById('wk-status'); if(s1) s1.innerHTML='🎉 PR bei '+esc((EX[slug]||{n:slug}).n)+'! '+s1.innerHTML; } return; }
+      var dl=e.target.closest('[data-ssdel]'); if(dl){ DB.strengthsets=(DB.strengthsets||[]).filter(function(s){return s.id!==dl.dataset.ssdel;}); save('as_strengthsets',DB.strengthsets); renderWorkout(); return; }
+    }); }
   }
   function renderTraining(){
     var pl=document.getElementById('phase-list'); var pi=phaseIndex(); pl.innerHTML='';
@@ -1303,7 +1316,7 @@
       var div=document.createElement('div'); div.className='sess '+(on?'strength':'recovery'); if(on)div.style.borderColor='var(--gold)';
       div.innerHTML='<div class="ic">'+(on?'➡️':p.n)+'</div><div><div class="t">Phase '+p.n+' · '+p.name+'</div><div class="d">'+p.rng+' — '+p.focus+'</div></div>'; pl.appendChild(div); });
     renderStrengthPlan();
-    renderLoad(); renderStrengthForm(); renderStrengthSets(); renderWeekEditor(); renderProtocolStatic(); renderExerciseDB();
+    renderLoad(); renderStrengthForm(); renderWorkout(); renderWeekEditor(); renderProtocolStatic(); renderExerciseDB();
   }
 
   /* ---------- körper: niggles ---------- */
@@ -1396,8 +1409,9 @@
   function bind(){
     var seSave=document.getElementById('se-save'); if(seSave) seSave.addEventListener('click',logSession);
     document.getElementById('strength-save').addEventListener('click',saveStrength);
-    var stAdd=document.getElementById('st-add'); if(stAdd) stAdd.addEventListener('click',addStrengthSet);
-    var stReps=document.getElementById('st-reps'); if(stReps) stReps.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); addStrengthSet(); } });
+    var wkds=document.getElementById('wk-daysel'); if(wkds) wkds.addEventListener('click',function(e){ var b=e.target.closest('[data-wd]'); if(!b) return; wkDay=b.dataset.wd; renderWorkout(); });
+    var wkx=document.getElementById('wk-xadd'); if(wkx) wkx.addEventListener('click',function(){ initWkEx(); var slug=pv('wk-ex')||EXLIB[0].ex[0]; var r=logSet(slug,num(pv('wk-xkg')),parseInt(num(pv('wk-xreps')),10)); var st=document.getElementById('wk-status'); if(r==null){ if(st) st.textContent='Bitte Gewicht (kg) und Wiederholungen eintragen.'; return; } sv('wk-xkg',''); sv('wk-xreps',''); renderWorkout(); });
+    var wkxr=document.getElementById('wk-xreps'); if(wkxr) wkxr.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var wb=document.getElementById('wk-xadd'); if(wb) wb.click(); } });
     document.getElementById('ng-save').addEventListener('click',function(){
       var area=document.getElementById('ng-area').value, sev=+document.getElementById('ng-sev').value, note=document.getElementById('ng-note').value.trim();
       DB.niggles.push({date:TODAY,area:area,sev:sev,note:note}); save('as_niggles',DB.niggles);
