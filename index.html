@@ -497,6 +497,8 @@
       <div class="inrow" id="wk-daysel" style="margin-top:8px"></div>
       <div id="wk-list" style="margin-top:10px"></div>
       <div class="note" id="wk-status"></div>
+      <div class="inrow" style="margin-top:10px"><button class="btn" id="wk-share">📤 Training teilen</button><button class="btn ghost" id="wk-copy">Kopieren</button></div>
+      <div class="note" id="wk-share-status">Fasst dein heutiges Training zusammen (Aufwärmen, Sätze, Volumen, PRs, Sessions). „Teilen" öffnet am iPhone die Teilen-Ansicht → <b>Nachrichten/iMessage</b> wählen. Am Desktop nutze „Kopieren".</div>
       <h3 style="margin-top:14px">Weitere / freie Übung</h3>
       <div class="bgrid">
         <div class="bf" style="grid-column:1/-1"><label>Übung</label><select id="wk-ex"></select></div>
@@ -1301,6 +1303,36 @@
       '<div class="exc" style="margin-top:4px;color:var(--warn)">Submaximal halten — Aktivierung, kein zweites Workout. Vor schwerem Squat-/Hinge-Tag ggf. weniger Swings; Griff fürs Sparring schonen.</div>'+
       '</div>';
   }
+  function trainingText(){
+    var d=TODAY;
+    var sets=(DB.strengthsets||[]).filter(function(s){return s.date===d;});
+    var sess=(DB.sessions||[]).filter(function(s){return s.date===d;});
+    var L=['🏋️ Training '+fmtD(d)+' — Alter Schwede'];
+    var sc=readyScore(DB.readiness[d]); if(sc!=null) L.push('Readiness: '+sc+'/100');
+    if(DB.checklist[d]&&DB.checklist[d].warmup) L.push('Aufwärmen ✓ (Mobility · 100 KB Swings · 10 TGU)');
+    if(sets.length){
+      L.push(''); L.push('KRAFT:');
+      var order=[],g={},vol=0; sets.forEach(function(s){ if(!g[s.ex]){g[s.ex]=[];order.push(s.ex);} g[s.ex].push(s); vol+=s.kg*s.reps; });
+      order.forEach(function(ex){ var arr=g[ex];
+        var tb=0; arr.forEach(function(s){ var e1=s.kg*(1+s.reps/30); if(e1>tb)tb=e1; });
+        var ab=0; (DB.strengthsets||[]).forEach(function(s){ if(s.ex===ex){ var e1=s.kg*(1+s.reps/30); if(e1>ab)ab=e1; } });
+        var pr=(tb>0&&tb>=ab-0.01)?' 🎉PR':'';
+        L.push('• '+arr[0].name+': '+arr.map(function(s){return s.kg+'×'+s.reps;}).join(', ')+pr);
+      });
+      L.push('Σ '+sets.length+' Sätze · Volumen '+Math.round(vol)+' kg·Wdh.');
+    }
+    if(sess.length){ L.push(''); L.push('SESSIONS:'); sess.forEach(function(s){ L.push('• '+((STMAP&&STMAP[s.type])||s.type)+' · RPE '+s.rpe+' · '+s.min+' min'+(s.focus?' · '+s.focus:'')); }); }
+    if(!sets.length&&!sess.length) L.push('(heute noch nichts geloggt)');
+    return L.join('\n');
+  }
+  function shareTraining(){ var t=trainingText(), st=document.getElementById('wk-share-status');
+    if(navigator.share){ navigator.share({title:'Training · Alter Schwede',text:t}).then(function(){ if(st) st.textContent='✓ geteilt.'; }).catch(function(){}); }
+    else copyTraining();
+  }
+  function copyTraining(){ var t=trainingText(), st=document.getElementById('wk-share-status');
+    try{ navigator.clipboard.writeText(t).then(function(){ if(st) st.textContent='✓ kopiert — in iMessage/Nachrichten einfügen.'; },function(){ if(st) st.textContent='Kopieren nicht möglich — Text manuell markieren.'; }); }
+    catch(e){ if(st) st.textContent='Kopieren nicht möglich.'; }
+  }
   function renderWorkout(){
     var el=document.getElementById('wk-list'); if(!el) return;
     if(wkDay==null) wkDay=todayStrengthDay()||'A';
@@ -1419,6 +1451,8 @@
     var seSave=document.getElementById('se-save'); if(seSave) seSave.addEventListener('click',logSession);
     document.getElementById('strength-save').addEventListener('click',saveStrength);
     var wkds=document.getElementById('wk-daysel'); if(wkds) wkds.addEventListener('click',function(e){ var b=e.target.closest('[data-wd]'); if(!b) return; wkDay=b.dataset.wd; renderWorkout(); });
+    var wksh=document.getElementById('wk-share'); if(wksh) wksh.addEventListener('click',shareTraining);
+    var wkcp=document.getElementById('wk-copy'); if(wkcp) wkcp.addEventListener('click',copyTraining);
     var wkx=document.getElementById('wk-xadd'); if(wkx) wkx.addEventListener('click',function(){ initWkEx(); var slug=pv('wk-ex')||EXLIB[0].ex[0]; var r=logSet(slug,num(pv('wk-xkg')),parseInt(num(pv('wk-xreps')),10)); var st=document.getElementById('wk-status'); if(r==null){ if(st) st.textContent='Bitte Gewicht (kg) und Wiederholungen eintragen.'; return; } sv('wk-xkg',''); sv('wk-xreps',''); renderWorkout(); });
     var wkxr=document.getElementById('wk-xreps'); if(wkxr) wkxr.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var wb=document.getElementById('wk-xadd'); if(wb) wb.click(); } });
     document.getElementById('ng-save').addEventListener('click',function(){
@@ -1885,6 +1919,22 @@
     tgu:{n:'Turkish Get-Up',cue:'Vom Liegen Schritt für Schritt zum Stand, Blick stets am KB. Ganzkörper-Stabilität und gesunde Schultern.',url:'https://www.youtube.com/watch?v=0bWRPC49-KI',ch:'StrongFirst'},
     cleanpress:{n:'KB Clean & Press',cue:'Sauberer Clean in die Rack-Position (KB legt sich sanft an), dann fester Press über Kopf.',url:'https://www.youtube.com/watch?v=qQ2C_3dCkNo',ch:'StrongFirst'},
     goblet:{n:'Goblet Squat',cue:'KB vor der Brust halten, tief sitzen, Ellbogen wandern zwischen die Knie. Aufrechter Rumpf.',url:'https://www.youtube.com/watch?v=TcXOrjCAyPg',ch:'StrongFirst'},
+    kbclean:{n:'KB Clean',cue:'Hüft-Hinge, KB sauber in die Rack-Position bringen (legt sich an, kein Schlag aufs Handgelenk). Basis für Press/Thruster.',url:sURL('kettlebell clean technique strongfirst'),ch:'Suche'},
+    kbsnatch:{n:'KB Snatch',cue:'Explosiver Hüft-Hinge wie beim Swing, die KB schießt in einem Zug über Kopf, weiches Einfädeln am Top. Ganzkörper-Power & Kondition.',url:sURL('kettlebell snatch technique strongfirst'),ch:'Suche'},
+    kbpress:{n:'KB Military Press (strikt)',cue:'Aus der Rack-Position strikt über Kopf drücken, Rumpf fest, kein Ausweichen. Schulter- & Trizepskraft.',url:sURL('kettlebell strict press strongfirst'),ch:'Suche'},
+    kbpushpress:{n:'KB Push Press',cue:'Kurzer Bein-Dip gibt der KB Schwung über Kopf — mehr Last als beim strikten Press.',url:sURL('kettlebell push press technique'),ch:'Suche'},
+    kbrow:{n:'KB Rudern (einarmig)',cue:'Hüfte gebeugt, Rücken neutral, KB zum unteren Bauch ziehen, Schulterblatt zusammen. Rückenbreite & Griff.',url:sURL('one arm kettlebell row technique'),ch:'Suche'},
+    kbrenegade:{n:'KB Renegade Row',cue:'Liegestütz-Position auf zwei KB, abwechselnd rudern, Hüfte stabil (kein Drehen). Rumpf + Rücken.',url:sURL('renegade row kettlebell technique'),ch:'Suche'},
+    kbdl:{n:'KB Kreuzheben',cue:'Zwei KB neben den Füßen (oder eine zwischen den Füßen), Hüft-Hinge, Rücken neutral. Hintere Kette.',url:sURL('kettlebell deadlift technique'),ch:'Suche'},
+    kbsldl:{n:'KB einbeiniges Kreuzheben',cue:'Auf einem Bein, Hüfte nach hinten, KB nah am Bein absenken. Standbein-Hamstring & Balance — top für Scrambles.',url:sURL('single leg kettlebell deadlift'),ch:'Suche'},
+    kbfsquat:{n:'KB Front Squat (Doppel-Rack)',cue:'Zwei KB in der Rack-Position, tief und aufrecht squaten. Bein- & Rumpfkraft, rückenschonend.',url:sURL('double kettlebell front squat'),ch:'Suche'},
+    kblunge:{n:'KB Ausfallschritt',cue:'KB in Rack oder Suitcase, sauberer Ausfallschritt, Knie über dem Fuß. Einbeinige Kraft.',url:sURL('kettlebell reverse lunge technique'),ch:'Suche'},
+    kbthruster:{n:'KB Thruster',cue:'Front Squat direkt in den Overhead-Press — Ganzkörper, konditionell stark.',url:sURL('kettlebell thruster technique'),ch:'Suche'},
+    kbhighpull:{n:'KB High Pull',cue:'Wie Swing, am Top Ellbogen hoch ziehen (KB zur Schulter). Übergang zum Snatch, Power.',url:sURL('kettlebell high pull technique'),ch:'Suche'},
+    kbwindmill:{n:'KB Windmill',cue:'KB über Kopf fixiert, Hüfte zur Seite, Hand Richtung Boden, Blick zur KB. Schulterstabilität & Mobilität — leicht starten.',url:sURL('kettlebell windmill technique'),ch:'Suche'},
+    kbhalo:{n:'KB Halo',cue:'KB am Horn um den Kopf kreisen, Rumpf fest. Schulter-Warm-up & Mobilität.',url:sURL('kettlebell halo technique'),ch:'Suche'},
+    kbbottomsup:{n:'KB Bottoms-Up Press',cue:'KB kopfüber (Boden nach oben) pressen — fordert Griff & Schulterstabilität enorm. Leicht & sauber.',url:sURL('bottoms up kettlebell press'),ch:'Suche'},
+    kbsuitcase:{n:'KB Suitcase Carry',cue:'Eine KB seitlich wie einen Koffer tragen, Rumpf gegen das Kippen anspannen. Anti-Lateralflexion fürs Core.',url:sURL('suitcase carry kettlebell core'),ch:'Suche'},
     split:{n:'Bulgarian Split Squat',cue:'Hinterer Fuß erhöht, Gewicht auf dem vorderen Bein. Knie über dem Fuß, Oberkörper leicht vor. Einbeinige Kraft für Scrambles.',url:sURL('bulgarian split squat how to'),ch:'Suche'},
     legpress:{n:'Beinpresse',cue:'Füße schulterbreit auf der Platte, kontrolliert tief, Knie am Ende nicht ganz durchdrücken.',url:sURL('leg press proper form'),ch:'Suche'},
     legcurl:{n:'Beincurl',cue:'Hamstrings isoliert anbeugen, langsam zurück. Schützt das Knie als Gegenspieler zum Quadrizeps.',url:sURL('leg curl hamstring technique'),ch:'Suche'},
@@ -1909,7 +1959,11 @@
     cleanpress:'KB ca. 20–28 kg', goblet:'KB ca. 24–32 kg', split:'KH ca. 2×12–22 kg (erst KG beherrschen)',
     legpress:'ca. 120–180 kg (Maschine variiert)', legcurl:'ca. 30–50 kg (Maschine)', facepull:'leicht, ca. 20–35 kg — Technik vor Last',
     biceps:'KH ca. 2×10–16 kg / SZ ~20–30 kg', triceps:'Seil ca. 20–35 kg / Dips Körpergewicht', carry:'schwer, ca. 2×24–32 kg',
-    grip:'progressiv, nach Gefühl'
+    grip:'progressiv, nach Gefühl',
+    kbclean:'KB ca. 20–32 kg', kbsnatch:'KB ca. 20–28 kg', kbpress:'KB ca. 16–24 kg (einarmig)', kbpushpress:'KB ca. 20–28 kg',
+    kbrow:'KB ca. 20–32 kg', kbrenegade:'KB ca. 2×16–24 kg', kbdl:'KB ca. 2×24–32 kg', kbsldl:'KB ca. 16–24 kg',
+    kbfsquat:'KB ca. 2×16–24 kg', kblunge:'KB ca. 1×20–28 / 2×16–24 kg', kbthruster:'KB ca. 2×14–20 kg', kbhighpull:'KB ca. 20–28 kg',
+    kbwindmill:'KB ca. 12–20 kg (Technik!)', kbhalo:'KB ca. 8–16 kg', kbbottomsup:'KB ca. 12–20 kg (Griff/Technik)', kbsuitcase:'KB ca. 24–32 kg (einseitig)'
   };
   var SESS={
     esn:{A:[['backsquat','4×5–8'],['rdl','3×8–10'],['split','3×8/S'],['incline','3×8–10'],['triceps','3×10–12'],['carry','3× schwer']],
@@ -1930,7 +1984,7 @@
   }
   var EXLIB=[
     {g:'Grundübungen (Langhantel/Maschine)',ex:['backsquat','frontsquat','tempo','rdl','incline','row','ohp','pullup','latpull','legpress','legcurl','floorpress']},
-    {g:'Kettlebell',ex:['swing','tgu','cleanpress','goblet','carry']},
+    {g:'Kettlebell',ex:['swing','tgu','kbclean','cleanpress','kbsnatch','kbpress','kbpushpress','kbthruster','kbhighpull','goblet','kbfsquat','kblunge','kbdl','kbsldl','kbrow','kbrenegade','kbwindmill','kbhalo','kbbottomsup','carry','kbsuitcase']},
     {g:'Akzessorisch & Griff',ex:['split','facepull','biceps','triceps','grip']},
     {g:'Prehab & Mobility',ex:['ramp','neck','shoulderp','hipp','gripp','spine']}
   ];
