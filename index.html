@@ -490,6 +490,20 @@
     </div>
 
     <div class="card">
+      <h2><span class="dot"></span>Sätze loggen — live im Training</h2>
+      <div class="role">Trainerteam · Satz für Satz · für jede Übung</div>
+      <div class="lead">Während des Trainings: Übung wählen, Gewicht &amp; Wdh. eintragen, „+ Satz". Beliebig viele Sätze pro Übung — direkt auf dem Handy an der Hantel. PR wird automatisch erkannt.</div>
+      <div class="bgrid">
+        <div class="bf" style="grid-column:1/-1"><label>Übung</label><select id="st-ex"></select></div>
+        <div class="bf"><label>Gewicht (kg)</label><input type="text" inputmode="decimal" id="st-kg" placeholder="z. B. 100"></div>
+        <div class="bf"><label>Wiederholungen</label><input type="text" inputmode="numeric" id="st-reps" placeholder="z. B. 5"></div>
+      </div>
+      <div class="inrow" style="margin-top:10px"><button class="btn" id="st-add">+ Satz</button></div>
+      <div class="note" id="st-status">Gewicht/Wdh. bleiben stehen — für gleiche Folgesätze einfach wieder „+ Satz".</div>
+      <div id="st-list" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
       <h2><span class="dot"></span>Krafteinheiten</h2>
       <div class="role">Trainerteam</div>
       <div id="strength-variant"></div>
@@ -972,7 +986,7 @@
   function pick(a){ return a[ daysBetween(START,NOW>START?NOW:START) % a.length ]; }
 
   /* ---------- DB ---------- */
-  var DB={profile:{},checklist:{},readiness:{},load:{},strength:[],niggles:[],weight:[],schedule:{gb:{},ber:{}},bloodlog:[],shop:{},tournaments:{},appts:[],journey:[],coachlog:[],over:{},sessions:[],meals:{}};
+  var DB={profile:{},checklist:{},readiness:{},load:{},strength:[],niggles:[],weight:[],schedule:{gb:{},ber:{}},bloodlog:[],shop:{},tournaments:{},appts:[],journey:[],coachlog:[],over:{},sessions:[],meals:{},strengthsets:[]};
   async function loadDB(){
     DB.profile=await getJSON('as_profile',{});
     DB.checklist=await getJSON('as_checklist',{});
@@ -1001,6 +1015,7 @@
     DB.over=await getJSON('as_over',{});
     DB.sessions=await getJSON('as_sessions',[]);
     DB.meals=await getJSON('as_meals',{});
+    DB.strengthsets=await getJSON('as_strengthsets',[]);
     if(!DB.schedule.gb)DB.schedule.gb={}; if(!DB.schedule.ber)DB.schedule.ber={};
   }
 
@@ -1248,13 +1263,47 @@
     var btn=document.getElementById('strength-save'); var o='Einheit speichern';
     btn.textContent= prs.length?('🎉 PR: '+prs.join(' · ')):'Gespeichert ✓'; setTimeout(function(){btn.textContent=o;}, prs.length?2400:1200);
   }
+  /* ---------- Sätze loggen (set-by-set, live im Training) ---------- */
+  function initStEx(){
+    var s=document.getElementById('st-ex'); if(!s||s._b) return; s._b=1;
+    s.innerHTML=EXLIB.map(function(grp){ return '<optgroup label="'+esc(grp.g)+'">'+grp.ex.map(function(slug){ var e=EX[slug]; return e?'<option value="'+slug+'">'+esc(e.n)+'</option>':''; }).join('')+'</optgroup>'; }).join('');
+    s.addEventListener('change',prefillSt);
+  }
+  function lastSetFor(slug){ for(var i=(DB.strengthsets||[]).length-1;i>=0;i--){ if(DB.strengthsets[i].ex===slug) return DB.strengthsets[i]; } return null; }
+  function prefillSt(){ var l=lastSetFor(pv('st-ex')); if(l){ sv('st-kg',l.kg); sv('st-reps',l.reps); } }
+  function addStrengthSet(){
+    initStEx(); var slug=pv('st-ex')||EXLIB[0].ex[0]; var kg=num(pv('st-kg')), reps=parseInt(num(pv('st-reps')),10); var st=document.getElementById('st-status');
+    if(isNaN(kg)||kg<=0||isNaN(reps)||reps<=0){ if(st) st.textContent='Bitte Gewicht (kg) und Wiederholungen eintragen.'; return; }
+    var e=EX[slug]||{n:slug};
+    DB.strengthsets=DB.strengthsets||[];
+    var nowE=kg*(1+reps/30), prev=0;
+    DB.strengthsets.forEach(function(s){ if(s.ex===slug){ var pe=s.kg*(1+s.reps/30); if(pe>prev)prev=pe; } });
+    DB.strengthsets.push({id:'ss'+Date.now(),date:TODAY,ex:slug,name:e.n,kg:kg,reps:reps});
+    save('as_strengthsets',DB.strengthsets);
+    if(st) st.textContent=(prev>0&&nowE>prev+0.01)?('🎉 PR bei '+e.n+'! '+kg+' kg × '+reps):('✓ Satz gespeichert: '+e.n+' '+kg+' kg × '+reps+'.');
+    renderStrengthSets();
+  }
+  function renderStrengthSets(){
+    initStEx();
+    var el=document.getElementById('st-list'); if(!el) return;
+    var today=(DB.strengthsets||[]).filter(function(s){ return s.date===TODAY; });
+    if(!today.length){ el.innerHTML='<div class="note">Heute noch keine Sätze geloggt.</div>'; }
+    else{
+      var order=[],groups={},vol=0; today.forEach(function(s){ if(!groups[s.ex]){ groups[s.ex]=[]; order.push(s.ex); } groups[s.ex].push(s); vol+=s.kg*s.reps; });
+      el.innerHTML=order.map(function(ex){ var arr=groups[ex];
+        var sets=arr.map(function(s){ return '<span class="rchip">'+s.kg+'×'+s.reps+'<button data-ssdel="'+s.id+'" aria-label="Satz löschen" style="background:none;border:none;color:var(--bad);cursor:pointer;padding:0 0 0 5px;font-size:12px">✕</button></span>'; }).join(' ');
+        return '<div class="course" style="display:block"><b style="font-size:13px;color:var(--ink)">'+esc(arr[0].name)+'</b> <span style="color:var(--faint);font-size:11px">'+arr.length+' Satz'+(arr.length>1?'·e':'')+'</span><div style="margin-top:4px">'+sets+'</div></div>';
+      }).join('')+'<div class="note">Heute gesamt: <b style="color:var(--gold)">'+today.length+'</b> Sätze · Volumen <b>'+Math.round(vol)+'</b> kg·Wdh.</div>';
+    }
+    if(!el._b){ el._b=1; el.addEventListener('click',function(e){ var x=e.target.closest('[data-ssdel]'); if(!x) return; DB.strengthsets=(DB.strengthsets||[]).filter(function(s){ return s.id!==x.dataset.ssdel; }); save('as_strengthsets',DB.strengthsets); renderStrengthSets(); }); }
+  }
   function renderTraining(){
     var pl=document.getElementById('phase-list'); var pi=phaseIndex(); pl.innerHTML='';
     PHASES.forEach(function(p,i){ var on=(i===pi&&dToStart<=0&&dToComp>=0);
       var div=document.createElement('div'); div.className='sess '+(on?'strength':'recovery'); if(on)div.style.borderColor='var(--gold)';
       div.innerHTML='<div class="ic">'+(on?'➡️':p.n)+'</div><div><div class="t">Phase '+p.n+' · '+p.name+'</div><div class="d">'+p.rng+' — '+p.focus+'</div></div>'; pl.appendChild(div); });
     renderStrengthPlan();
-    renderLoad(); renderStrengthForm(); renderWeekEditor(); renderProtocolStatic(); renderExerciseDB();
+    renderLoad(); renderStrengthForm(); renderStrengthSets(); renderWeekEditor(); renderProtocolStatic(); renderExerciseDB();
   }
 
   /* ---------- körper: niggles ---------- */
@@ -1347,6 +1396,8 @@
   function bind(){
     var seSave=document.getElementById('se-save'); if(seSave) seSave.addEventListener('click',logSession);
     document.getElementById('strength-save').addEventListener('click',saveStrength);
+    var stAdd=document.getElementById('st-add'); if(stAdd) stAdd.addEventListener('click',addStrengthSet);
+    var stReps=document.getElementById('st-reps'); if(stReps) stReps.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); addStrengthSet(); } });
     document.getElementById('ng-save').addEventListener('click',function(){
       var area=document.getElementById('ng-area').value, sev=+document.getElementById('ng-sev').value, note=document.getElementById('ng-note').value.trim();
       DB.niggles.push({date:TODAY,area:area,sev:sev,note:note}); save('as_niggles',DB.niggles);
@@ -2350,7 +2401,7 @@
     if(!raw){ fail('Kein Backup gefunden — wähle eine .json-Datei oder füge den Backup-Text ein.'); return false; }
     var d; try{ d=JSON.parse(raw); }catch(e){ fail('Das ist kein gültiges JSON-Backup'+note+'. Bitte die unveränderte Export-Datei verwenden.'); return false; }
     if(!d||typeof d!=='object'||Array.isArray(d)){ fail('Backup hat das falsche Format'+note+' — erwartet wird ein JSON-Objekt mit deinen Daten.'); return false; }
-    var ARR={strength:1,niggles:1,weight:1,bloodlog:1,appts:1,journey:1,coachlog:1,sessions:1};
+    var ARR={strength:1,niggles:1,weight:1,bloodlog:1,appts:1,journey:1,coachlog:1,sessions:1,strengthsets:1};
     var OBJ={profile:1,checklist:1,readiness:1,load:1,shop:1,tournaments:1,schedule:1,over:1,meals:1};
     var applied=0,skipped=[];
     Object.keys(ARR).concat(Object.keys(OBJ)).forEach(function(k){
@@ -2361,7 +2412,7 @@
     if(!applied){ fail('Keine gültigen Daten-Felder im Backup gefunden'+note+' — nichts importiert.'); return false; }
     if(!DB.schedule||typeof DB.schedule!=='object') DB.schedule={gb:{},ber:{}};
     if(!DB.schedule.gb)DB.schedule.gb={}; if(!DB.schedule.ber)DB.schedule.ber={};
-    save('as_profile',DB.profile);save('as_checklist',DB.checklist);save('as_readiness',DB.readiness);save('as_load',DB.load);save('as_strength',DB.strength);save('as_niggles',DB.niggles);save('as_weightlog',DB.weight);save('as_bloodlog',DB.bloodlog);save('as_shop',DB.shop);save('as_tournaments',DB.tournaments);save('as_schedule',DB.schedule);save('as_appts',DB.appts);save('as_journey',DB.journey);save('as_coachlog',DB.coachlog);save('as_over',DB.over);save('as_sessions',DB.sessions);save('as_meals',DB.meals);
+    save('as_profile',DB.profile);save('as_checklist',DB.checklist);save('as_readiness',DB.readiness);save('as_load',DB.load);save('as_strength',DB.strength);save('as_niggles',DB.niggles);save('as_weightlog',DB.weight);save('as_bloodlog',DB.bloodlog);save('as_shop',DB.shop);save('as_tournaments',DB.tournaments);save('as_schedule',DB.schedule);save('as_appts',DB.appts);save('as_journey',DB.journey);save('as_coachlog',DB.coachlog);save('as_over',DB.over);save('as_sessions',DB.sessions);save('as_meals',DB.meals);save('as_strengthsets',DB.strengthsets);
     renderAll(); renderBlood(); renderShop(); renderDash(); renderW(); renderBackupStatus();
     if(st){ st.classList.remove('warn'); st.innerHTML='✓ Backup importiert'+note+' — '+applied+' Bereich(e) wiederhergestellt'+(skipped.length?', '+skipped.length+' übersprungen (falsches Format)':'')+'.'; }
     var btn=document.getElementById('imp-btn'); if(btn){ btn.textContent='Importiert ✓'; setTimeout(function(){btn.textContent='Aus Text importieren';},1800); }
