@@ -1290,6 +1290,15 @@
       '<div class="inrow" style="margin-top:8px;gap:6px;align-items:center"><input type="text" inputmode="decimal" id="wk-kg-'+slug+'" value="'+pkg+'" placeholder="kg" style="width:74px"><span style="color:var(--faint)">×</span><input type="text" inputmode="numeric" id="wk-reps-'+slug+'" value="'+preps+'" placeholder="Wdh." style="width:74px"><button class="btn" data-wlog="'+slug+'" style="padding:8px 14px">✓ Satz</button><span class="role" style="margin:0 0 0 auto">'+prog+'</span></div>'+
       '</div>';
   }
+  function warmupBlock(){
+    var done=!!(DB.checklist[TODAY]&&DB.checklist[TODAY].warmup);
+    var sw=EX['swing']||{}, tg=EX['tgu']||{};
+    return '<div style="padding:12px 14px;margin-bottom:10px;background:var(--card2);border-radius:14px;border:1px solid '+(done?'rgba(55,211,155,.45)':'var(--line)')+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="font-size:14px">🔥 Aufwärmen</b><button class="btn'+(done?' ghost':'')+'" id="wk-warm" style="padding:6px 12px">'+(done?'✓ erledigt':'erledigt')+'</button></div>'+
+      '<div class="exc" style="margin-top:6px"><b>1.</b> Mobility / Flexibilität · <b>2.</b> 100 Kettlebell Swings · <b>3.</b> 10 Turkish Get-ups (5/Seite). <a class="exl" style="margin-top:0" href="'+(sw.url||'#')+'" target="_blank" rel="noopener">▶ Swing</a> · <a class="exl" style="margin-top:0" href="'+(tg.url||'#')+'" target="_blank" rel="noopener">▶ TGU</a></div>'+
+      '<div class="exc" style="margin-top:4px;color:var(--warn)">Submaximal halten — Aktivierung, kein zweites Workout. Vor schwerem Squat-/Hinge-Tag ggf. weniger Swings; Griff fürs Sparring schonen.</div>'+
+      '</div>';
+  }
   function renderWorkout(){
     var el=document.getElementById('wk-list'); if(!el) return;
     if(wkDay==null) wkDay=todayStrengthDay()||'A';
@@ -1298,10 +1307,12 @@
     var planSlugs=plan.map(function(p){return p[0];});
     var todaySets=(DB.strengthsets||[]).filter(function(s){return s.date===TODAY;});
     var extra=[]; todaySets.forEach(function(s){ if(planSlugs.indexOf(s.ex)<0 && extra.indexOf(s.ex)<0) extra.push(s.ex); });
-    el.innerHTML=(plan.map(function(p){ return exBlock(p[0],p[1]); }).join('')+extra.map(function(slug){ return exBlock(slug,null); }).join(''))||'<div class="note">Kein Plan für diese Einheit.</div>';
+    var body=(plan.map(function(p){ return exBlock(p[0],p[1]); }).join('')+extra.map(function(slug){ return exBlock(slug,null); }).join(''))||'<div class="note">Kein Plan für diese Einheit.</div>';
+    el.innerHTML=warmupBlock()+body;
     var vol=0; todaySets.forEach(function(s){ vol+=s.kg*s.reps; });
     var st=document.getElementById('wk-status'); if(st) st.innerHTML=todaySets.length?('Heute gesamt: <b style="color:var(--gold)">'+todaySets.length+'</b> Sätze · Volumen <b>'+Math.round(vol)+'</b> kg·Wdh.'):'Noch keine Sätze geloggt — leg los.';
     if(!el._b){ el._b=1; el.addEventListener('click',function(e){
+      var wm=e.target.closest('#wk-warm'); if(wm){ DB.checklist[TODAY]=DB.checklist[TODAY]||{}; DB.checklist[TODAY].warmup=!DB.checklist[TODAY].warmup; save('as_checklist',DB.checklist); renderWorkout(); return; }
       var lg=e.target.closest('[data-wlog]'); if(lg){ var slug=lg.dataset.wlog; var r=logSet(slug,num(pv('wk-kg-'+slug)),parseInt(num(pv('wk-reps-'+slug)),10)); if(r==null){ var s0=document.getElementById('wk-status'); if(s0) s0.textContent='Bitte Gewicht (kg) und Wiederholungen eintragen.'; return; } var pr=(r==='pr'); renderWorkout(); if(pr){ var s1=document.getElementById('wk-status'); if(s1) s1.innerHTML='🎉 PR bei '+esc((EX[slug]||{n:slug}).n)+'! '+s1.innerHTML; } return; }
       var dl=e.target.closest('[data-ssdel]'); if(dl){ DB.strengthsets=(DB.strengthsets||[]).filter(function(s){return s.id!==dl.dataset.ssdel;}); save('as_strengthsets',DB.strengthsets); renderWorkout(); return; }
     }); }
