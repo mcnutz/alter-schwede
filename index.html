@@ -130,6 +130,9 @@
   a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,
   [role=button]:focus-visible,[role=checkbox]:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
   .dots .d:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+  /* a11y: skip-link, sichtbar nur bei Fokus */
+  .skip{position:absolute;left:-9999px;top:8px;z-index:10000;background:var(--gold);color:#06121f;font-family:'Bebas Neue';letter-spacing:1px;padding:10px 16px;border-radius:10px;text-decoration:none}
+  .skip:focus{left:12px}
   @media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
   .btn{font-family:'Bebas Neue';letter-spacing:1px;font-size:16px;border:none;cursor:pointer;background:linear-gradient(145deg,var(--gold),var(--gold2));color:#06121f;border-radius:11px;padding:10px 20px;transition:.15s}
   .btn:hover{filter:brightness(1.08)} .btn:active{transform:translateY(1px)}
@@ -352,10 +355,11 @@
   .leaflet-popup-content{font-family:'Sora',sans-serif;font-size:12px}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
 <div id="lockscreen"><div class="lockcard"><div class="lockbrand">🔒 ALTER SCHWEDE</div><div id="lock-body"><div class="lead" style="text-align:center">Lädt…</div></div></div></div>
+<a class="skip" href="#tabs">Zum Inhalt springen</a>
 <div class="wrap">
 
   <header>
@@ -379,24 +383,32 @@
   <div class="say"><div style="flex:1"><div class="who">ALTER SCHWEDE SAGT</div><p id="coach-line">Moin.</p></div></div>
 
   <div class="navwrap" id="navwrap">
-  <nav class="tabs" id="tabs" role="tablist" aria-label="Bereiche">
-    <button class="tab on" role="tab" aria-selected="true" data-t="heute"><span class="ti" aria-hidden="true">📅</span><span>Heute</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="profil"><span class="ti" aria-hidden="true">🥋</span><span>Profil</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="woche"><span class="ti" aria-hidden="true">🗓️</span><span>Woche</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="training"><span class="ti" aria-hidden="true">🏋️</span><span>Training</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="technik"><span class="ti" aria-hidden="true">🧠</span><span>Technik</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="koerper"><span class="ti" aria-hidden="true">🩺</span><span>Körper</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="ernaehrung"><span class="ti" aria-hidden="true">🍽️</span><span>Ernährung</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="wissen"><span class="ti" aria-hidden="true">📚</span><span>Wissen</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="turniere"><span class="ti" aria-hidden="true">🏆</span><span>Turniere</span></button>
-    <button class="tab" role="tab" aria-selected="false" data-t="daten"><span class="ti" aria-hidden="true">📊</span><span>Daten</span></button>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Bereiche" tabindex="-1">
+    <button class="tab on" id="tab-heute" role="tab" aria-selected="true" aria-controls="s-heute" data-t="heute"><span class="ti" aria-hidden="true">📅</span><span>Heute</span></button>
+    <button class="tab" id="tab-profil" role="tab" aria-selected="false" aria-controls="s-profil" data-t="profil"><span class="ti" aria-hidden="true">🥋</span><span>Profil</span></button>
+    <button class="tab" id="tab-woche" role="tab" aria-selected="false" aria-controls="s-woche" data-t="woche"><span class="ti" aria-hidden="true">🗓️</span><span>Woche</span></button>
+    <button class="tab" id="tab-training" role="tab" aria-selected="false" aria-controls="s-training" data-t="training"><span class="ti" aria-hidden="true">🏋️</span><span>Training</span></button>
+    <button class="tab" id="tab-technik" role="tab" aria-selected="false" aria-controls="s-technik" data-t="technik"><span class="ti" aria-hidden="true">🧠</span><span>Technik</span></button>
+    <button class="tab" id="tab-gb" role="tab" aria-selected="false" aria-controls="s-gb" data-t="gb"><span class="ti" aria-hidden="true">🌐</span><span>GB Intl</span></button>
+    <button class="tab" id="tab-gbsys" role="tab" aria-selected="false" aria-controls="s-gbsys" data-t="gbsys"><span class="ti" aria-hidden="true">🔴</span><span>GB System</span></button>
+    <button class="tab" id="tab-koerper" role="tab" aria-selected="false" aria-controls="s-koerper" data-t="koerper"><span class="ti" aria-hidden="true">🩺</span><span>Körper</span></button>
+    <button class="tab" id="tab-ernaehrung" role="tab" aria-selected="false" aria-controls="s-ernaehrung" data-t="ernaehrung"><span class="ti" aria-hidden="true">🍽️</span><span>Ernährung</span></button>
+    <button class="tab" id="tab-wissen" role="tab" aria-selected="false" aria-controls="s-wissen" data-t="wissen"><span class="ti" aria-hidden="true">📚</span><span>Wissen</span></button>
+    <button class="tab" id="tab-turniere" role="tab" aria-selected="false" aria-controls="s-turniere" data-t="turniere"><span class="ti" aria-hidden="true">🏆</span><span>Turniere</span></button>
+    <button class="tab" id="tab-daten" role="tab" aria-selected="false" aria-controls="s-daten" data-t="daten"><span class="ti" aria-hidden="true">📊</span><span>Daten</span></button>
   </nav>
   </div>
 
   <!-- ===================== HEUTE ===================== -->
-  <section class="on" id="s-heute">
+  <section class="on" id="s-heute" role="tabpanel" aria-labelledby="tab-heute" tabindex="0">
     <div id="onboard"></div>
     <div id="taper-guard"></div>
+    <div id="illness-card"></div>
+    <div id="comp-timer"></div>
+    <div id="go-check"></div>
+    <div id="niggle-alert"></div>
+    <div id="retest-alert"></div>
+    <div id="debrief-hint"></div>
     <div id="comp-protocol"></div>
     <div class="card">
       <h2><span class="dot"></span>Readiness-Check</h2>
@@ -429,6 +441,7 @@
       <div id="phase-chips" style="margin-top:12px"></div>
       <div id="today-session"></div>
       <div class="note" id="techfocus"></div>
+      <div id="gb-today" style="margin-top:10px"></div>
     </div>
 
     <div class="card">
@@ -446,7 +459,7 @@
     <div class="card">
       <h2><span class="dot"></span>Session loggen</h2>
       <div class="role">Sportmedizin · Trainingslast (<abbr title="session-RPE: wahrgenommene Anstrengung (RPE 1–10) × Dauer in Minuten = Last-Einheiten" style="text-decoration:underline dotted;cursor:help">sRPE</abbr>) · pro Session</div>
-      <div class="lead">Nach jedem Training erfassen — du kannst mehrere Sessions pro Tag loggen (z. B. Kraft morgens, BJJ abends). Last = RPE × Minuten fließt in die ACWR-Lastkontrolle.</div>
+      <div class="lead">Nach jedem Training erfassen — du kannst mehrere Sessions pro Tag loggen (z. B. Kraft morgens, BJJ abends). Last = RPE × Minuten (Last-Einheiten, LE) fließt in die ACWR-Lastkontrolle.</div>
       <div class="bgrid">
         <div class="bf"><label>Art</label><select id="se-type"></select></div>
         <div class="bf"><label>RPE 1–10</label><input type="number" id="se-rpe" min="1" max="10" step="1" placeholder="wie hart?"></div>
@@ -463,11 +476,11 @@
   </section>
 
   <!-- ===================== TRAINING ===================== -->
-  <section id="s-training">
+  <section id="s-training" role="tabpanel" aria-labelledby="tab-training" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>11-Wochen-Periodisierung</h2>
       <div class="role">Trainerteam</div>
-      <div class="lead">Recomp halten · -85 kg frisch · Aufbau nach dem Turnier.<span class="srcrow" style="display:block"><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/17762369/" target="_blank" rel="noopener">Taper: Bosquet 2007, MSSE</a></span></div>
+      <div class="lead">Recomp halten · Klasse −185 lbs (84,09 kg · keine Toleranz), frisch · Aufbau nach dem Turnier.<span class="srcrow" style="display:block"><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/17762369/" target="_blank" rel="noopener">Taper: Bosquet 2007, MSSE</a></span></div>
       <div id="phase-list"></div>
     </div>
 
@@ -477,7 +490,7 @@
       <div class="lead">Wochenlast aus deinen sRPE-Logs. Spitzen = Risiko.</div>
       <div class="bars" id="load-bars"></div>
       <div class="acwr" id="acwr"></div>
-      <div class="note">ACWR = Last der letzten 7 Tage ÷ Schnitt der letzten 4 Wochen. <b>0,8–1,3</b> ist der „Sweet Spot", <b>&gt;1,5</b> erhöht das Verletzungsrisiko. Richtwert, kein Gesetz — <span style="color:var(--warn)">methodisch umstritten, Details im Wissen-Tab.</span><div class="srcrow"><a class="src" href="https://bjsm.bmj.com/content/50/5/273" target="_blank" rel="noopener">Gabbett 2016, BJSM</a><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/?term=Impellizzeri+acute+chronic+workload+ratio" target="_blank" rel="noopener">Impellizzeri – Kritik</a></div></div>
+      <div class="note">ACWR = Last der letzten 7 Tage ÷ Schnitt der letzten 4 Wochen. <b>0,8–1,3</b> ist der „Sweet Spot“, <b>&gt;1,5</b> erhöht das Verletzungsrisiko. Richtwert, kein Gesetz — <span style="color:var(--warn)">methodisch umstritten, Details im Wissen-Tab.</span><div class="srcrow"><a class="src" href="https://bjsm.bmj.com/content/50/5/273" target="_blank" rel="noopener">Gabbett 2016, BJSM</a><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/?term=Impellizzeri+acute+chronic+workload+ratio" target="_blank" rel="noopener">Impellizzeri – Kritik</a></div></div>
     </div>
 
     <div class="card">
@@ -492,13 +505,13 @@
     <div class="card">
       <h2><span class="dot"></span>Trainingsplan heute — geführt</h2>
       <div class="role" id="wk-role">Trainerteam · dein Plan für heute · Satz für Satz abhaken</div>
-      <div class="lead">Wähle die Einheit, arbeite die Übungen der Reihe nach ab und tippe nach jedem Satz „✓ Satz". Fortschritt (Sätze X/Ziel), Volumen und PRs laufen automatisch mit — direkt fürs Handy an der Hantel.</div>
-      <div class="note">💡 Die <b>Gewichts-Orientierung</b> je Übung ist ein grober „ca."-Richtwert für eine/n trainierte/n ~84-kg-Sportler/in — <b>taste dich heran</b>: wähle ein Gewicht, bei dem am Satzende noch <b>1–3 Wiederholungen in Reserve</b> bleiben (RIR). Sobald du etwas geloggt hast, zeigt die App dein <b>letztes Gewicht</b> als Anker.</div>
+      <div class="lead">Wähle die Einheit, arbeite die Übungen der Reihe nach ab und tippe nach jedem Satz „✓ Satz“. Fortschritt (Sätze X/Ziel), Volumen und PRs laufen automatisch mit — direkt fürs Handy an der Hantel.</div>
+      <div class="note">💡 Die <b>Gewichts-Orientierung</b> ist nur ein grober „ca.“-Richtwert (trainierte Person, ~84 kg). <b>Taste dich heran</b>: am Satzende sollten noch <b>1–3 Wiederholungen in Reserve</b> sein (RIR). Sobald du etwas loggst, merkt sich die App dein <b>letztes Gewicht</b> als Anker.</div>
       <div class="inrow" id="wk-daysel" style="margin-top:8px"></div>
       <div id="wk-list" style="margin-top:10px"></div>
       <div class="note" id="wk-status"></div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="wk-share">📤 Training teilen</button><button class="btn ghost" id="wk-copy">Kopieren</button></div>
-      <div class="note" id="wk-share-status">Fasst dein heutiges Training zusammen (Aufwärmen, Sätze, Volumen, PRs, Sessions). „Teilen" öffnet am iPhone die Teilen-Ansicht → <b>Nachrichten/iMessage</b> wählen. Am Desktop nutze „Kopieren".</div>
+      <div class="note" id="wk-share-status">Fasst dein heutiges Training zusammen (Aufwärmen, Sätze, Volumen, PRs, Sessions). „Teilen“ öffnet am iPhone die Teilen-Ansicht → <b>Nachrichten/iMessage</b> wählen. Am Desktop nutze „Kopieren“.</div>
       <h3 style="margin-top:14px">Weitere / freie Übung</h3>
       <div class="bgrid">
         <div class="bf" style="grid-column:1/-1"><label>Übung</label><select id="wk-ex"></select></div>
@@ -525,10 +538,10 @@
     <div class="card">
       <h2><span class="dot"></span>Wochenplan &amp; Kurszeiten</h2>
       <div class="role">Trainerteam · trag deine echten GB-/Berserker-Zeiten ein</div>
-      <div class="lead">GB-Zeiten (Juni) sind vorausgefüllt. Berserker-Zeiten (ab Juli) trägst du ein, sobald du sie hast — sie erscheinen automatisch in „Heute".</div>
+      <div class="lead">GB-Zeiten (Juni) sind vorausgefüllt. Berserker-Zeiten (ab Juli) trägst du ein, sobald du sie hast — sie erscheinen automatisch in „Heute“.</div>
       <div class="inrow" id="sched-toggle" style="margin-top:10px">
         <button class="btn ghost" data-sk="gb">Juni · GB Sternschanze</button>
-        <button class="btn ghost" data-sk="ber">ab Juli · Berserker</button>
+        <button class="btn ghost" data-sk="ber">ab Juli · Berserker Buchholz</button>
       </div>
       <div id="week-editor" style="margin-top:8px"></div>
     </div>
@@ -536,18 +549,19 @@
     <div class="card">
       <h2><span class="dot"></span>Wettkampftag-Protokoll</h2>
       <div class="role">Trainerteam · Physio · Sportmedizin</div>
-      <div class="lead">In der letzten Woche erscheint das automatisch in „Heute". Hier jederzeit nachlesbar.</div>
+      <div class="lead">In der letzten Woche erscheint das automatisch in „Heute“. Hier jederzeit nachlesbar.</div>
       <div id="protocol-static"></div>
+      <div id="comp-timer-demo" style="margin-top:10px"></div>
     </div>
 
     <div class="card">
       <h2><span class="dot"></span>Wettkampf-Fakten</h2>
-      <div class="lead" style="line-height:1.95">📍 Sporthalle Wandsbek, Rüterstraße 75, Hamburg · Einlass 7:30, Start 9:00<br>⚖️ Wiegen <b style="color:var(--gold)">am Wettkampftag</b> → bei 83,5 kg kein Cut, voll fuelen<br>📝 Normalpreis bis <b style="color:var(--gold)">25.07.</b> (70 €), Late bis 11.08. (95 €)</div>
+      <div class="lead" style="line-height:1.95">📍 Sporthalle Wandsbek, Rüterstraße 75, Hamburg · Einlass 7:30, Start 9:00<br>⚖️ Wiegen <b style="color:var(--gold)">am Wettkampftag</b> → bei 83,5 kg kein Cut, voll auftanken<br>📝 Normalpreis bis <b style="color:var(--gold)">25.07.</b> (70 €), Late bis 11.08. (95 €)</div>
     </div>
   </section>
 
   <!-- ===================== KÖRPER ===================== -->
-  <section id="s-koerper">
+  <section id="s-koerper" role="tabpanel" aria-labelledby="tab-koerper" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>RAMP Warm-up</h2>
       <div class="role">Physiotherapie · vor jeder Einheit (8–10 min)</div>
@@ -581,7 +595,7 @@
       </div>
       <div class="inrow"><input id="ng-note" placeholder="Notiz (optional)" style="flex:1"><button class="btn" id="ng-save">Loggen</button></div>
       <div id="ng-list" style="margin-top:12px"></div>
-      <div class="note warn"><b>Rote Flaggen → Physio/Arzt:</b> scharfer Gelenkschmerz, Taubheit/Kribbeln, Schwellung, „Knacken" mit Funktionsverlust, oder Schmerz &gt; 2 Wochen. Grundregel: <b>um den Schmerz herum trainieren, nicht durch ihn.</b></div>
+      <div class="note warn"><b>Rote Flaggen → Physio/Arzt:</b> scharfer Gelenkschmerz, Taubheit/Kribbeln, Schwellung, „Knacken“ mit Funktionsverlust, oder Schmerz &gt; 2 Wochen. Grundregel: <b>um den Schmerz herum trainieren, nicht durch ihn.</b></div>
     </div>
 
     <div class="card">
@@ -597,12 +611,12 @@
       <div class="role">Sportmedizin · Physiotherapie</div>
       <div class="lead" style="line-height:1.9"><b style="color:var(--ink)">Schlaf 7,5–9 h</b> — größter Hebel. <b style="color:var(--ink)">Sauna</b> 2–3×/Woche nach Training (nicht zum Cutten). <b style="color:var(--ink)">Schwimmen</b> (Juni: Hamburger Bäder) als gelenkschonendes Zone-2. <b style="color:var(--ink)">Yoga</b> bei Inner Smile (Juni). Down-Regulation: 5 min Nasenatmung 4-7-8 abends.<span class="srcrow" style="display:block"><a class="src" href="https://bjsm.bmj.com/content/55/7/356" target="_blank" rel="noopener">Schlaf: Walsh 2021, BJSM</a><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/?term=Plews+heart+rate+variability+training+monitoring" target="_blank" rel="noopener">HRV: Plews 2013</a></span></div>
       <div class="note">THC (neutral): kann REM-Schlaf &amp; HRV dämpfen. In der Schärfe-/Taperphase reduzieren oder früher timen — deine Entscheidung.</div>
-      <div class="note warn"><b>Kein Training bei:</b> Fieber/Infekt „unter dem Hals", Verdacht auf Gehirnerschütterung, akuter starker Schmerz. Im Zweifel Ruhetag — eine verpasste Einheit kostet nichts, eine Verletzung das Turnier.</div>
+      <div class="note warn"><b>Kein Training bei:</b> Fieber/Infekt „unter dem Hals“, Verdacht auf Gehirnerschütterung, akuter starker Schmerz. Im Zweifel Ruhetag — eine verpasste Einheit kostet nichts, eine Verletzung das Turnier.</div>
     </div>
     <div class="card">
       <h2><span class="dot"></span>Termine</h2>
       <div class="role">Arzt &amp; Co. · mit Countdown · als Kalender (.ics) exportierbar</div>
-      <div class="lead">Trag Termine ein — z. B. Arztbesuche. Jeder Termin lässt sich einzeln als Kalenderdatei exportieren (Erinnerung 2 h vorher); „Alle als .ics" packt alles in eine Datei.</div>
+      <div class="lead">Trag Termine ein — z. B. Arztbesuche. Jeder Termin lässt sich einzeln als Kalenderdatei exportieren (Erinnerung 2 h vorher); „Alle als .ics“ packt alles in eine Datei.</div>
       <div class="bgrid">
         <div class="bf"><label>Datum</label><input type="date" id="ap-date"></div>
         <div class="bf"><label>Von</label><input type="time" id="ap-t0"></div>
@@ -637,7 +651,7 @@
   </section>
 
   <!-- ===================== ERNÄHRUNG ===================== -->
-  <section id="s-ernaehrung">
+  <section id="s-ernaehrung" role="tabpanel" aria-labelledby="tab-ernaehrung" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>Recomp-Makros</h2>
       <div class="role">Sportmedizin · Trainerteam</div>
@@ -646,7 +660,7 @@
         <div class="mc train"><div class="lbl">Trainingstag</div><div class="kcal">3.050<span style="font-size:13px;color:var(--muted)"> kcal</span></div><div class="row"><span>Protein</span><b>185 g</b></div><div class="row"><span>Carbs</span><b>410 g</b></div><div class="row"><span>Fett</span><b>75 g</b></div></div>
         <div class="mc rest"><div class="lbl">Ruhetag</div><div class="kcal">2.750<span style="font-size:13px;color:var(--muted)"> kcal</span></div><div class="row"><span>Protein</span><b>185 g</b></div><div class="row"><span>Carbs</span><b>320 g</b></div><div class="row"><span>Fett</span><b>80 g</b></div></div>
       </div>
-      <div class="note">Schnitt ≈ Erhaltung (~2.900 kcal) → Gewicht stabil ~83,5–84,5 kg. <b>Nach dem Turnier:</b> +250–350 kcal für Lean Bulk Richtung 86–87 kg.<div class="srcrow"><a class="src" href="https://bjsm.bmj.com/content/52/6/376" target="_blank" rel="noopener">Morton 2018, BJSM</a><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/?term=Barakat+body+recomposition+trained+individuals" target="_blank" rel="noopener">Barakat 2020</a></div></div>
+      <div class="note" id="nutri-note">Schnitt ≈ Erhaltung (~2.900 kcal) → Gewicht stabil ~83,0–83,8 kg halten (GI-Limit: −185 lbs = 84,09 kg ohne Toleranz). <b>Nach dem Turnier:</b> +250–350 kcal für Lean Bulk Richtung 86–87 kg.<div class="srcrow"><a class="src" href="https://bjsm.bmj.com/content/52/6/376" target="_blank" rel="noopener">Morton 2018, BJSM</a><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/?term=Barakat+body+recomposition+trained+individuals" target="_blank" rel="noopener">Barakat 2020</a></div></div>
     </div>
     <div class="card">
       <h2><span class="dot"></span>Gracie Diet — Gruppen</h2>
@@ -660,29 +674,29 @@
       <div class="rule yes"><span class="k">✓</span><span>Eine Stärke + Gruppe-1 (Reis + Huhn + Gemüse)</span></div>
       <div class="rule yes"><span class="k">✓</span><span>Vollwertig, frisch, langsam essen · ~4–5 h zwischen Hauptmahlzeiten</span></div>
       <div class="rule no"><span class="k">✕</span><span>Zwei Stärken mischen · Fett + Zucker · Industriezucker</span></div>
-      <div class="note"><b>Ehrlich:</b> Die pH-/„Säure"-Begründung ist sportwissenschaftlich nicht belegt. Übernommen sind die <b>belegten</b> Teile (Vollwertkost, Gemüse/Obst, kein Zuckermüll, ruhige Struktur) + die Leistungs-Hebel <b>Protein 2,2 g/kg</b> und <b>Carbs ums Training</b> (Whey + Banane post-WK ist erlaubt).</div>
+      <div class="note"><b>Ehrlich:</b> Die pH-/„Säure“-Begründung ist sportwissenschaftlich nicht belegt. Übernommen sind die <b>belegten</b> Teile (Vollwertkost, Gemüse/Obst, kein Zuckermüll, ruhige Struktur) + die Leistungs-Hebel <b>Protein 2,2 g/kg</b> und <b>Carbs ums Training</b> (Whey + Banane post-WK ist erlaubt).</div>
     </div>
     <div class="card">
       <h2><span class="dot"></span>Einkaufsliste</h2>
       <div class="role">Gracie-Diet-Gruppen · 1 Tap = auswählen · Teilen an Bring! / Erinnerungen</div>
-      <div class="lead">Tippe an, was du brauchst. Dann „Teilen" (öffnet die iPhone-Teilen-Ansicht → Bring!, Erinnerungen, Notizen …) oder „Kopieren".</div>
+      <div class="lead">Tippe an, was du brauchst. Dann „Teilen“ (öffnet die iPhone-Teilen-Ansicht → Bring!, Erinnerungen, Notizen …) oder „Kopieren“.</div>
       <div id="shop-list"></div>
       <h3>Eigene Artikel</h3>
       <textarea id="shop-custom" placeholder="Eigene Zeilen, je eine pro Artikel:&#10;Kokosöl&#10;Heidelbeeren" style="width:100%;min-height:64px"></textarea>
       <div class="inrow" style="margin-top:12px"><button class="btn" id="shop-share">Teilen → Bring! / Erinnerungen</button><button class="btn ghost" id="shop-copy">Kopieren</button><button class="btn ghost" id="shop-clear">Auswahl leeren</button></div>
       <div class="note" id="shop-status">Nichts ausgewählt.</div>
-      <div class="note"><b>So landet die Liste in Bring!:</b> „Teilen" tippen → in der Teilen-Ansicht <b>Bring!</b> wählen → Artikel werden übernommen. Für <b>Apple Erinnerungen</b> dort <b>Erinnerungen</b> wählen. Klappt das Teilen am Desktop nicht, nutze „Kopieren" und füge die Liste in der App ein.</div>
+      <div class="note"><b>So landet die Liste in Bring!:</b> „Teilen“ tippen → in der Teilen-Ansicht <b>Bring!</b> wählen → Artikel werden übernommen. Für <b>Apple Erinnerungen</b> dort <b>Erinnerungen</b> wählen. Klappt das Teilen am Desktop nicht, nutze „Kopieren“ und füge die Liste in der App ein.</div>
     </div>
     <div class="card">
       <h2><span class="dot"></span>Mahlzeiten-Protokoll</h2>
-      <div class="role">Dokumentiert im Heute-Tab → „Tagesverlauf" · letzte Einträge</div>
+      <div class="role">Dokumentiert im Heute-Tab → „Tagesverlauf“ · letzte Einträge</div>
       <div class="lead">Was du wirklich gegessen hast — pro Tag festgehalten. Anpassen/Ergänzen direkt im Tagesverlauf bei jeder Mahlzeit.</div>
       <div id="meal-log" style="margin-top:10px"></div>
     </div>
   </section>
 
   <!-- ===================== DATEN ===================== -->
-  <section id="s-daten">
+  <section id="s-daten" role="tabpanel" aria-labelledby="tab-daten" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>Wochen-Dashboard</h2>
       <div class="role">Digitale Strategie</div>
@@ -697,13 +711,13 @@
 
     <div class="card">
       <h2><span class="dot"></span>Gewichtslog</h2>
-      <div class="lead">Recomp: Waage steht fast still — Korridor 83,5–84,5 kg, Limit 85,0 kg.</div>
+      <div class="lead">Recomp: Waage steht fast still — Korridor 83,0–83,8 kg, Limit −185 lbs = 84,09 kg (keine Toleranz, Wiegen ohne Gi).</div>
       <div class="inrow"><input type="text" id="w-kg" inputmode="decimal" placeholder="kg (z. B. 83,7)" style="flex:1;min-width:90px"><button class="btn" id="w-add">Eintragen</button></div>
       <div class="chartwrap"><div class="cap"><span>Verlauf</span><span id="w-range">—</span></div>
         <svg id="w-chart" viewBox="0 0 320 120" width="100%" height="120" preserveAspectRatio="none"></svg>
         <div style="display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:8px">
-          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(55,211,155,.4);border-radius:2px;vertical-align:middle"></span> Ziel 83,5–84,5</span>
-          <span><span style="display:inline-block;width:12px;height:0;border-top:2px dashed rgba(255,106,90,.8);vertical-align:middle"></span> Limit 85,0 kg</span>
+          <span><span style="display:inline-block;width:10px;height:10px;background:rgba(55,211,155,.4);border-radius:2px;vertical-align:middle"></span> <span id="w-leg-ziel">Ziel 83,0–83,8</span></span>
+          <span><span style="display:inline-block;width:12px;height:0;border-top:2px dashed rgba(255,106,90,.8);vertical-align:middle"></span> <span id="w-leg-limit">Limit 84,09 kg</span></span>
         </div></div>
       <div class="wentries" id="w-entries"></div>
     </div>
@@ -729,7 +743,7 @@
   </section>
 
   <!-- ===================== PROFIL ===================== -->
-  <section id="s-profil">
+  <section id="s-profil" role="tabpanel" aria-labelledby="tab-profil" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>BJJ-Profil</h2>
       <div class="role">Deine Geschichte · in Szene gesetzt · mit Aktivitäts-Level</div>
@@ -753,7 +767,7 @@
       <div class="role">Langfristige Linie · realistisch, ambitioniert</div>
       <div class="lead">Eine Vision ist kein Versprechen, sondern eine Richtung. Der Weg zum Schwarzgurt und zu Titeln ist ein Jahrzehnt-Projekt aus Konstanz, Wettkampf und Regeneration — nicht aus einzelnen Heldentagen.</div>
       <div id="vision-road"></div>
-      <div class="note">Quantität schlägt Intensität über die Zeit: lieber 4× pro Woche über Jahre als 7× über Wochen. Verletzungsfrei bleiben ist die wichtigste „Technik".</div>
+      <div class="note">Quantität schlägt Intensität über die Zeit: lieber 4× pro Woche über Jahre als 7× über Wochen. Verletzungsfrei bleiben ist die wichtigste „Technik“.</div>
     </div>
 
     <div class="card">
@@ -771,13 +785,13 @@
         <div class="bf" style="grid-column:1/-1"><label>Notiz (optional)</label><input id="jr-note" placeholder="Was war besonders?"></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="jr-add">Eintrag hinzufügen</button><button class="btn ghost" id="jr-find">📍 Koordinaten finden</button><button class="btn ghost" id="jr-share">Reise teilen</button></div>
-      <div class="note">„Koordinaten finden" öffnet OpenStreetMap mit deinem Ort — dort Rechtsklick → „Adresse anzeigen" zeigt lat/lng zum Eintragen. Marker brauchen lat + lng.</div>
+      <div class="note">„Koordinaten finden“ öffnet OpenStreetMap mit deinem Ort — dort Rechtsklick → „Adresse anzeigen“ zeigt lat/lng zum Eintragen. Marker brauchen lat + lng.</div>
       <div id="journey-list" style="margin-top:12px"></div>
     </div>
   </section>
 
   <!-- ===================== TECHNIK ===================== -->
-  <section id="s-technik">
+  <section id="s-technik" role="tabpanel" aria-labelledby="tab-technik" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>Legenden-Coach · dein Problem → dein Plan</h2>
       <div class="role">Position/Problem wählen · Plan aus den passenden Legenden · Analyse-Prompt für die KI</div>
@@ -794,6 +808,11 @@
       <div class="note" id="co-status"></div>
       <h3 style="margin-top:14px">Deine Analyse-Historie</h3>
       <div id="coachlog-list" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <h2><span class="dot"></span>Wettkampf-Coach · Was wirklich gewinnt<span class="evidence">Evidenz · 06/2026</span></h2>
+      <div class="role">Turnierdaten (IBJJF/ADCC/Studien) · GI-Regelwerk verifiziert · auf dein Profil gemünzt</div>
+      <div id="gameplan"></div>
     </div>
     <div class="card">
       <h2><span class="dot"></span>BJJ-Videothek</h2>
@@ -825,18 +844,18 @@
   </section>
 
   <!-- ===================== WISSEN ===================== -->
-  <section id="s-wissen">
+  <section id="s-wissen" role="tabpanel" aria-labelledby="tab-wissen" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>Wissen &amp; Quellen</h2>
       <div class="role">Sportwissenschaft · jede Empfehlung mit Beleg</div>
       <div class="lead">Die Logik hinter dem Tool — mit Primärquellen (Peer-Review) und seriöser Sekundärliteratur (NSCA, Reviews, Positionspapiere). Tippe eine Quelle an, um sie zu öffnen.</div>
-      <div class="note warn" style="margin-top:14px"><b>Ehrliche Einordnung vorab:</b> Einige populäre Konzepte sind umstritten oder Mythos — das steht jeweils dabei (ACWR-„Sweet-Spot", Recomp-Realismus, Gracie-Diät-pH-These, dünne Taper-Datenlage im Kampfsport).</div>
+      <div class="note warn" style="margin-top:14px"><b>Ehrliche Einordnung vorab:</b> Einige populäre Konzepte sind umstritten oder Mythos — das steht jeweils dabei (ACWR-„Sweet-Spot“, Recomp-Realismus, Gracie-Diät-pH-These, dünne Taper-Datenlage im Kampfsport).</div>
     </div>
     <div id="sources-list"></div>
   </section>
 
   <!-- ===================== WOCHE ===================== -->
-  <section id="s-woche">
+  <section id="s-woche" role="tabpanel" aria-labelledby="tab-woche" tabindex="0">
     <div class="card">
       <h2><span class="dot"></span>Wochenübersicht</h2>
       <div class="role">Zusatz-Ansicht · Training · Mahlzeiten · Ruhe · Routinen</div>
@@ -874,7 +893,7 @@
       <div class="filt" id="course-filter">
         <button class="pillbtn on" data-c="auto">Aktuell</button>
         <button class="pillbtn" data-c="gb">GB Sternschanze</button>
-        <button class="pillbtn" data-c="ber">Berserker</button>
+        <button class="pillbtn" data-c="ber">Berserker Buchholz</button>
         <button class="pillbtn" data-c="yoga">Yoga</button>
       </div>
       <div id="week-courses"></div>
@@ -887,20 +906,133 @@
     </div>
   </section>
 
-  <!-- ===================== TURNIERE ===================== -->
-  <section id="s-turniere">
+  <!-- ===================== GRACIE BARRA INTERNATIONAL ===================== -->
+  <section id="s-gb" role="tabpanel" aria-labelledby="tab-gb" tabindex="0">
     <div class="card">
-      <h2><span class="dot"></span>Turniere 2026</h2>
-      <div class="role">Wettkampf-Kalender · wähle, wo du startest</div>
-      <div class="lead">Tippe „Teilnahme", um ein Turnier für dich zu markieren — jedes mit Info &amp; Link. Dein Camp ist auf das <b style="color:var(--gold)">Hauptziel GI Hamburg (15.08.)</b> kalibriert; weitere Turniere sind frei wählbar.</div>
-      <div id="tourn-summary" style="margin-top:12px"></div>
-      <div id="tourn-list"></div>
-      <div class="note" id="tourn-status"></div>
+      <h2><span class="dot"></span>🌐 Diese Woche international</h2>
+      <div class="role">Gracie Barra Fundamentals · weltweit synchronisierter 16-Wochen-Zyklus</div>
+      <div class="lead">Alle GB-Schulen unterrichten dieselbe Woche. Das hier läuft <b style="color:var(--gold)">gerade international</b> — und ob du es schon trainiert hast.</div>
+      <div id="gb-current"></div>
     </div>
-    <div class="card"><div class="note">Termine &amp; Anmeldestarts aus deinem Kalender (Stand Mai 2026). „Anmeldung sollte offen sein" = geschätzt — prüfe den Link. Ohne Gewähr; maßgeblich sind Smoothcomp bzw. die Veranstalter.</div></div>
+    <div class="card">
+      <h2><span class="dot"></span>Zyklus durchblättern</h2>
+      <div class="role">Alle 16 Wochen · Selbstverteidigung · Takedown · Bodentechniken · Abgleich mit deinem Training</div>
+      <div class="inrow" style="justify-content:space-between;align-items:center;margin:8px 0 10px">
+        <button class="btn ghost" id="gb-prev">‹ zurück</button>
+        <b id="gb-wlabel" style="font-family:'Space Mono',monospace;color:var(--gold)">Woche –/16</b>
+        <button class="btn ghost" id="gb-next">weiter ›</button>
+      </div>
+      <div class="inrow" style="margin-bottom:12px"><button class="btn" id="gb-jump">↦ Zur aktuellen Woche</button></div>
+      <div id="gb-browse"></div>
+    </div>
+    <div class="card">
+      <h2><span class="dot"></span>Kalibrieren &amp; Quelle</h2>
+      <div class="role">Einmalig an deine Schule (GB Sternschanze) anpassen — danach läuft es automatisch</div>
+      <div id="gb-calib"></div>
+      <div class="note" style="margin-top:12px">⚠️ <b>Rekonstruktion.</b> Der offizielle GB-Wochenplan liegt hinter dem GB-Online-Login. Diese 16-Wochen-Struktur ist aus öffentlichen Quellen (GB-Schulblogs, BJJ Legends, GB1-Aufbau nach Almeida/Feitosa) nachgebaut — die Reihenfolge deiner Schule kann abweichen. Frag einmal deinen Coach „welche Woche läuft gerade?", kalibriere oben und korrigiere einzelne Wochen per Notiz.</div>
+    </div>
   </section>
 
-  <footer>„Alter Schwede" · Camp bis GI Hamburg 15.08.2026 · Optimiert mit den Perspektiven Sportmedizin, Trainerteam, Physiotherapie &amp; digitaler Strategie.<br>Kein medizinischer Rat. Bei Schmerz, Krankheit oder Verletzung Fachperson hinzuziehen.</footer>
+  <!-- ===================== GRACIE BARRA GESAMTSYSTEM ===================== -->
+  <section id="s-gbsys" role="tabpanel" aria-labelledby="tab-gbsys" tabindex="0">
+    <div class="card">
+      <h2><span class="dot"></span>🔴 Das Gracie-Barra-System</h2>
+      <div class="role">Programme · Gürtel · Methodik — das ganze GB-Framework auf einen Blick</div>
+      <div class="lead">Von Carlos Gracie Jr. als „<b style="color:var(--gold)">Jiu-Jitsu for Everyone</b>" aufgebaut: ein weltweit standardisiertes System, in dem jede Schule nach denselben Programmen und demselben Curriculum unterrichtet.</div>
+      <div id="gbsys-you" style="margin-top:6px"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Die Programme · Erwachsene</h2>
+      <div class="role">Drei Stufen vom Einstieg bis zur Meisterschaft — plus Frauen-Programm</div>
+      <div style="display:grid;gap:10px;margin-top:8px">
+        <div style="border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--card2)"><b style="color:var(--gold)">GB1 · Fundamentals</b><div class="note" style="margin-top:3px">Alle / Einsteiger. 16-Wochen-Zyklus, ~96 Techniken. Selbstverteidigung + Kernpositionen + GB-Philosophie. <b>Voraussetzung:</b> keine.</div></div>
+        <div style="border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--card2)"><b style="color:var(--gold)">GB2 · Advanced</b><div class="note" style="margin-top:3px">Komplexe Technik-Ketten, Guard-Systeme (Spider, De La Riva), No-Gi, Takedowns aus Ringen/Judo, mehr Live-Sparring. <b>Voraussetzung:</b> 3 Streifen Weißgurt (~4+ Monate).</div></div>
+        <div style="border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--card2)"><b style="color:var(--gold)">GB3 · Expert</b><div class="note" style="margin-top:3px">Höchste Komplexität & Intensität, Timing, Wettkampfstrategie, lange harte Runden, Lehrmethodik. <b>Voraussetzung:</b> Blaugurt+.</div></div>
+        <div style="border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--card2)"><b style="color:var(--gold)">GBF · Women</b><div class="note" style="margin-top:3px">Unterstützender, inklusiver Einstieg für Frauen; baut Kern-Technik & Selbstvertrauen auf und führt in GB1/2/3.</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Gürtelsystem · Erwachsene</h2>
+      <div class="role">Weiß → Blau → Lila → Braun → Schwarz (→ rote Grade) · bis zu 4 Streifen je Gürtel</div>
+      <div id="gbsys-belts" style="margin-top:6px"></div>
+      <div class="note" style="margin-top:10px">Zeiten sind <b>typisch</b> und variieren stark je Schule &amp; Person. Beförderung zählt Technik, Konstanz, Haltung &amp; Verhalten — nicht nur Mattenzeit.</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Kids-Programm &amp; -Gürtel</h2>
+      <div class="role">Eigenes System bis zum Übergang in den Erwachsenen-Blaugurt (ab 16)</div>
+      <div style="display:grid;gap:8px;margin:6px 0 12px">
+        <div class="note">🧒 <b>Little Champions (3–6):</b> Motorik, Zuhören, Spaß.</div>
+        <div class="note">🥋 <b>Juniors (7–9):</b> Technik, Disziplin, Partnerarbeit.</div>
+        <div class="note">🧑 <b>Teens (10–14):</b> Führung, Fitness, reale Selbstverteidigung.</div>
+      </div>
+      <div id="gbsys-kids-belts"></div>
+      <div class="note" style="margin-top:10px">Grün wird bis 16 gehalten, danach Übergang ins Erwachsenensystem (Blaugurt).</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Methodik &amp; Werte</h2>
+      <div class="role">Die „GB-Methode" — weltweit gleich</div>
+      <div style="margin-top:6px"><span class="chip">🌍 Jiu-Jitsu for Everyone</span><span class="chip">🧩 16-Wochen-Curriculum je Programm</span><span class="chip">🥋 SV + Sport-BJJ</span><span class="chip">🔴 Rotes Schild</span></div>
+      <div class="note" style="margin-top:10px">Standardisierte Lehrmethode von Carlos Gracie Jr.: In jeder GB-Schule weltweit wird gleich unterrichtet — ein GB-Schüler kann überall einsteigen und der Struktur folgen.</div>
+      <div style="margin-top:8px"><b style="color:var(--gold)">Werte:</b> <span class="chip">Disziplin</span><span class="chip">Respekt</span><span class="chip">Integrität</span><span class="chip">Ausdauer</span> — die „GB Family".</div>
+      <div style="margin-top:8px"><b style="color:var(--gold)">Schul-Standard:</b> <span class="chip">Organized</span><span class="chip">Clean</span><span class="chip">Friendly</span></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot"></span>Klassen-Ablauf &amp; Matten-Etikette</h2>
+      <div class="role">So läuft eine typische GB-Einheit</div>
+      <div class="note" style="margin-top:6px"><b>Ablauf:</b> Aufwärmen → Selbstverteidigungs-Technik → Positions-Technik → Drillen → Positions- &amp; freies Sparring → Cool-down &amp; Review.</div>
+      <div class="note" style="margin-top:8px"><b>Etikette:</b> sauberer GB-Gi &amp; Hygiene · pünktlich · Gruß beim Betreten/Verlassen der Matte · Instruktor = „Professor/Coach" · früh abklopfen · Ego an der Tür lassen.</div>
+    </div>
+
+    <div class="card"><div class="note">Quellen: offizielle GB-Programm-, Gürtel- &amp; Methodik-Seiten sowie GB-Schulseiten (2025/26). Zeiten &amp; Details variieren je Schule — im Zweifel gilt, was deine Schule (GB Sternschanze) sagt.</div></div>
+  </section>
+
+  <!-- ===================== TURNIERE ===================== -->
+  <section id="s-turniere" role="tabpanel" aria-labelledby="tab-turniere" tabindex="0">
+    <div class="card">
+      <h2><span class="dot"></span>Events &amp; Turniere</h2>
+      <div class="role">Nord · Mitte · Süd — was in Deutschland ansteht (wöchentlich aktualisiert)</div>
+      <div class="lead">Filtere nach Region, um zu sehen, welche Events anstehen. Tippe „Teilnahme“, um eins zu markieren, oder „📅 Termin“ für Kalender + .ics. Dein Camp ist auf das <b style="color:var(--gold)">Hauptziel GI Hamburg (15.08.)</b> kalibriert.</div>
+      <div id="tourn-summary" style="margin-top:12px"></div>
+      <div class="filt" id="tourn-region" style="margin:12px 0 10px">
+        <button class="pillbtn on" data-r="alle">Alle</button>
+        <button class="pillbtn" data-r="nord">🧭 Nord</button>
+        <button class="pillbtn" data-r="mitte">Mitte</button>
+        <button class="pillbtn" data-r="sued">Süd</button>
+      </div>
+      <div id="tourn-list"></div>
+      <div class="note" id="tourn-status"></div>
+      <div class="note" style="margin-top:12px">🔎 <b>Immer aktuell je Region prüfen:</b>
+        <a href="https://bjjb.de/termine-2/" target="_blank" rel="noopener">BJJBD-Termine</a> ·
+        <a href="https://bjj-lernen.de/bjj-wettkaempfe" target="_blank" rel="noopener">bjj-lernen</a> ·
+        <a href="https://www.bjjcompfinder.com/tournaments/germany" target="_blank" rel="noopener">CompFinder DE</a> ·
+        <a href="https://smoothcomp.com/en/events" target="_blank" rel="noopener">Smoothcomp</a></div>
+    </div>
+    <div class="card">
+      <h2><span class="dot"></span>Wettkampf-Debrief</h2>
+      <div class="role">Nach jedem Turnier · speist deine Technik-Prioritäten</div>
+      <div class="lead">Innerhalb von 48 h ausfüllen, solange die Matches frisch sind. Die drei Prioritäten werden dein Technik-Fokus für den nächsten Block.</div>
+      <div class="bgrid">
+        <div class="bf" style="grid-column:1/-1"><label>Turnier</label><select id="db-t"></select></div>
+        <div class="bf" style="grid-column:1/-1"><label>Was lief gut?</label><textarea id="db-good" style="min-height:56px" placeholder="z. B. Body-Lock-Passing hat 3× funktioniert, Kondition hat getragen …"></textarea></div>
+        <div class="bf" style="grid-column:1/-1"><label>Was lief nicht?</label><textarea id="db-bad" style="min-height:56px" placeholder="z. B. Guard Pull gegen den Wrestler war ein Fehler, Grip-Fight verloren …"></textarea></div>
+        <div class="bf" style="grid-column:1/-1"><label>Gegen welche Spiele/Typen?</label><input id="db-games" placeholder="z. B. 2× Wrestler, 1× Lapel-Guard, 1× Leglocker"></div>
+        <div class="bf"><label>Priorität 1</label><input id="db-p1" placeholder="z. B. Heel-Hook-Defense"></div>
+        <div class="bf"><label>Priorität 2</label><input id="db-p2"></div>
+        <div class="bf"><label>Priorität 3</label><input id="db-p3"></div>
+      </div>
+      <div class="inrow" style="margin-top:10px"><button class="btn" id="db-save">Debrief speichern</button></div>
+      <div class="note" id="db-status"></div>
+      <div id="debrief-list" style="margin-top:8px"></div>
+    </div>
+    <div class="card"><div class="note">Termine &amp; Anmeldestarts aus deinem Kalender (Stand Mai 2026). „Anmeldung sollte offen sein“ = geschätzt — prüfe den Link. Ohne Gewähr; maßgeblich sind Smoothcomp bzw. die Veranstalter.</div></div>
+  </section>
+
+  <footer>„Alter Schwede“ · Camp bis GI Hamburg 15.08.2026 · Optimiert mit den Perspektiven Sportmedizin, Trainerteam, Physiotherapie &amp; digitaler Strategie.<br>Kein medizinischer Rat. Bei Schmerz, Krankheit oder Verletzung Fachperson hinzuziehen.</footer>
 </div>
 
 <script>
@@ -987,7 +1119,7 @@
   function pick(a){ return a[ daysBetween(START,NOW>START?NOW:START) % a.length ]; }
 
   /* ---------- DB ---------- */
-  var DB={profile:{},checklist:{},readiness:{},load:{},strength:[],niggles:[],weight:[],schedule:{gb:{},ber:{}},bloodlog:[],shop:{},tournaments:{},appts:[],journey:[],coachlog:[],over:{},sessions:[],meals:{},strengthsets:[]};
+  var DB={profile:{},checklist:{},readiness:{},load:{},strength:[],niggles:[],weight:[],schedule:{gb:{},ber:{}},bloodlog:[],shop:{},tournaments:{},appts:[],journey:[],coachlog:[],over:{},sessions:[],meals:{},strengthsets:[],comp:{},gb:{}};
   async function loadDB(){
     DB.profile=await getJSON('as_profile',{});
     DB.checklist=await getJSON('as_checklist',{});
@@ -1013,10 +1145,12 @@
     if(DB.profile.bjjCoach==null) DB.profile.bjjCoach='André Nunes';
     if(DB.profile.bjjSince==null) DB.profile.bjjSince='2013';
     DB.coachlog=await getJSON('as_coachlog',[]);
+    DB.comp=await getJSON('as_comp',{m1:'09:00',fights:[],demo:false});
     DB.over=await getJSON('as_over',{});
     DB.sessions=await getJSON('as_sessions',[]);
     DB.meals=await getJSON('as_meals',{});
     DB.strengthsets=await getJSON('as_strengthsets',[]);
+    DB.gb=await getJSON('as_gb',{}); DB.gb.notes=DB.gb.notes||{};
     if(!DB.schedule.gb)DB.schedule.gb={}; if(!DB.schedule.ber)DB.schedule.ber={};
   }
 
@@ -1038,7 +1172,7 @@
     box.querySelectorAll('.d').forEach(function(d){
       function set(){
         var r2=DB.readiness[TODAY]||{}; r2[d.dataset.m]=+d.dataset.v; DB.readiness[TODAY]=r2; save('as_readiness',DB.readiness);
-        renderReadiness(); renderReadyBanner(); renderCoach(); renderHeute();
+        renderReadiness(); renderReadyBanner(); renderCoach(); renderHeute(); renderGoCheck();
         var sel=document.querySelector('#readiness .d[data-m="'+d.dataset.m+'"][data-v="'+d.dataset.v+'"]'); if(sel) sel.focus();
       }
       d.addEventListener('click',set);
@@ -1061,6 +1195,9 @@
   /* ---------- coach ---------- */
   function renderCoach(){
     var line;
+    var _ill=DB.profile.illness;
+    if(_ill&&_ill.since&&!_ill.returnStart){ document.getElementById('coach-line').textContent='Krank, alter Schwede. Heute zählt Ruhe, nicht Disziplin. Niemals mit Fieber trainieren — die Form holst du in einer Woche locker zurück.'; return; }
+    if(_ill&&_ill.returnStart){ var _rs=rttState(_ill.returnStart,TODAY); if(_rs.active){ document.getElementById('coach-line').textContent='Wiedereinstieg '+_rs.label.toLowerCase()+': ~'+_rs.volPct+' % Volumen, '+(_rs.spar===false?'noch kein Sparring':_rs.spar==='leicht'?'leichte Runden':'Sparring normal')+'. Geduld schlägt Nachholen.'; return; } }
     if(dToStart>0) line=pick(SAY.prestart);
     else if(dToComp<0) line=pick(SAY.done);
     else{
@@ -1074,11 +1211,11 @@
 
   /* ---------- heute ---------- */
   function buildChecklist(plan,pi){
-    var items=[]; var inTaper=(dToStart<=0&&dToComp>=0&&dToComp<=10);
+    var items=[]; var ts=taperState(dToStart,dToComp,0); var inTaper=ts.active;
     var band=readyBand(readyScore(DB.readiness[TODAY])); var rb=band?band.c:null;
     var sessLabel = (rb==='red') ? plan.t+' → nur Technik & Mobility (Readiness 🔴)'
                   : (rb==='yellow') ? plan.t+' → Volumen ~20 % runter (Readiness 🟡)'
-                  : inTaper ? plan.t+(plan.type==='strength' ? ' → Deload (Taper)' : ' → Taper: Volumen runter, Schärfe halten')
+                  : inTaper ? plan.t+(plan.type==='strength' ? ' → Deload (Taper · '+ts.volLabel+')' : ' → Taper: '+ts.volLabel+', Schärfe halten')
                   : plan.t;
     items.push({id:'sess',label:sessLabel,sub:plan.d});
     if(plan.am) items.push({id:'am',label:plan.am.replace('optional: ','')+' (optional)'});
@@ -1089,7 +1226,7 @@
     items.push({id:'creat',label:'Kreatin 5 g'});
     items.push({id:'sleep',label:'Schlaf 7,5–9 h'});
     items.push({id:'rpe',label:'Session loggen (RPE)',sub:'für die Lastkontrolle'});
-    if(plan.type==='bjj'||plan.type==='cond') items.push({id:'weigh',label:'Morgens wiegen (83,5–84,5)'});
+    if(plan.type==='bjj'||plan.type==='cond') items.push({id:'weigh',label:'Morgens wiegen (Korridor 83,0–83,8)'});
     if(bloodDue().due) items.push({id:'blood',label:'🩸 Bluttest/Testosteron buchen',sub:'monatlich fällig'});
     return items;
   }
@@ -1117,7 +1254,7 @@
     PHASES.forEach(function(_,i){ var s=document.createElement('div'); s.className='seg'+(i<pi?' done':'')+(i===pi&&dToStart<=0&&dToComp>=0?' now':''); pb.appendChild(s); });
 
     var weeks=Math.max(0,Math.ceil((dToComp>=0?dToComp:0)/7));
-    document.getElementById('phase-chips').innerHTML='<span class="chip"><b>'+(dToComp>=0?dToComp:0)+'</b> Tage</span><span class="chip blue"><b>'+weeks+'</b> Wochen</span><span class="chip">📍 <b>'+LOC.gym+'</b></span><span class="chip">Korridor <b>83,5–84,5 kg</b></span>';
+    document.getElementById('phase-chips').innerHTML='<span class="chip"><b>'+(dToComp>=0?dToComp:0)+'</b> Tage</span><span class="chip blue"><b>'+weeks+'</b> Wochen</span><span class="chip">📍 <b>'+LOC.gym+'</b></span><span class="chip">'+nutriPhase(dToComp).chip+'</span>';
 
     document.getElementById('techfocus').textContent=(dToComp>=0&&dToStart<=0)?TECHFOCUS[pi]:'🎯 Vorbereitung: Equipment & Kurszeiten organisieren, Schlaf regeln.';
 
@@ -1162,7 +1299,7 @@
     save('as_sessions',DB.sessions); recomputeLoad(TODAY);
     ['se-rpe','se-min','se-rounds','se-focus','se-partner','se-note'].forEach(function(i){ sv(i,''); });
     if(st) st.textContent='✓ Session gespeichert.';
-    renderSessToday(); renderLoad(); renderDash(); renderTaperGuard();
+    renderSessToday(); renderLoad(); renderDash(); renderTaperGuard(); renderGoCheck(); renderGBToday();
   }
   function renderSessToday(){
     initSessTypes();
@@ -1182,7 +1319,7 @@
   /* ---------- Tagebuch / Kontext ---------- */
   function renderDiary(){
     var r=DB.readiness[TODAY]||{};
-    sv('dy-wake',r.wake); var md=document.getElementById('dy-mood'); if(md) md.value=r.mood||''; sv('dy-doms',r.domsNote); sv('dy-journal',r.journal);
+    svNF('dy-wake',r.wake); var md=document.getElementById('dy-mood'); if(md&&document.activeElement!==md) md.value=r.mood||''; svNF('dy-doms',r.domsNote); svNF('dy-journal',r.journal);
     [['dy-wake','wake'],['dy-mood','mood'],['dy-doms','domsNote'],['dy-journal','journal']].forEach(function(p){
       var e=document.getElementById(p[0]); if(e&&!e._b){ e._b=1; e.addEventListener('change',function(){ var r2=DB.readiness[TODAY]||{}; var v=e.value.trim?e.value.trim():e.value; if(v) r2[p[1]]=v; else delete r2[p[1]]; DB.readiness[TODAY]=r2; save('as_readiness',DB.readiness); var st=document.getElementById('dy-status'); if(st) st.textContent='✓ gespeichert · '+fmtTime(); renderDiaryList(); }); }
     });
@@ -1199,6 +1336,8 @@
 
   /* ---------- training: load / acwr ---------- */
   function weekIndex(d){ return Math.floor(daysBetween(START,d)/7); }
+  // ACWR = akute 7-Tage-Last ÷ (chronische 28-Tage-Last ÷ 4). null, wenn zu wenig Daten. (gekoppelte Methode; Caveats im Wissen-Tab)
+  function acwrRatio(acute,chronic28){ var chronic=chronic28/4; return (chronic>0&&acute>0)?acute/chronic:null; }
   function renderLoad(){
     // weekly buckets
     var weeks={}; Object.keys(DB.load).forEach(function(k){
@@ -1218,10 +1357,10 @@
       if(ago>=0&&ago<7) acute+=DB.load[k].load;
       if(ago>=0&&ago<28){ chronic28+=DB.load[k].load; days28++; }
     });
-    var chronic=chronic28/4;
     var el=document.getElementById('acwr');
-    if(chronic<=0||acute<=0){ el.innerHTML='<span class="pill blue">—</span><span style="color:var(--muted)">Noch zu wenig Daten. Logge ein paar Sessions.</span>'; return; }
-    var ratio=acute/chronic; var cls,txt;
+    var ratio=acwrRatio(acute,chronic28);
+    if(ratio==null){ el.innerHTML='<span class="pill blue">—</span><span style="color:var(--muted)">Noch zu wenig Daten. Logge ein paar Sessions.</span>'; return; }
+    var cls,txt;
     if(ratio>1.5){cls='red';txt='Last-Spike — Volumen drosseln, Verletzungsrisiko erhöht.';}
     else if(ratio<0.8){cls='blue';txt='Niedrige Last — ok in der Taperwoche, sonst Reiz erhöhen.';}
     else if(ratio>=0.8&&ratio<=1.3){cls='green';txt='Sweet Spot — Last sauber progressiv.';}
@@ -1320,7 +1459,7 @@
       var order=[],g={},vol=0; sets.forEach(function(s){ if(!g[s.ex]){g[s.ex]=[];order.push(s.ex);} g[s.ex].push(s); if(!isDist(s.ex)) vol+=s.kg*s.reps; });
       order.forEach(function(ex){ var arr=g[ex];
         var pr='';
-        if(!isDist(ex)){ var tb=0; arr.forEach(function(s){ var e1=s.kg*(1+s.reps/30); if(e1>tb)tb=e1; }); var ab=0; (DB.strengthsets||[]).forEach(function(s){ if(s.ex===ex){ var e1=s.kg*(1+s.reps/30); if(e1>ab)ab=e1; } }); if(tb>0&&tb>=ab-0.01) pr=' 🎉PR'; }
+        if(!isDist(ex)){ var tb=0; arr.forEach(function(s){ var e1=s.kg*(1+s.reps/30); if(e1>tb)tb=e1; }); var prevBest=0; (DB.strengthsets||[]).forEach(function(s){ if(s.ex===ex&&s.date!==d){ var e1=s.kg*(1+s.reps/30); if(e1>prevBest)prevBest=e1; } }); if(tb>0&&prevBest>0&&tb>prevBest+0.01) pr=' 🎉PR'; }
         L.push('• '+arr[0].name+': '+arr.map(setLabel).join(', ')+pr);
       });
       L.push('Σ '+sets.length+' Sätze · Volumen '+Math.round(vol)+' kg·Wdh.');
@@ -1369,8 +1508,240 @@
     var box=document.getElementById('ng-list');
     if(!DB.niggles.length){ box.innerHTML='<div class="empty">Keine Einträge — gut so.</div>'; return; }
     box.innerHTML=DB.niggles.slice().reverse().slice(0,8).map(function(n,idx){
-      return '<div class="niggle"><span><b>'+n.area+'</b>'+(n.note?' · '+n.note:'')+'<br><small style="color:var(--faint)">'+n.date+'</small></span><span class="sev">'+n.sev+'/5</span></div>';
+      return '<div class="niggle"><span><b>'+esc(n.area)+'</b>'+(n.note?' · '+esc(n.note):'')+'<br><small style="color:var(--faint)">'+esc(n.date)+'</small></span><span class="sev">'+esc(n.sev)+'/5</span></div>';
     }).join('');
+  }
+
+  /* ---------- Niggle-Eskalation — reine Logik (testbar) ----------
+     Dieselbe Stelle an aufeinanderfolgenden Tagen mit Schweregrad >=3/5:
+     >=3 Tage → 'rot' (Physio/Arzt abklären), genau 2 Tage → 'gelb' (beobachten).
+     Lücken in der Datumsfolge unterbrechen die Serie. ANNAHME: Die Serie darf
+     heute ODER gestern enden, damit die Warnung morgens vor dem ersten Log
+     sichtbar bleibt. Mehrfach-Logs am selben Tag zählen als ein Tag.
+     „Vorschlagen, nicht ausführen": zeigt nur an, keine Aktionen. */
+  function niggleEscalation(niggles,todayKey){
+    function prevK(k){ var p=String(k).split('-'),d=new Date(+p[0],+p[1]-1,+p[2]-1);
+      return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+    var byArea={};
+    (niggles||[]).forEach(function(n){
+      if(!n||!n.area||!n.date||!(+n.sev>=3)) return;
+      (byArea[n.area]=byArea[n.area]||{})[n.date]=true;
+    });
+    var out=[];
+    Object.keys(byArea).forEach(function(area){
+      var days=byArea[area];
+      var start=days[todayKey]?todayKey:(days[prevK(todayKey)]?prevK(todayKey):null);
+      if(!start) return;
+      var tage=0,k=start;
+      while(days[k]){ tage++; k=prevK(k); }
+      if(tage>=2) out.push({stelle:area,tage:tage,level:(tage>=3?'rot':'gelb')});
+    });
+    out.sort(function(a,b){ return a.level===b.level ? b.tage-a.tage : (a.level==='rot'?-1:1); });
+    return out;
+  }
+  /* ---------- Go-Check Wettkampfwoche (Roadmap-Punkt 4) · reine Logik testbar ---------- */
+  function gcAvg(a){ var v=(a||[]).filter(function(x){ return x!=null&&!isNaN(x); }); if(!v.length) return null; return v.reduce(function(s,x){ return s+x; },0)/v.length; }
+  function goCheck(o){
+    o=o||{};
+    var d=o.dToComp;
+    if(d==null||isNaN(d)||d<0||d>7) return {show:false,items:[],overall:null,action:''};
+    var items=[];
+    var wc=giWeightCheck(o.kg);
+    var wState=wc.status==='unbekannt'?'offen':wc.status==='ok'?'gruen':wc.status==='knapp'?'gelb':'rot';
+    items.push({k:'gewicht',label:'Gewicht',state:wState,msg:
+      wState==='offen'?'Heute noch wiegen — Limit 84,09 kg ohne Toleranz.':
+      wState==='gruen'?(o.kg.toFixed(1).replace('.',',')+' kg · Puffer '+wc.margin.toFixed(2).replace('.',',')+' kg — im Korridor.'):
+      wState==='gelb'?(o.kg.toFixed(1).replace('.',',')+' kg · nur '+wc.margin.toFixed(2).replace('.',',')+' kg Puffer — Vorabend leicht essen, morgens nüchtern wiegen.'):
+      (o.kg.toFixed(1).replace('.',',')+' kg · ÜBER dem Limit — Korrektur planen, KEIN Crash-Cut; notfalls −200 lbs erwägen.')});
+    var ra=gcAvg(o.ready3);
+    items.push({k:'readiness',label:'Readiness (3-Tage-Trend)',state:ra==null?'offen':ra>=80?'gruen':ra>=60?'gelb':'rot',msg:
+      ra==null?'Readiness-Check ausfüllen (30 Sekunden, oben).':
+      ra>=80?('Schnitt '+Math.round(ra)+' — erholt.'):
+      ra>=60?('Schnitt '+Math.round(ra)+' — dosieren: Volumen runter, Schärfe kurz.'):
+      ('Schnitt '+Math.round(ra)+' — nur Technik/Mobility, Schlaf priorisieren.')});
+    var sa=gcAvg(o.sleep3);
+    items.push({k:'schlaf',label:'Schlaf (3-Tage-Trend)',state:sa==null?'offen':sa>=4?'gruen':sa>=3?'gelb':'rot',msg:
+      sa==null?'Keine Schlaf-Bewertung — im Readiness-Check mitloggen.':
+      sa>=4?'Schlaf im Soll.':
+      sa>=3?'Schlaf unter Soll — heute früher ins Bett, Abendroutine.':
+      'Schlaf kritisch — der Taper wirkt nur ausgeruht: Schlaf vor allem anderen.'});
+    var ng=o.niggles||[];
+    var nState=ng.indexOf('rot')>=0?'rot':ng.indexOf('gelb')>=0?'gelb':'gruen';
+    items.push({k:'beschwerden',label:'Beschwerden',state:nState,msg:
+      nState==='gruen'?'Keine eskalierte Stelle.':
+      nState==='gelb'?'Stelle 2 Tage in Folge ≥3/5 — beobachten, Last anpassen.':
+      'Stelle ≥3 Tage ≥3/5 — Physio/Arzt abklären, um den Schmerz herum trainieren.'});
+    var tState=o.taperOver?(d<=2?'rot':'gelb'):'gruen';
+    items.push({k:'last',label:'Taper-Last heute',state:tState,msg:
+      tState==='gruen'?'Unter dem Taper-Deckel.':
+      tState==='gelb'?'Tageslast über dem Taper-Deckel — Rest des Tages ruhig.':
+      'Last-Deckel in der Schärfephase gerissen — sofort runterfahren.'});
+    var overall=items.some(function(r){ return r.state==='rot'; })?'rot':items.some(function(r){ return r.state==='gelb'||r.state==='offen'; })?'gelb':'gruen';
+    var first=null;
+    for(var i=0;i<items.length&&!first;i++){ if(items[i].state==='rot') first=items[i]; }
+    for(var j=0;j<items.length&&!first;j++){ if(items[j].state==='gelb'||items[j].state==='offen') first=items[j]; }
+    var action=first?(first.label+': '+first.msg):'Alles grün — Plan fahren, nichts Neues mehr lernen, schlafen.';
+    return {show:true,items:items,overall:overall,action:action};
+  }
+  function renderGoCheck(){
+    var el=document.getElementById('go-check'); if(!el) return;
+    var inWeek=(dToComp>=0&&dToComp<=7), preview=!inWeek&&!!DB.comp.demo;
+    if(!inWeek&&!preview){ el.innerHTML=''; return; }
+    var deff=inWeek?dToComp:Math.max(0,Math.min(7,dToComp));
+    var ready3=[],sleep3=[];
+    for(var i=0;i<3;i++){ var dd=new Date(NOW); dd.setDate(dd.getDate()-i); var r=DB.readiness[key(dd)]; ready3.push(readyScore(r)); sleep3.push(r&&r.sleep?r.sleep:null); }
+    var ngl=niggleEscalation(DB.niggles,TODAY).map(function(x){ return x.level; });
+    var tl=DB.load[TODAY]?DB.load[TODAY].load:0;
+    var ts=taperState(dToStart,deff,tl);
+    var gc=goCheck({dToComp:deff,kg:todayWeight(),ready3:ready3,sleep3:sleep3,niggles:ngl,taperOver:!!(ts&&ts.over)});
+    if(!gc.show){ el.innerHTML=''; return; }
+    var COL={gruen:'var(--good)',gelb:'var(--warn)',rot:'var(--bad)',offen:'var(--muted)'};
+    var ICO={gruen:'🟢',gelb:'🟡',rot:'🔴',offen:'⚪'};
+    var head=gc.overall==='gruen'?'🟢 GO':gc.overall==='gelb'?'🟡 GO mit Auflagen':'🔴 STOPP-Signal';
+    el.innerHTML='<div class="card" style="border-color:'+COL[gc.overall]+'"><h2><span class="dot" style="background:'+COL[gc.overall]+'"></span>🚦 Go-Check Wettkampfwoche'+(preview?' · Vorschau':'')+'</h2>'+
+      '<div class="role">'+(inWeek?(dToComp===0?'Wettkampftag':'Noch '+dToComp+' Tag'+(dToComp===1?'':'e')):'Vorschau (erscheint automatisch ab 7 Tage vor dem Turnier)')+' · ein Blick, fünf Signale</div>'+
+      '<div style="font-family:\'Bebas Neue\';font-size:26px;letter-spacing:1px;color:'+COL[gc.overall]+';margin:6px 0 10px">'+head+'</div>'+
+      gc.items.map(function(it){ return '<div style="display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line)"><span style="flex:0 0 auto">'+ICO[it.state]+'</span><div><b style="color:var(--ink)">'+it.label+'</b><div class="note" style="margin-top:2px">'+it.msg+'</div></div></div>'; }).join('')+
+      '<div style="margin-top:10px"><b style="color:'+COL[gc.overall]+'">Wichtigste Handlung:</b> '+gc.action+'</div>'+
+      '<div class="note" style="margin-top:8px">Vorschlag, kein Befund — entscheiden tust du. Ampel-Logik: Gewicht vs. 84,09-kg-Limit · Readiness-/Schlaf-Schnitt der letzten 3 Tage · Niggle-Eskalation · Taper-Deckel.</div></div>';
+  }
+
+  /* ---------- Nach-Turnier-Schleifen (Roadmap 5–7): Debrief · Lean-Bulk · Technik-Schleife ---------- */
+  function nutriPhase(d){
+    if(d==null||isNaN(d)||d>=0) return {bulk:false,ktL:'~3.050',krL:'~2.750',chip:'Korridor <b>83,0–83,8 kg</b>'};
+    return {bulk:true,ktL:'~3.350',krL:'~3.050',chip:'Lean Bulk → <b>86–87 kg</b>'};
+  }
+  function applyNutriPhase(){
+    if(!nutriPhase(dToComp).bulk) return;
+    var lz=document.getElementById('w-leg-ziel'); if(lz) lz.textContent='Ziel 86–87 (Lean Bulk)';
+    var ll=document.getElementById('w-leg-limit'); if(ll) ll.textContent='kein Limit aktiv';
+    var nn=document.getElementById('nutri-note');
+    if(nn) nn.innerHTML='<b>Lean Bulk aktiv</b> (Turnier vorbei): +250–350 kcal über Erhaltung → ~3.150–3.250 kcal Schnitt, Ziel 86–87 kg über Monate. Protein 1,6–2,2 g/kg halten, Kraft progressiv steigern. Klassen-Limits gelten erst wieder mit der nächsten Turnier-Meldung.<div class="srcrow"><a class="src" href="https://bjsm.bmj.com/content/52/6/376" target="_blank" rel="noopener">Morton 2018, BJSM</a><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/?term=Barakat+body+recomposition+trained+individuals" target="_blank" rel="noopener">Barakat 2020</a></div>';
+  }
+  function retestDue(arr,todayKey){
+    return (arr||[]).filter(function(e){ return e&&e.retest&&!e.done&&e.retest<=todayKey; })
+      .sort(function(a,b){ return a.retest<b.retest?-1:1; });
+  }
+  function debriefDue(d,has){ return d!=null&&!isNaN(d)&&d<0&&d>=-14&&!has; }
+  function renderLoopAlerts(){
+    var el=document.getElementById('retest-alert');
+    if(el){
+      var due=retestDue(DB.coachlog,TODAY);
+      el.innerHTML=due.length?('<div class="card" style="border-color:var(--warn)"><h2><span class="dot" style="background:var(--warn)"></span>🔁 Technik-Schleife · Re-Test fällig</h2>'+
+        '<div class="role">Schwäche → Drill → Re-Test nach 2 Wochen — die Schleife schließen</div>'+
+        due.map(function(q){ return '<div class="note" style="margin-top:6px"><b>'+esc(q.k||q.cat||'Technik-Fokus')+'</b>'+(q.prob?' — '+esc(q.prob):'')+' · fällig seit '+fmtD(q.retest)+'. Heute in 2 wettkampfnahen Runden testen, dann im Technik-Tab abhaken.</div>'; }).join('')+'</div>'):'';
+    }
+    var dh=document.getElementById('debrief-hint');
+    if(dh){
+      var t=(TOURN||[]).filter(function(x){ return x.target; })[0];
+      var has=!!(t&&DB.profile.debriefs&&DB.profile.debriefs[t.id]);
+      dh.innerHTML=(t&&debriefDue(dToComp,has))?('<div class="card" style="border-color:var(--blue)"><h2><span class="dot" style="background:var(--blue)"></span>📝 Wettkampf-Debrief offen</h2><div class="note">'+esc(t.name)+' ist vorbei — füll das Debrief im Turniere-Tab aus, solange die Matches frisch sind: was lief, was nicht, drei Technik-Prioritäten.</div></div>'):'';
+    }
+  }
+  function dbFill(tid){
+    var d=(DB.profile.debriefs||{})[tid]||{};
+    sv('db-good',d.good||''); sv('db-bad',d.bad||''); sv('db-games',d.games||''); sv('db-p1',d.p1||''); sv('db-p2',d.p2||''); sv('db-p3',d.p3||'');
+  }
+  function renderDebriefList(){
+    var el=document.getElementById('debrief-list'); if(!el) return;
+    var dbs=DB.profile.debriefs||{}; var ids=Object.keys(dbs);
+    el.innerHTML=ids.length?ids.map(function(tid){
+      var t=(TOURN||[]).filter(function(x){ return x.id===tid; })[0]; var d=dbs[tid];
+      var prios=[d.p1,d.p2,d.p3].filter(Boolean).map(esc).join(' · ');
+      return '<div class="course"><div style="flex:1"><b style="font-size:13px;color:var(--ink)">'+esc(t?t.name:tid)+'</b><div class="tlp" style="margin-top:2px">'+(d.date?fmtD(d.date)+' · ':'')+(prios?('Prioritäten: <b>'+prios+'</b>'):'noch keine Prioritäten')+(d.good?'<br>✓ '+esc(d.good):'')+(d.bad?'<br>✗ '+esc(d.bad):'')+(d.games?'<br>Gegner: '+esc(d.games):'')+'</div></div><div class="inrow" style="gap:6px;flex:0 0 auto"><button class="btn ghost" data-dbdel="'+esc(tid)+'" style="padding:6px 10px">✕</button></div></div>';
+    }).join(''):'<div class="note">Noch kein Debrief — nach dem Turnier ausfüllen.</div>';
+  }
+  function renderDebrief(){
+    var s=document.getElementById('db-t'); if(!s) return;
+    if(!s._b){
+      s._b=1;
+      s.innerHTML=(TOURN||[]).map(function(t){ return '<option value="'+esc(t.id)+'"'+(t.target?' selected':'')+'>'+esc(t.name)+' ('+fmtD(t.date)+')</option>'; }).join('');
+      s.addEventListener('change',function(){ dbFill(s.value); });
+      var sb=document.getElementById('db-save');
+      if(sb) sb.addEventListener('click',function(){
+        DB.profile.debriefs=DB.profile.debriefs||{};
+        DB.profile.debriefs[s.value]={date:TODAY,good:pv('db-good').trim(),bad:pv('db-bad').trim(),games:pv('db-games').trim(),p1:pv('db-p1').trim(),p2:pv('db-p2').trim(),p3:pv('db-p3').trim()};
+        save('as_profile',DB.profile);
+        var st=document.getElementById('db-status'); if(st) st.textContent='✓ Debrief gespeichert. Die Prioritäten sind dein nächster Technik-Fokus.';
+        renderDebriefList(); renderLoopAlerts();
+      });
+      var dl=document.getElementById('debrief-list');
+      if(dl) dl.addEventListener('click',function(e){
+        var x=e.target.closest('[data-dbdel]'); if(!x) return;
+        if(DB.profile.debriefs){ delete DB.profile.debriefs[x.dataset.dbdel]; save('as_profile',DB.profile); renderDebriefList(); renderLoopAlerts(); }
+      });
+      dbFill(s.value);
+    }
+    renderDebriefList();
+  }
+
+  /* ---------- Krank-Modus & gestufter Wiedereinstieg (Return-to-Training) · reine Logik ---------- */
+  function keyToDate(k){ var p=(k||'').split('-'); return new Date(+p[0],(+p[1]||1)-1,(+p[2]||1)); }
+  function illnessDays(since,todayKey){ if(!since) return 0; return daysBetween(keyToDate(since),keyToDate(todayKey))+1; }
+  function rttState(returnStart,todayKey){
+    if(!returnStart) return {active:false};
+    var d=daysBetween(keyToDate(returnStart),keyToDate(todayKey));
+    if(d<0) return {active:false};
+    if(d>4) return {active:false,done:true};
+    var stages=[
+      {volPct:50,spar:false,label:'Tag 1 · Locker antesten',msg:'Zone-2/Mobility + lockeres Technik-Drilling, ~50 % Volumen. Kein Sparring, keine Maximalkraft.'},
+      {volPct:55,spar:false,label:'Tag 2 · Bewegung aufbauen',msg:'Leichtes Drilling/Conditioning, ~50–60 %. Weiter kein Sparring. Ruhepuls &amp; Gefühl checken.'},
+      {volPct:70,spar:'leicht',label:'Tag 3 · Erste Runden',msg:'Leichte Positionsrunden mit Reset, Kraft mit RIR 3–4, ~70 %. Nichts erzwingen.'},
+      {volPct:80,spar:'leicht',label:'Tag 4 · Intensität antasten',msg:'Etwas längere, kontrollierte Runden, ~70–80 %. Bei Rückfall einen Schritt zurück.'},
+      {volPct:90,spar:'normal',label:'Tag 5 · Zurück zum Plan',msg:'Progressiv Sparring, ~90 %. Wenn symptomfrei und gut erholt: ab morgen normal weiter.'}
+    ];
+    var s=stages[d];
+    return {active:true,day:d+1,volPct:s.volPct,spar:s.spar,label:s.label,msg:s.msg};
+  }
+  function renderIllness(){
+    var el=document.getElementById('illness-card'); if(!el) return;
+    if(!el._b){ el._b=1; el.addEventListener('click',function(e){
+      var b=e.target.closest('[data-ill]'); if(!b) return; var a=b.dataset.ill;
+      if(a==='start'){ DB.profile.illness={since:TODAY}; }
+      else if(a==='return'){ if(DB.profile.illness) DB.profile.illness.returnStart=TODAY; }
+      else if(a==='cancel'||a==='done'){ DB.profile.illness=null; }
+      save('as_profile',DB.profile); renderIllness(); renderGoCheck(); renderCoach();
+    }); }
+    var ill=DB.profile.illness||null;
+    if(ill&&ill.returnStart){
+      var rs=rttState(ill.returnStart,TODAY);
+      if(!rs.active){ DB.profile.illness=null; save('as_profile',DB.profile); ill=null; }
+      else {
+        var sparTxt=rs.spar===false?'kein Sparring':rs.spar==='leicht'?'leichte Runden':'Sparring normal';
+        el.innerHTML='<div class="card" style="border-color:var(--blue)"><h2><span class="dot" style="background:var(--blue)"></span>🩺 Wiedereinstieg · '+rs.label+'</h2>'+
+          '<div class="role">Tag '+rs.day+' von 5 · gestufte Rückkehr (Heuristik) · ~'+rs.volPct+' % Volumen · '+sparTxt+'</div>'+
+          '<div class="note" style="margin-top:6px">'+rs.msg+'</div>'+
+          '<div class="note" style="margin-top:6px">Bei Rückkehr der Symptome, Brustschmerz, Atemnot oder Herzstolpern: sofort stoppen und ärztlich abklären. Vorschlag, kein Befund.</div>'+
+          '<div class="inrow" style="margin-top:8px"><button class="btn ghost" data-ill="done">Fühlt sich normal an → abschließen</button></div></div>';
+        return;
+      }
+    }
+    if(ill&&ill.since){
+      var dz=illnessDays(ill.since,TODAY);
+      el.innerHTML='<div class="card" style="border-color:var(--warn)"><h2><span class="dot" style="background:var(--warn)"></span>🤒 Krank-Modus · Trainingspause</h2>'+
+        '<div class="role">Seit '+fmtD(ill.since)+' · Tag '+dz+'</div>'+
+        '<div class="note" style="margin-top:6px"><b>Ruhe ist jetzt das Training.</b> „Neck Check": Symptome unterhalb des Halses (Fieber, Gliederschmerzen, Brust, produktiver Husten) = kein Training. <b>Niemals mit Fieber trainieren</b> (Myokarditis-Risiko).</div>'+
+        '<div class="note" style="margin-top:6px">Zum Arzt bei: Fieber &gt;3–4 Tage, Brustschmerz, Atemnot, Herzstolpern/-rasen in Ruhe, oder Rückfall nach Besserung.</div>'+
+        '<div class="note" style="margin-top:6px">Noch '+(dToComp>=0?dToComp:0)+' Tage bis zum Turnier — genug Puffer, eine Woche Pause kostet kaum Form. Gewichtsabfall jetzt ist Flüssigkeit, kein Fortschritt: normal rehydrieren.</div>'+
+        '<div class="note" style="margin-top:6px">Erst zurück, wenn ≥24 h fieberfrei (ohne Fiebersenker), Ruhepuls normal, im Alltag klar erholt — dann startet die gestufte 5-Tage-Rückkehr.</div>'+
+        '<div class="inrow" style="margin-top:8px"><button class="btn" data-ill="return">Wieder fit → Wiedereinstieg starten</button><button class="btn ghost" data-ill="cancel">Krank-Modus beenden</button></div></div>';
+      return;
+    }
+    el.innerHTML='<div style="margin:0 0 14px"><button class="btn ghost" data-ill="start" style="width:100%">🤒 Training krank ausgefallen? Krank-Modus starten</button></div>';
+  }
+
+  function renderNiggleAlert(){
+    var el=document.getElementById('niggle-alert'); if(!el) return;
+    var list=niggleEscalation(DB.niggles,TODAY);
+    if(!list.length){ el.innerHTML=''; return; }
+    var anyRed=list.some(function(w){ return w.level==='rot'; });
+    var rows=list.map(function(w){
+      if(w.level==='rot') return '<div class="note warn" style="margin-top:8px;border-color:var(--bad);color:var(--bad)">🔴 <b>'+esc(w.stelle)+'</b> — seit <b>'+w.tage+' Tagen in Folge</b> Schweregrad ≥3/5. <b>Physio/Arzt abklären</b> — um den Schmerz herum trainieren, nicht durch ihn.</div>';
+      return '<div class="note warn" style="margin-top:8px">🟡 <b>'+esc(w.stelle)+'</b> — <b>2 Tage in Folge</b> ≥3/5. Beobachten, Last anpassen — wird es morgen nicht besser, eskaliert das auf Rot.</div>';
+    }).join('');
+    el.innerHTML='<div class="card" style="border-color:var(--'+(anyRed?'bad':'warn')+')"><h2><span class="dot" style="background:var(--'+(anyRed?'bad':'warn')+')"></span>'+(anyRed?'🚨 Niggle-Eskalation':'⚠️ Niggle-Vorwarnung')+'</h2>'+
+      '<div class="role">Physiotherapie · Beschwerden-Tracker</div>'+rows+
+      '<div class="note" style="margin-top:10px">Vorschlag, kein Befund — Rote Flaggen (scharfer Gelenkschmerz, Taubheit/Kribbeln, Schwellung, „Knacken“ mit Funktionsverlust) immer direkt abklären lassen.</div></div>';
   }
 
   /* ---------- daten: dashboard, weight, export ---------- */
@@ -1407,27 +1778,31 @@
   function renderMorningWeight(){
     var box=document.getElementById('morning-weight'); if(!box) return;
     var tw=todayWeight();
-    var warn=(tw==null)?'':(tw>85.0?' <b style="color:var(--bad)">⚠ über dem 85,0-kg-Limit!</b>':(tw>=84.6?' <b style="color:var(--warn)">nahe am 85,0-kg-Limit.</b>':''));
-    box.innerHTML='<div class="role" style="margin-top:8px">⚖️ Morgengewicht (nüchtern, nach dem Aufstehen) · Korridor 83,5–84,5 kg · Limit 85,0</div>'+
+    var wck=giWeightCheck(tw), NPw=nutriPhase(dToComp);
+    var warn=(tw==null||NPw.bulk)?'':(wck.status==='ueber'?' <b style="color:var(--bad)">⚠ ÜBER dem Limit −185 lbs = 84,09 kg (keine Toleranz)!</b>':(wck.status==='knapp'?' <b style="color:var(--warn)">knapp am 84,09-kg-Limit — Puffer '+wck.margin.toFixed(2).replace('.',',')+' kg.</b>':''));
+    box.innerHTML='<div class="role" style="margin-top:8px">'+(NPw.bulk?'⚖️ Morgengewicht (nüchtern) · Lean-Bulk-Phase: Aufbau Richtung 86–87 kg über Monate · kein Klassen-Limit aktiv':'⚖️ Morgengewicht (nüchtern, nach dem Aufstehen) · Korridor 83,0–83,8 kg · Limit −185 lbs = 84,09 kg (keine Toleranz)')+'</div>'+
       '<div class="inrow"><input type="text" id="mw-kg" inputmode="decimal" placeholder="kg (z. B. 83,7)" aria-label="Morgengewicht in Kilogramm" value="'+(tw!=null?tw:'')+'" style="flex:1;min-width:100px"><button class="btn" id="mw-add">'+(tw!=null?'Aktualisieren':'Eintragen')+'</button></div>'+
       '<div class="note" id="mw-status">'+(tw!=null?('✓ Heute eingetragen: '+tw.toFixed(1)+' kg.'+warn+' Fließt in Chart &amp; Trend (Daten-Tab).'):'Noch nicht gewogen heute. Am besten morgens nüchtern, gleiche Bedingungen.')+'</div>';
     var inp=box.querySelector('#mw-kg'), btn=box.querySelector('#mw-add');
-    function go(){ var st=document.getElementById('mw-status'); if(!logWeight(num(inp.value))){ if(st) st.textContent='Bitte ein realistisches Gewicht (40–200 kg) eingeben.'; inp.focus(); return; } renderMorningWeight(); renderW(); renderDash(); }
+    function go(){ var st=document.getElementById('mw-status'); if(!logWeight(num(inp.value))){ if(st) st.textContent='Bitte ein realistisches Gewicht (40–200 kg) eingeben.'; inp.focus(); return; } renderMorningWeight(); renderW(); renderDash(); renderGoCheck(); }
     if(btn) btn.addEventListener('click',go);
     if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go(); } });
   }
-  function drawGuides(svg){ var W=320,yFor=function(kg){return 110-((kg-82.5)/3)*100;}; var h='';
-    h+='<rect x="0" y="'+yFor(84.5)+'" width="'+W+'" height="'+(yFor(83.5)-yFor(84.5))+'" fill="rgba(55,211,155,.10)"/>';
-    h+='<line x1="0" y1="'+yFor(85)+'" x2="'+W+'" y2="'+yFor(85)+'" stroke="rgba(255,106,90,.7)" stroke-width="1" stroke-dasharray="4 4"/>';
-    svg.innerHTML=h; return {W:W,yFor:yFor,base:h}; }
+  function drawGuides(svg,bulk){ var W=320,lo=bulk?84.5:82.5,yFor=function(kg){return 110-((kg-lo)/3)*100;}; var h='';
+    if(bulk){ h+='<rect x="0" y="'+yFor(87)+'" width="'+W+'" height="'+(yFor(86)-yFor(87))+'" fill="rgba(55,211,155,.10)"/>'; }
+    else {
+      h+='<rect x="0" y="'+yFor(83.8)+'" width="'+W+'" height="'+(yFor(83.0)-yFor(83.8))+'" fill="rgba(55,211,155,.10)"/>';
+      h+='<line x1="0" y1="'+yFor(84.09)+'" x2="'+W+'" y2="'+yFor(84.09)+'" stroke="rgba(255,106,90,.7)" stroke-width="1" stroke-dasharray="4 4"/>';
+    }
+    svg.innerHTML=h; return {W:W,yFor:yFor,lo:lo,base:h}; }
   function renderW(){
     var arr=loadW(); var box=document.getElementById('w-entries'); var svg=document.getElementById('w-chart'); var range=document.getElementById('w-range');
-    if(!arr.length){ box.innerHTML='<div class="empty">Noch keine Einträge.</div>'; drawGuides(svg); range.textContent='—'; return; }
+    if(!arr.length){ box.innerHTML='<div class="empty">Noch keine Einträge.</div>'; drawGuides(svg,nutriPhase(dToComp).bulk); range.textContent='—'; return; }
     box.innerHTML=arr.slice().reverse().slice(0,10).map(function(e){ return '<div class="we"><span>'+e.d+'</span><b>'+e.kg.toFixed(1)+' kg</b></div>'; }).join('');
     var last=arr.slice(-14); range.textContent=last[0].d+' → '+last[last.length-1].d;
-    var g=drawGuides(svg),W=g.W,yFor=g.yFor,n=last.length,pad=14;
+    var g=drawGuides(svg,nutriPhase(dToComp).bulk),W=g.W,yFor=g.yFor,n=last.length,pad=14;
     var xFor=function(i){ return n<=1?W/2:pad+(i/(n-1))*(W-2*pad); };
-    var pts=last.map(function(e,i){ return [xFor(i),yFor(Math.max(82.5,Math.min(85.5,e.kg)))]; });
+    var pts=last.map(function(e,i){ return [xFor(i),yFor(Math.max(g.lo,Math.min(g.lo+3,e.kg)))]; });
     var line=pts.map(function(p,i){ return (i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1); }).join(' ');
     var dots=pts.map(function(p){ return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3" fill="var(--gold)"/>'; }).join('');
     svg.innerHTML=g.base+'<path d="'+line+'" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linejoin="round"/>'+dots;
@@ -1462,7 +1837,7 @@
     document.getElementById('ng-save').addEventListener('click',function(){
       var area=document.getElementById('ng-area').value, sev=+document.getElementById('ng-sev').value, note=document.getElementById('ng-note').value.trim();
       DB.niggles.push({date:TODAY,area:area,sev:sev,note:note}); save('as_niggles',DB.niggles);
-      document.getElementById('ng-note').value=''; renderNiggles();
+      document.getElementById('ng-note').value=''; renderNiggles(); renderNiggleAlert(); renderGoCheck();
     });
     document.getElementById('w-add').addEventListener('click',function(){
       var inp=document.getElementById('w-kg'); if(!logWeight(num(inp.value))){inp.focus();return;}
@@ -1529,8 +1904,10 @@
       if(b.dataset.t==='profil') renderProfil();
       if(b.dataset.t==='woche') renderWoche();
       if(b.dataset.t==='technik') renderTechnik();
+      if(b.dataset.t==='gb') renderGB();
+      if(b.dataset.t==='gbsys') renderGBSys();
       if(b.dataset.t==='wissen') renderWissen();
-      if(b.dataset.t==='turniere') renderTurniere();
+      if(b.dataset.t==='turniere'){ renderTurniere(); renderDebrief(); }
       if(b.dataset.t==='koerper'){ renderNiggles(); renderHRzones(); renderBlood(); renderAppts(); }
       if(b.dataset.t==='ernaehrung'){ renderShop(); renderMealLog(); }
       if(b.dataset.t==='daten'){ renderDash(); renderW(); renderTrends(); renderBackupStatus(); renderLockSettings(); document.getElementById('p-name').value=DB.profile.name||''; document.getElementById('p-kg').value=DB.profile.startKg||''; document.getElementById('p-hr').value=DB.profile.maxHR||''; }
@@ -1546,6 +1923,11 @@
         if(tabs[ni]){ tabs[ni].click(); tabs[ni].focus(); }
       });
     }
+    // Tageswechsel erkennen: bleibt die App über Mitternacht offen, sind NOW/TODAY/dToComp veraltet.
+    // Beim Zurückkehren neu laden, wenn der Kalendertag gewechselt hat (Daten sind bei jeder Änderung gespeichert).
+    function refreshIfNewDay(){ try{ if(key(new Date())!==TODAY) location.reload(); }catch(e){} }
+    document.addEventListener('visibilitychange',function(){ if(!document.hidden) refreshIfNewDay(); });
+    window.addEventListener('focus',refreshIfNewDay);
   }
 
   function tickCountdown(){
@@ -1557,26 +1939,34 @@
   /* ---------- competition day protocol ---------- */
   var PROTOCOL_HTML=
     '<div class="grp" data-grp><div class="hd">🎒 Vorabend (Fr) <span class="arr">▾</span></div><div class="bd"><div class="foods">Tasche packen: Gi (sauber), Rashguard, Mundschutz, Flip-Flops, Tape, Snacks (Banane/Datteln/Reiswaffeln), Elektrolyte, Wasser. Leichtes Abendessen, früh schlafen. Game Plan auf 2–3 Sequenzen festlegen.</div></div></div>'+
-    '<div class="grp" data-grp><div class="hd">🌅 Wettkampf-Morgen <span class="arr">▾</span></div><div class="bd"><div class="foods">Wiegen zur Kontrolle (klar &lt;85). Normal frühstücken: Carbs + Protein. Hydration + Elektrolyte. Koffein ~45–60 min vor Match 1. Ankunft 7:30, Check-in, Bracket &amp; Mattennummer checken. <a class="src" href="https://jissn.biomedcentral.com/articles/10.1186/s12970-020-00383-4" target="_blank" rel="noopener">Koffein 3–6 mg/kg · ISSN 2021</a></div></div></div>'+
+    '<div class="grp" data-grp><div class="hd">🌅 Wettkampf-Morgen <span class="arr">▾</span></div><div class="bd"><div class="foods">Wiegen zur Kontrolle (klar &lt;85). Normal frühstücken: Carbs + Protein. Hydration + Elektrolyte. Koffein ~60 min vor Match 1 (im Training getestet). Ankunft 7:30, Check-in, Bracket &amp; Mattennummer checken. <a class="src" href="https://jissn.biomedcentral.com/articles/10.1186/s12970-020-00383-4" target="_blank" rel="noopener">Koffein 3–6 mg/kg · ISSN 2021</a></div></div></div>'+
     '<div class="grp" data-grp><div class="hd">🔥 Warm-up (20–30 min vor Match 1) <span class="arr">▾</span></div><div class="bd"><div class="foods"><b>Raise:</b> 2–3 min Seil/Bewegung. <b>Activate:</b> Glute Bridges, Band Pull-aparts. <b>Mobilise:</b> Hüfte 90/90, Schulter, Nacken sanft. <b>Potentiate:</b> 3–4 explosive Bewegungen + 1–2 leichte Drilling-Runden. Atmung ruhig durch die Nase. Warm bleiben bis zum Aufruf.</div></div></div>'+
     '<div class="grp" data-grp><div class="hd">⏱️ Zwischen den Kämpfen <span class="arr">▾</span></div><div class="bd"><div class="foods">Locker warmhalten. Schnelle Carbs (Banane/Dattel) + Schluck Elektrolyte. Vor dem nächsten Match 3–5 min Re-Warm-up. Mental: 4-7-8 atmen, Fokus auf deine Sequenzen, nicht aufs Ergebnis.</div></div></div>'+
     '<div class="grp" data-grp><div class="hd">🧠 Mindset &amp; Game Plan <span class="arr">▾</span></div><div class="bd"><div class="foods">Du bist auf Gewicht und frisch — dein Vorteil. Greif zuerst (Grips/Position). Prozess vor Ergebnis, eine Position nach der anderen. Atmen, wenn\u2019s hektisch wird.</div></div></div>'+
     '<div class="grp" data-grp><div class="hd">♻️ Danach <span class="arr">▾</span></div><div class="bd"><div class="foods">Auswertung (was lief, was nicht), Mahlzeit + Protein, Mobility/Sauna, früh schlafen. Ab ~3 Tagen später: Lean Bulk starten.</div></div></div>';
   function renderProtocolStatic(){ var el=document.getElementById('protocol-static'); if(el){ el.innerHTML=PROTOCOL_HTML; bindAccordions(); } }
-  function taperInfo(){
-    if(dToStart>0||dToComp<0||dToComp>10) return null;
-    if(dToComp<=2) return {days:dToComp,vol:'nur lockere Bewegung',msg:'Wettkampfnähe — Game Plan, Visualisierung, nichts Neues mehr lernen. Frisch bleiben schlägt alles.'};
-    if(dToComp<=5) return {days:dToComp,vol:'Volumen ~50–60 % runter',msg:'Schärfephase — kurze, scharfe Wettkampfrunden mit Reset, Technik sauber. Die letzte wirklich harte Einheit gehört jetzt hinter dich.'};
-    return {days:dToComp,vol:'Volumen ~40 % runter',msg:'Taper beginnt — Intensität/Schärfe halten, Gesamtumfang senken. Letzte richtig harte Einheit 5–7 Tage vor dem Turnier.'};
+  /* Taper-Schutzplanke — reine Logik (testbar). Fenster: letzte 10 Tage vor Turnier.
+     Stufen mit eigenem Volumen-Ziel UND eigenem Last-Deckel (RPE×min), ab dem gewarnt wird.
+     „Vorschlagen, nicht ausführen": labelt/warnt nur, ändert nichts automatisch. Quelle: Bosquet 2007. */
+  function taperState(dToStart,dToComp,todayLoad){
+    if(dToStart>0||dToComp<0||dToComp>10) return {active:false};
+    todayLoad=todayLoad||0;
+    var s;
+    if(dToComp<=2)      s={volPct:80,volLabel:'nur lockere Bewegung',loadCap:150,msg:'Wettkampfnähe — Game Plan, Visualisierung, nichts Neues mehr lernen. Frisch bleiben schlägt alles.'};
+    else if(dToComp<=5) s={volPct:55,volLabel:'Volumen ~50–60 % runter',loadCap:250,msg:'Schärfephase — kurze, scharfe Wettkampfrunden mit Reset, Technik sauber. Die letzte wirklich harte Einheit gehört jetzt hinter dich.'};
+    else                s={volPct:40,volLabel:'Volumen ~40 % runter',loadCap:350,msg:'Taper beginnt — Intensität/Schärfe halten, Gesamtumfang senken. Letzte richtig harte Einheit 5–7 Tage vor dem Turnier.'};
+    s.active=true; s.days=dToComp; s.todayLoad=todayLoad; s.over=todayLoad>s.loadCap;
+    return s;
   }
+  function taperInfo(){ var s=taperState(dToStart,dToComp,0); return s.active?{days:s.days,vol:s.volLabel,msg:s.msg}:null; }
   function renderTaperGuard(){
     var el=document.getElementById('taper-guard'); if(!el) return;
-    var ti=taperInfo(); if(!ti){ el.innerHTML=''; return; }
-    var todayLoad=(DB.load[TODAY]?DB.load[TODAY].load:0); var over=todayLoad>300;
+    var todayLoad=(DB.load[TODAY]?DB.load[TODAY].load:0);
+    var s=taperState(dToStart,dToComp,todayLoad); if(!s.active){ el.innerHTML=''; return; }
     el.innerHTML='<div class="card" style="border-color:var(--gold)"><h2><span class="dot"></span>🛡️ Taper-Schutzplanke</h2>'+
-      '<div class="role">Sportmedizin · Trainerteam · letzte '+ti.days+' Tag'+(ti.days===1?'':'e')+'</div>'+
-      '<div class="lead" style="margin-top:6px"><b style="color:var(--gold)">'+ti.vol+'</b> — '+ti.msg+'</div>'+
-      (over?'<div class="note warn" style="margin-top:10px">⚠ Heute bereits <b>'+todayLoad+'</b> Last-Einheiten geloggt — im Taper bewusst niedrig halten. Nicht mehr kaputt machen; das Turnier gewinnst du mit frischen Beinen.</div>':'')+
+      '<div class="role">Sportmedizin · Trainerteam · letzte '+s.days+' Tag'+(s.days===1?'':'e')+'</div>'+
+      '<div class="lead" style="margin-top:6px"><b style="color:var(--gold)">'+s.volLabel+'</b> — '+s.msg+'</div>'+
+      (s.over?'<div class="note warn" style="margin-top:10px">⚠ Heute bereits <b>'+todayLoad+'</b> Last (Deckel '+s.loadCap+' in dieser Taperstufe) — bewusst niedrig halten. Nicht mehr kaputt machen; das Turnier gewinnst du mit frischen Beinen.</div>':'')+
       '<div class="srcrow" style="margin-top:10px"><a class="src" href="https://pubmed.ncbi.nlm.nih.gov/17762369/" target="_blank" rel="noopener">Taper: Bosquet 2007, MSSE</a></div>'+
       '<div class="note" style="margin-top:8px">Evidenz aus Ausdauer-/Kraftsport: ~2 Wochen Taper, Volumen exponentiell −41…−60 %, Intensität halten. <span style="color:var(--warn)">Kampfsport-spezifische Daten sind dünn — als Richtwert behandeln, nach Gefühl &amp; Readiness justieren.</span></div>'+
       '</div>';
@@ -1587,6 +1977,85 @@
       el.innerHTML='<div class="card" style="border-color:var(--gold)"><h2><span class="dot"></span>🏆 Wettkampfwoche — Protokoll</h2><div class="role">Trainerteam · Physio · Sportmedizin</div><div class="lead">Noch '+dToComp+' Tag'+(dToComp!==1?'e':'')+' bis GI Hamburg. Dein Ablauf:</div>'+PROTOCOL_HTML+'</div>';
       bindAccordions();
     } else el.innerHTML='';
+  }
+
+  /* ---------- Wettkampftag-Timer (15.08.) — reine Logik (testbar) ----------
+     Ein Input: geplante Zeit von Match 1. Alles andere wird abgeleitet:
+     Aufwachen −3,5 h · Carbs −2,5 h (Fenster 2–3 h) · Ankunft −1,5 h ·
+     Koffein −60 min · Warm-up −25 min (Fenster 20–30). Quelle: Protokoll oben (ISSN 2021).
+     „Vorschlagen, nicht ausführen": zeigt nur an, keine Aktionen. */
+  function hmToMin(s){ if(!/^\d{1,2}:\d{2}$/.test(String(s||''))) return null; var p=String(s).split(':'),h=+p[0],m=+p[1]; if(h>23||m>59) return null; return h*60+m; }
+  function minToHM(m){ m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+  function compTimerSteps(m1){
+    return [
+      {t:m1-210,ic:'⏰',l:'Aufwachen + Kontroll-Wiegen',d:'Waage ≤83,8 kg → sicher unter dem GI-Limit (−185 lbs = 84,09 kg, keine Toleranz, Wiegen ohne Gi). Wasser + Elektrolyte starten.'},
+      {t:m1-150,ic:'🍚',l:'Carbs-Mahlzeit + Protein',d:'Kohlenhydratreich, nichts Neues am Wettkampftag. Abstand 2–3 h zu Match 1.'},
+      {t:m1-90,ic:'🎒',l:'Ankunft, Check-in &amp; offizielles Wiegen',d:'Bracket &amp; Mattennummer checken, Gi-Check. Locker bleiben, Schatten suchen.'},
+      {t:m1-60,ic:'☕',l:'Koffein',d:'3–6 mg/kg (~250–500 mg) — nur wie im Training getestet.'},
+      {t:m1-25,ic:'🔥',l:'Warm-up (RAMP kurz)',d:'Raise → Activate → Mobilise → Potentiate + 1–2 leichte Drill-Runden. Warm bleiben bis zum Aufruf.'},
+      {t:m1,ic:'🥋',l:'Match 1',d:'Zuerst greifen (Grips/Position). Prozess vor Ergebnis. Atmen.'}
+    ];
+  }
+  function compTimerState(m1,nowMin){
+    var steps=compTimerSteps(m1),cur=-1;
+    for(var i=0;i<steps.length;i++) if(nowMin>=steps[i].t) cur=i;
+    var next=(cur<steps.length-1)?steps[cur+1]:null;
+    return {steps:steps,cur:cur,next:next,minsToNext:next?(next.t-nowMin):null,done:cur===steps.length-1};
+  }
+  function reWarmupState(sinceMin){
+    if(sinceMin<5)  return {ph:0,msg:'Durchatmen (4-7-8), Wasser. Kurz auswerten: was lief, was kommt.'};
+    if(sinceMin<15) return {ph:1,msg:'Schnelle Carbs (Banane/Dattel) + Elektrolyte. Schultern warm halten.'};
+    return {ph:2,msg:'Warmhalten — alle ~15 min kurz bewegen. Bei Aufruf: 3–5 min Re-Warm-up (Raise + Potentiate kurz).'};
+  }
+  function renderCompTimer(){
+    /* Demo-Schalter in der Protokoll-Karte */
+    var demoEl=document.getElementById('comp-timer-demo');
+    if(demoEl){
+      demoEl.innerHTML='<button class="btn ghost" id="ct-demo">'+(DB.comp.demo?'Timer-Vorschau ausblenden':'▶ Wettkampftag-Timer testen')+'</button>'+
+        (dToComp===0?'':'<div class="note" style="margin-top:6px">Am Wettkampftag (15.08.) erscheint der Timer automatisch oben in „Heute“.</div>');
+      var bd=document.getElementById('ct-demo');
+      if(bd) bd.addEventListener('click',function(){ DB.comp.demo=!DB.comp.demo; save('as_comp',DB.comp); renderCompTimer(); renderGoCheck(); });
+    }
+    var el=document.getElementById('comp-timer'); if(!el) return;
+    var active=(dToComp===0)||!!DB.comp.demo;
+    if(!active){ el.innerHTML=''; return; }
+    var m1=hmToMin(DB.comp.m1); if(m1==null) m1=540;
+    var now=new Date(), nowMin=now.getHours()*60+now.getMinutes();
+    var st=compTimerState(m1,nowMin);
+    var rows='';
+    st.steps.forEach(function(s,i){
+      var isCur=(i===st.cur&&!st.done), past=(i<st.cur)||(st.done&&i<st.steps.length-1);
+      rows+='<div style="display:flex;gap:10px;align-items:baseline;padding:7px 10px;border-radius:8px;'+
+        (isCur?'border:1px solid var(--gold);background:rgba(212,175,55,.07)':'')+(past?'opacity:.45':'')+'">'+
+        '<b style="min-width:46px;color:var(--gold)">'+minToHM(s.t)+'</b><span>'+s.ic+'</span>'+
+        '<div><b>'+s.l+(past?' ✓':'')+'</b><div class="note" style="margin-top:2px">'+s.d+'</div></div></div>';
+    });
+    var head;
+    if(!st.done&&st.next) head='Jetzt '+minToHM(nowMin)+' · nächster Schritt in <b style="color:var(--gold)">'+st.minsToNext+' min</b>: '+st.next.l;
+    else if(st.done) head='Match 1 läuft / gelaufen — unten „Kampf beendet“ tippen für den Zwischen-Kampf-Modus.';
+    else head='Ablauf scharf — erster Schritt um '+minToHM(st.steps[0].t)+'.';
+    /* Zwischen-Kampf-Modus */
+    var fights=DB.comp.fights||[], between='';
+    if(fights.length){
+      var last=fights[fights.length-1], since=nowMin-last; if(since<0) since+=1440;
+      var rw=reWarmupState(since);
+      between='<div class="note warn" style="margin-top:10px">🥋 Kampf '+fights.length+' beendet vor <b>'+since+' min</b> ('+minToHM(last)+').<br>'+rw.msg+'</div>';
+    }
+    el.innerHTML='<div class="card" style="border-color:var(--gold)"><h2><span class="dot"></span>⏱️ Wettkampftag-Timer'+(dToComp===0?'':' · Vorschau')+'</h2>'+
+      '<div class="role">GI Hamburg · Sporthalle Wandsbek · Einlass 7:30, Start 9:00</div>'+
+      '<div class="lead" style="margin-top:6px">'+head+'</div>'+
+      '<div class="inrow" style="margin-top:10px;align-items:center"><label style="min-width:auto">Match 1 geplant</label>'+
+      '<input type="time" id="ct-m1" value="'+esc(DB.comp.m1||'09:00')+'" style="width:110px">'+
+      '<button class="btn ghost" id="ct-fight">🥋 Kampf beendet</button>'+
+      (fights.length?'<button class="btn ghost" id="ct-reset">Zurücksetzen</button>':'')+'</div>'+
+      '<div style="display:grid;gap:6px;margin-top:12px">'+rows+'</div>'+between+
+      '<div class="note" style="margin-top:10px">Richtwerte, kein Kommando — Aufruf der Matte schlägt jeden Plan. Koffein/Carbs nur wie im Training erprobt.</div></div>';
+    var inp=document.getElementById('ct-m1');
+    if(inp) inp.addEventListener('change',function(){ if(hmToMin(inp.value)!=null){ DB.comp.m1=inp.value; save('as_comp',DB.comp); renderCompTimer(); } });
+    var bf=document.getElementById('ct-fight');
+    if(bf) bf.addEventListener('click',function(){ var n=new Date(); (DB.comp.fights=DB.comp.fights||[]).push(n.getHours()*60+n.getMinutes()); save('as_comp',DB.comp); renderCompTimer(); });
+    var br=document.getElementById('ct-reset');
+    if(br) br.addEventListener('click',function(){ DB.comp.fights=[]; save('as_comp',DB.comp); renderCompTimer(); });
   }
 
   /* ---------- weekly schedule editor ---------- */
@@ -1643,12 +2112,12 @@
     {k:'roger',name:'Roger Gracie',dom:'Gi',tag:'Die perfekte Basis',
       tech:'Geschlossene Guard, Mount und der Kreuzkragenwürger (Cross-Collar) aus dem Mount — Lehrbuch-Fundamentals, makellos ausgeführt.',
       strat:'Wenige, hochprozentige Techniken in perfekter Reihenfolge: passen → mounten → würgen. A nach B, ohne Schnörkel.',
-      app:'„Basics, perfekt gemacht, schlagen alles Ausgefallene." Druck und Geduld statt Tempo.',
+      app:'„Basics, perfekt gemacht, schlagen alles Ausgefallene.“ Druck und Geduld statt Tempo.',
       acc:'10× IBJJF-Weltmeister (2004–2010), erster 3× Absolute-Champion — der meistgenannte Gi-GOAT.',
       videos:[{t:'How To Do the Perfect Cross Choke From Mount',ch:'Roger Gracie',url:'https://www.youtube.com/watch?v=8wLWTw8G0c0',gi:'gi',cat:'tech'},
         {t:'Cross Collar Choke from Mount',ch:'BJJ Fanatics',url:'https://www.youtube.com/watch?v=r57lj1y87gI',gi:'gi',cat:'tech'}]},
     {k:'marcelo',name:'Marcelo Garcia',dom:'Both',tag:'Bewegung & Submission-Jagd',
-      tech:'Butterfly- & X-Guard, Single-Leg-X, Arm-Drags, Rear-Naked-Choke, High-Elbow-Guillotine („Marcelotine"), North-South-Choke.',
+      tech:'Butterfly- & X-Guard, Single-Leg-X, Arm-Drags, Rear-Naked-Choke, High-Elbow-Guillotine („Marcelotine“), North-South-Choke.',
       strat:'Kleines, perfekt verstandenes Arsenal aus allen Winkeln; Verteidigungsreaktionen in Rückennahmen verwandeln.',
       app:'Ständige Bewegung, Technik über Größe — Pionier auch beim Online-Lernen (MGInAction).',
       acc:'5× ADCC-Champion, 4× IBJJF-Weltmeister — oft als bester Pound-for-Pound aller Zeiten genannt.',
@@ -1657,11 +2126,11 @@
     {k:'rickson',name:'Rickson Gracie',dom:'Gi',tag:'Unsichtbares Jiu-Jitsu',
       tech:'Fundamentals bis ins kleinste Detail — Basis, Verbindung (Connection), Gewichtsverteilung, Atmung.',
       strat:'Kontrolle durch unsichtbare Details und Druck, lange bevor die Submission kommt.',
-      app:'Effizienz, Atmung und konzeptuelle Meisterschaft der Basics — „Invisible Jiu-Jitsu".',
+      app:'Effizienz, Atmung und konzeptuelle Meisterschaft der Basics — „Invisible Jiu-Jitsu“.',
       acc:'Legendär ungeschlagen; prägende Figur der Gracie-Selbstverteidigung.',
       videos:[{t:'Invisible Jiu-Jitsu — Konzepte (Suche)',ch:'YouTube-Suche',url:'https://www.youtube.com/results?search_query=rickson+gracie+invisible+jiu+jitsu',gi:'gi',cat:'app'},
         {t:'Base, Connection & Breathing (Suche)',ch:'YouTube-Suche',url:'https://www.youtube.com/results?search_query=rickson+gracie+breathing+base+connection',gi:'gi',cat:'tech'}]},
-    {k:'buchecha',name:'Marcus „Buchecha" Almeida',dom:'Both',tag:'Athletisches Allround-Spiel',
+    {k:'buchecha',name:'Marcus „Buchecha“ Almeida',dom:'Both',tag:'Athletisches Allround-Spiel',
       tech:'Dynamisches Passing, starke Guard, Takedowns — komplettes Top- und Bottom-Game.',
       strat:'Vielseitig und anpassungsfähig; athletische Dominanz in Gi und No-Gi.',
       app:'Allrounder ohne Schwächen — Druck plus Dynamik.',
@@ -1690,7 +2159,7 @@
       videos:[{t:'Worm-Guard-Analyse (BJJ Scout)',ch:'BJJ Scout',url:'https://www.youtube.com/watch?v=gEWO8PxSXuU',gi:'gi',cat:'strat'},
         {t:'Worm Guard Instructional (Suche)',ch:'YouTube-Suche',url:'https://www.youtube.com/results?search_query=keenan+cornelius+worm+guard+instructional',gi:'gi',cat:'tech'}]},
     {k:'rafa',name:'Rafael Mendes',dom:'Gi',tag:'Moderne Guard & Berimbolo',
-      tech:'Berimbolo, De-la-Riva & Reverse-DLR („Kiss of the Dragon"), Leg-Drag-Passing, 50/50, Collar-and-Sleeve.',
+      tech:'Berimbolo, De-la-Riva & Reverse-DLR („Kiss of the Dragon“), Leg-Drag-Passing, 50/50, Collar-and-Sleeve.',
       strat:'Footwork, Finten, Speed-Passing; eine Guard, die den Rücken jagt.',
       app:'Moderne Wettkampf-Guard — Mitbegründer von AOJ.',
       acc:'6× IBJJF-Weltmeister, 2× ADCC-Champion.',
@@ -1698,7 +2167,7 @@
         {t:'Armbar from the Berimbolo',ch:'GracieMag',url:'https://www.youtube.com/watch?v=P_1evVefvGY',gi:'gi',cat:'strat'}]},
     {k:'faria',name:'Bernardo Faria',dom:'Gi',tag:'Druck & Deep Half',
       tech:'Over-Under-Pass, Deep Half Guard, Half Guard, Single-Leg von unten.',
-      strat:'Druck-Passing oben + unermüdliches Deep-Half unten — „kein Tempo, kein Scramble nötig".',
+      strat:'Druck-Passing oben + unermüdliches Deep-Half unten — „kein Tempo, kein Scramble nötig“.',
       app:'Simpel, hochprozentig, druckbasiert — für jeden Körpertyp.',
       acc:'Mehrfacher IBJJF-Weltmeister (inkl. Gewicht + Absolute Double 2015); Gründer von BJJ Fanatics.',
       videos:[{t:'How to KILL The Over-Under Pass',ch:'BJJ Fanatics',url:'https://www.youtube.com/watch?v=TiUQYmokr0g',gi:'gi',cat:'tech'},
@@ -1709,15 +2178,15 @@
     {name:'John Danaher · DDS',dom:'No-Gi (Prinzipien gelten auch im Gi)',
       principles:['4-Schritt-Paradigma: Takedown → Beine passen → Pin-Hierarchie → Submission.',
         'Beinhebel als komplettes Kontrollsystem (Ashi-Garami-Familien, Saddle/Cross-Ashi; Inside-Heel-Hook als höchstprozentiger Abschluss).',
-        'Rücken-„Straight-Jacket-System": Seatbelt → Verteidigungshände entfernen → RNC + Rear-Triangle/Crucifix.',
-        'Leitsatz: „Kontrolle, die zur Submission führt" — Verfeinerung von „Position vor Submission".',
+        'Rücken-„Straight-Jacket-System“: Seatbelt → Verteidigungshände entfernen → RNC + Rear-Triangle/Crucifix.',
+        'Leitsatz: „Kontrolle, die zur Submission führt“ — Verfeinerung von „Position vor Submission“.',
         'Denkweise: erste Prinzipien, Mindestanforderungen pro Ziel, detaillierte Konzept-Frameworks.'],
       videos:[{t:'Leglock-System / Ashi-Garami (Suche)',ch:'YouTube-Suche',url:'https://www.youtube.com/results?search_query=john+danaher+leg+lock+system+ashi+garami',gi:'nogi',cat:'tech'},
         {t:'Heel-Hook-Kontrolle (ADCC 2019)',ch:'Lachlan Giles · Absolute MMA',url:'https://www.youtube.com/watch?v=Zyj6YLCj73s',gi:'nogi',cat:'app'},
         {t:'BJJ-Konzepte verstehen',ch:'Chewjitsu',url:'https://www.youtube.com/watch?v=Nkude2tXSnE',gi:'',cat:'app'}]},
     {name:'Gracie Barra · Methodik',dom:'Gi & Selbstverteidigung — dein Juni-Standort folgt genau diesem System',
       principles:['Strukturiertes Gürtel-Curriculum: GB1 Fundamentals → GB2 Advanced → GB3 Expert.',
-        'Fundamentals zuerst, weltweit standardisiert („organisiert wie eine Schule").',
+        'Fundamentals zuerst, weltweit standardisiert („organisiert wie eine Schule“).',
         'Wurzeln in der Selbstverteidigung; progressives, sicheres Lernen.',
         'Direkt relevant: GB Sternschanze (Juni) unterrichtet exakt nach diesem Aufbau.'],
       videos:[{t:'Fundamentals-Beispiel: Cross Choke (Roger Gracie)',ch:'Roger Gracie',url:'https://www.youtube.com/watch?v=8wLWTw8G0c0',gi:'gi',cat:'tech'},
@@ -1751,9 +2220,9 @@
       caveat:'Kampfsport-spezifische Taper-Daten sind dünn — übertragen aus Ausdauer-/Teamsport.',
       refs:[{label:'Bosquet 2007, MSSE',url:'https://pubmed.ncbi.nlm.nih.gov/17762369/'},{label:'Mujika 2010',url:'https://pubmed.ncbi.nlm.nih.gov/?term=Mujika+tapering+intensity+detraining'}]},
     {topic:'Trainingslast: sRPE & ACWR',badge:'umstritten',
-      finding:'Session-RPE (RPE × Minuten) ist validiert. Gabbett (2016) popularisierte den ACWR-„Sweet-Spot" 0,8–1,3 und die „Gefahrenzone" > 1,5.',
-      rec:'sRPE täglich loggen; 7-Tage- vs 28-Tage-Last als Trend. Spitzen > 1,5 als „prüfen/erholen" behandeln — immer mit subjektivem Befinden kombinieren.',
-      caveat:'UMSTRITTEN: Impellizzeri et al. forderten formell eine Korrektur/Rücknahme der „Sweet-Spot"-Grafik; Lolli et al. zeigten mathematische Kopplungs-Artefakte. ACWR ist Heuristik, kein validierter Verletzungs-Prädiktor.',
+      finding:'Session-RPE (RPE × Minuten) ist validiert. Gabbett (2016) popularisierte den ACWR-„Sweet-Spot“ 0,8–1,3 und die „Gefahrenzone“ > 1,5.',
+      rec:'sRPE täglich loggen; 7-Tage- vs 28-Tage-Last als Trend. Spitzen > 1,5 als „prüfen/erholen“ behandeln — immer mit subjektivem Befinden kombinieren.',
+      caveat:'UMSTRITTEN: Impellizzeri et al. forderten formell eine Korrektur/Rücknahme der „Sweet-Spot“-Grafik; Lolli et al. zeigten mathematische Kopplungs-Artefakte. ACWR ist Heuristik, kein validierter Verletzungs-Prädiktor.',
       refs:[{label:'Gabbett 2016, BJSM',url:'https://bjsm.bmj.com/content/50/5/273'},{label:'Foster 2001',url:'https://pubmed.ncbi.nlm.nih.gov/?term=Foster+monitoring+training+session+RPE+2001'},{label:'Impellizzeri – ACWR-Kritik',url:'https://pubmed.ncbi.nlm.nih.gov/?term=Impellizzeri+acute+chronic+workload+ratio'}]},
     {topic:'Krafttraining: RPE/RIR & VBT',badge:'belegt',
       finding:'RIR-basiertes Laden (Reps in Reserve) ist so effektiv wie feste %1RM; niedrige Velocity-Loss-Schwellen (≤ 20 %) = weniger Ermüdung bei gleicher/höherer Maximalkraft.',
@@ -1779,14 +2248,14 @@
       refs:[{label:'Andreato 2017 (Verletzungsdaten)',url:'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5306420/'},{label:'Gabbett 2016 (chron. Last protektiv)',url:'https://bjsm.bmj.com/content/50/5/273'}]},
     {topic:'Gewicht ohne harten Cut',badge:'belegt',
       finding:'Dehydrierungs-Cuts bergen Gesundheits- und Leistungsrisiken; Verluste ≤ 5 % in < 7 Tagen mindern Kraft/Power evtl. nicht messbar — die Risiken bleiben.',
-      rec:'Du wiegst stabil bei 85 kg ohne Cut → KEIN Rapid-Weight-Loss-Ritual. Recomp über Monate, dann voll gefuelt antreten. „Kein Cut" ist ein echter Vorteil (keine Dehydrierung, weniger Verletzungs-/Infektrisiko).',
+      rec:'Du wiegst stabil ~83,5–84 kg ohne Cut (GI-Limit −185 lbs = 84,09 kg, keine Toleranz) → KEIN Rapid-Weight-Loss-Ritual. Recomp über Monate, dann vollgetankt antreten. „Kein Cut“ ist ein echter Vorteil (keine Dehydrierung, weniger Verletzungs-/Infektrisiko).',
       refs:[{label:'Reale, Slater & Burke 2017, IJSPP',url:'https://pubmed.ncbi.nlm.nih.gov/?term=Reale+body+mass+management+combat+sport'}]},
     {topic:'Koffein & Wettkampftag-Nutrition',badge:'belegt',
       finding:'Koffein verbessert die Leistung zuverlässig bei 3–6 mg/kg, meist ~60 min vorher — Kraft, Power, anaerobe und sportspezifische Leistung (ISSN-Positionspapier).',
-      rec:'Wettkampftag: kohlenhydratreiche Mahlzeit 2–3 h vorher; Koffein 3–6 mg/kg (~250–500 mg bei 85 kg) ~60 min vor Match 1 (vorher im Training testen); zwischen Matches Carb-Elektrolyt + Snack; nichts Neues am Tag.',
+      rec:'Wettkampftag: kohlenhydratreiche Mahlzeit 2–3 h vorher; Koffein 3–6 mg/kg (~250–500 mg bei ~84 kg) ~60 min vor Match 1 (vorher im Training testen); zwischen Matches Carb-Elektrolyt + Snack; nichts Neues am Tag.',
       refs:[{label:'Guest 2021, ISSN (JISSN)',url:'https://jissn.biomedcentral.com/articles/10.1186/s12970-020-00383-4'}]},
     {topic:'Gracie-Diät — Mythos vs. Beleg',badge:'Einordnung',
-      finding:'Die pH-/„Säure"-/Food-Combining-Begründung der klassischen Gracie-Diät ist wissenschaftlich nicht belegt.',
+      finding:'Die pH-/„Säure“-/Food-Combining-Begründung der klassischen Gracie-Diät ist wissenschaftlich nicht belegt.',
       rec:'Übernimm die belegten Teile (Vollwertkost, Gemüse/Obst, wenig Zuckermüll, ruhige Essstruktur) — der Effekt kommt aus Kalorien- und Lebensmittelqualität, nicht aus Blut-pH-Steuerung.',
       caveat:'Reine Einordnung der Begründung — kein Urteil über die Esskultur selbst.',
       refs:[]},
@@ -1818,7 +2287,7 @@
     var vids=L.videos.filter(vidVisible);
     var links=(x.links||[]).filter(function(v){ return vidFilter==='all'||!v.gi||v.gi===vidFilter; });
     var all=vids.concat(links);
-    var vh=all.length?all.map(vidHTML).join(''):'<div class="empty">Keine Videos für diesen Filter — wechsle auf „Alles".</div>';
+    var vh=all.length?all.map(vidHTML).join(''):'<div class="empty">Keine Videos für diesen Filter — wechsle auf „Alles“.</div>';
     el.innerHTML='<div class="card"><h2><span class="dot"></span>'+L.name+'</h2><div class="role">'+L.tag+' · '+domLabel(L.dom)+(x.era?' · '+x.era:'')+'</div>'+
       (x.sig?'<div class="accolade" style="margin-top:8px">🎯 Signatur: '+x.sig+'</div>':'')+
       '<div class="tsa">'+
@@ -1863,23 +2332,122 @@
     var out=document.getElementById('co-out'); if(!out) return;
     out.innerHTML='<div class="tlitem bjj"><div class="tlh">🎯 '+esc(c.k)+'<span class="tt">'+c.leg.map(esc).join(' · ')+'</span></div><div class="tlp"><b>Prinzip:</b> '+esc(c.pr)+'<br><b>Drill:</b> '+esc(c.dr)+' · <a class="exl" style="margin-top:0" href="'+sURL(c.topic)+'" target="_blank" rel="noopener">Videos ↗</a><br><span style="color:var(--faint)">Diese Legenden findest du im Detail weiter unten in der Videothek.</span></div></div>'+
       '<div style="margin-top:10px"><label class="role">Analyse-Prompt für Claude (kopieren & im Chat mit Video besprechen)</label><textarea id="co-prompt" style="width:100%;min-height:120px;margin-top:6px">'+esc(lastCoachPrompt)+'</textarea></div>';
-    DB.coachlog=DB.coachlog||[]; DB.coachlog.unshift({id:'co'+Date.now(),date:TODAY,cat:pv('co-cat'),prob:pv('co-prob'),vid:pv('co-vid'),prompt:lastCoachPrompt}); if(DB.coachlog.length>30) DB.coachlog=DB.coachlog.slice(0,30); save('as_coachlog',DB.coachlog);
+    var _rd=new Date(NOW); _rd.setDate(_rd.getDate()+14);
+    DB.coachlog=DB.coachlog||[]; DB.coachlog.unshift({id:'co'+Date.now(),date:TODAY,cat:pv('co-cat'),prob:pv('co-prob'),vid:pv('co-vid'),prompt:lastCoachPrompt,k:c.k,drill:c.dr,retest:key(_rd),done:false}); if(DB.coachlog.length>30) DB.coachlog=DB.coachlog.slice(0,30); save('as_coachlog',DB.coachlog);
     var st=document.getElementById('co-status'); if(st) st.textContent='✓ Plan erstellt & in der Historie gespeichert. Prompt kopieren und hier im Chat mit deinem Video posten.';
     renderCoachLog();
   }
   function copyCoach(){ var t=document.getElementById('co-prompt'); var txt=t?t.value:(lastCoachPrompt||buildCoachPrompt(coCat())); var st=document.getElementById('co-status'); try{ navigator.clipboard.writeText(txt).then(function(){ if(st) st.textContent='✓ Prompt kopiert — im Chat einfügen.'; },function(){ if(st) st.textContent='Kopieren nicht möglich — Text im Feld markieren.'; }); }catch(e){ if(st) st.textContent='Kopieren nicht möglich.'; } }
   function renderCoachLog(){
     var el=document.getElementById('coachlog-list'); if(!el) return; var arr=DB.coachlog||[];
-    el.innerHTML=arr.length?arr.map(function(q){ return '<div class="course"><div style="flex:1"><b style="font-size:13px;color:var(--ink)">'+esc(q.cat)+'</b><div class="tlp" style="margin-top:2px">'+fmtD(q.date)+(q.prob?' · '+esc(q.prob):'')+(q.vid?'<br><a class="exl" style="margin-top:0" href="'+esc(q.vid)+'" target="_blank" rel="noopener">Video ↗</a>':'')+'</div></div><div class="inrow" style="gap:6px;flex:0 0 auto"><button class="btn ghost" data-cocopy="'+q.id+'" style="padding:6px 10px">Prompt</button><button class="btn ghost" data-codel="'+q.id+'" style="padding:6px 10px">✕</button></div></div>'; }).join(''):'<div class="note">Noch keine Analysen — oben einen Plan erstellen.</div>';
-    if(!el._b){ el._b=1; el.addEventListener('click',function(e){ var cp=e.target.closest('[data-cocopy]'),dl=e.target.closest('[data-codel]'),st=document.getElementById('co-status');
+    el.innerHTML=arr.length?arr.map(function(q){
+      var loop='';
+      if(q.retest){
+        loop=q.done?('<br><span style="color:var(--good)">✓ Re-Test erledigt'+(q.doneDate?' am '+fmtD(q.doneDate):'')+'</span>')
+          :('<br><span style="color:'+(q.retest<=TODAY?'var(--warn)':'var(--faint)')+'">🔁 Re-Test '+(q.retest<=TODAY?'FÄLLIG seit ':'bis ')+fmtD(q.retest)+'</span>'+(q.drill?' · Drill: '+esc(q.drill):''));
+      }
+      return '<div class="course"><div style="flex:1"><b style="font-size:13px;color:var(--ink)">'+esc(q.cat)+'</b><div class="tlp" style="margin-top:2px">'+fmtD(q.date)+(q.prob?' · '+esc(q.prob):'')+loop+(q.vid?'<br><a class="exl" style="margin-top:0" href="'+safeURL(q.vid)+'" target="_blank" rel="noopener">Video ↗</a>':'')+'</div></div><div class="inrow" style="gap:6px;flex:0 0 auto">'+(q.retest&&!q.done?'<button class="btn ghost" data-codone="'+q.id+'" style="padding:6px 10px">✓ Re-Test</button>':'')+'<button class="btn ghost" data-cocopy="'+q.id+'" style="padding:6px 10px">Prompt</button><button class="btn ghost" data-codel="'+q.id+'" style="padding:6px 10px">✕</button></div></div>';
+    }).join(''):'<div class="note">Noch keine Analysen — oben einen Plan erstellen.</div>';
+    if(!el._b){ el._b=1; el.addEventListener('click',function(e){ var cp=e.target.closest('[data-cocopy]'),dl=e.target.closest('[data-codel]'),dn=e.target.closest('[data-codone]'),st=document.getElementById('co-status');
       if(cp){ var q=(DB.coachlog||[]).filter(function(x){return x.id===cp.dataset.cocopy;})[0]; if(q){ try{ navigator.clipboard.writeText(q.prompt); if(st) st.textContent='✓ Prompt aus Historie kopiert.'; }catch(e2){} } }
-      else if(dl){ DB.coachlog=(DB.coachlog||[]).filter(function(x){return x.id!==dl.dataset.codel;}); save('as_coachlog',DB.coachlog); renderCoachLog(); }
+      else if(dn){ var q2=(DB.coachlog||[]).filter(function(x){return x.id===dn.dataset.codone;})[0]; if(q2){ q2.done=true; q2.doneDate=TODAY; save('as_coachlog',DB.coachlog); if(st) st.textContent='✓ Re-Test abgehakt — Schleife geschlossen. Bleibt die Schwäche, neuen Plan erstellen.'; renderCoachLog(); renderLoopAlerts(); } }
+      else if(dl){ DB.coachlog=(DB.coachlog||[]).filter(function(x){return x.id!==dl.dataset.codel;}); save('as_coachlog',DB.coachlog); renderCoachLog(); renderLoopAlerts(); }
     }); }
   }
   function initCoachCats(){ var s=document.getElementById('co-cat'); if(s&&!s._b){ s._b=1; s.innerHTML=CMAP.map(function(c){ return '<option>'+c.k+'</option>'; }).join(''); } }
 
+  /* ===================== Wettkampf-Coach: Evidenz & Game Plan (recherchiert + verifiziert 06/2026) ===================== */
+  var GI_WEIGHT_LIMIT=84.09; /* Männer −185 lbs · offizielle GI-Umrechnung (grapplingindustries.com/divisions) · KEINE Toleranz (Rulebook 3.2, Stand 09.02.2026) */
+  function giWeightCheck(kg){
+    if(kg==null||isNaN(kg)) return {limit:GI_WEIGHT_LIMIT,kg:null,margin:null,status:'unbekannt'};
+    var m=Math.round((GI_WEIGHT_LIMIT-kg)*100)/100;
+    return {limit:GI_WEIGHT_LIMIT,kg:kg,margin:m,status:(m<0?'ueber':(m<0.6?'knapp':'ok'))};
+  }
+  var GP_REF={
+    ibjjf23:{label:'IBJJF Worlds 2023 Breakdown',url:'https://ibjjf.com/news/2023-world-championships-submission-breakdown'},
+    ibjjf24:{label:'IBJJF Worlds 2024 Breakdown',url:'https://ibjjf.com/news/2024-ibjjf-world-championship-submission-breakdown'},
+    heroes22:{label:'BJJ Heroes · Worlds 2022 Stats',url:'https://www.bjjheroes.com/editorial/crunching-numbers-4-0-ibjjf-world-championships-2022-stats'},
+    adcc24:{label:'BJJ Heroes · ADCC 2024 Daten',url:'https://www.bjjheroes.com/editorial/adcc-2024-after-math-data-compilation-and-analysis'},
+    digitsu25:{label:'No-Gi Worlds 2025 Stats (Digitsu)',url:'https://digitsu.com/events/2025-ibjjf-world-no-gi-championship'},
+    bishop12:{label:'Bishop · Worlds-2012-Studie',url:'https://www.bishopbjj.com/posts/the-first-comprehensive-jiu-jitsu-study-on-bjj-competition'},
+    heroesTD:{label:'BJJ Heroes · Takedown-Studie',url:'https://www.bjjheroes.com/editorial/bjj-stats-takedowns-in-jiu-jitsu'},
+    scoggin:{label:'Scoggin 2014 (Verletzungen)',url:'https://journals.sagepub.com/doi/full/10.1177/2325967114522184'},
+    age30:{label:'Survey: Risiko >30 J.',url:'https://www.sciencedirect.com/science/article/abs/pii/S1466853X19301117'},
+    andreato:{label:'Andreato · Time-Motion-Review',url:'https://pmc.ncbi.nlm.nih.gov/articles/PMC3690734/'},
+    girules:{label:'GI Rulebook (09.02.2026)',url:'https://grapplingindustries.com/wp-content/uploads/2026/02/G.I-Rulebook-20260209.pdf'},
+    gidiv:{label:'GI Divisions',url:'https://grapplingindustries.com/divisions/'},
+    tall:{label:'Körperbau-Heuristik (BJJEE)',url:'https://www.bjjee.com/articles/the-best-moves-for-tall-lanky-grappling-athletes/'}
+  };
+  var GP_STATS=[
+    {v:'31–46 %',l:'Submission-Quote auf Elite-Niveau: Gi Worlds 31–35 %, No-Gi Worlds 46 %, ADCC 34–36 %. Heißt: <b>~⅔ der Matches entscheiden Punkte/Decision</b> — Positionsspiel gewinnt Turniere.',ev:'Daten',refs:[GP_REF.ibjjf23,GP_REF.digitsu25,GP_REF.adcc24]},
+    {v:'≈45 %',l:'aller Gi-Submissions auf Worlds-Niveau sind <b>Chokes vom Rücken</b> (Worlds 2023: 21 von 47). Im No-Gi: RNC Nr. 1 (26×), Inside Heel Hook Nr. 2 (20×), Straight Ankle Lock Nr. 3 (14×) — No-Gi Worlds 2025.',ev:'Daten',refs:[GP_REF.ibjjf23,GP_REF.digitsu25]},
+    {v:'99,6 %',l:'Sieg-Korrelation des <b>Guard Pass</b> (1089-Match-Auswertung); Backtake ≈100 %. Ein Sweep allein korreliert nur zu 64 % mit dem Sieg — der Pass danach entscheidet.',ev:'Daten',refs:[GP_REF.heroes22]},
+    {v:'75 %',l:'der Matches gewinnt, <b>wer zuerst punktet</b> (90 Black-Belt-Matches, Worlds 2012). Bei GI ohne Advantages und 5-min-Matches wiegt die erste volle Position doppelt.',ev:'Daten',refs:[GP_REF.bishop12]},
+    {v:'88 %',l:'Siegquote für den, der den <b>Takedown</b> setzt (830 Adult-Black-Belt-Matches 2016–19). ADCC 2024: Single Leg & Double Leg dominieren; häufigster „Sweep" ist der <b>Wrestle-Up</b>.',ev:'Daten',refs:[GP_REF.heroesTD,GP_REF.adcc24]},
+    {v:'0',l:'erfolgreiche reine Toreando-Pässe bei ADCC 2024 — praktisch alle Pässe kamen über <b>Druck/Body Lock (chest-to-chest)</b>. Distanzpassing dient im Meta als Setup, der Finish ist Druck.',ev:'Daten',refs:[GP_REF.adcc24]},
+    {v:'38,9 %',l:'der orthopädischen Wettkampfverletzungen betreffen den <b>Ellbogen</b> — Hauptmechanismus Armbar; ab 30+ steigt das Risiko. Lange Arme sind leichter zu fangen: früh tappen, Defense drillen.',ev:'Studie',refs:[GP_REF.scoggin,GP_REF.age30]},
+    {v:'6–10:1',l:'Effort:Pause-Verhältnis eines BJJ-Matches (mit ~3-s-Spitzen). Round Robin = viele kurze Matches → <b>Wiederholbarkeit schlägt Einzel-Peak</b>; Intervalle genau auf dieses Profil legen.',ev:'Studie',refs:[GP_REF.andreato]}
+  ];
+  var GP_RECS=[
+    {t:'Back-Take-System = Priorität 1',why:'Back-Chokes ≈45 % aller Gi-Subs, RNC Nr. 1 im No-Gi, Backtake ≈100 % Siegkorrelation — und bei GI 4 Punkte (nur mit Hooks; Body Triangle zählt nicht).',ev:'Daten',refs:[GP_REF.ibjjf23,GP_REF.heroes22,GP_REF.girules]},
+    {t:'Druck-/Body-Lock-Passing als Finish, Toreando nur als Setup',why:'Pass = stärkster Sieg-Prädiktor (99,6 %) + 3 GI-Punkte; das Meta finisht chest-to-chest, nicht auf Distanz.',ev:'Daten',refs:[GP_REF.heroes22,GP_REF.adcc24]},
+    {t:'Zuerst punkten — in Minute 1 ankommen',why:'75 % gewinnt, wer zuerst punktet. 5-min-Matches ohne Advantages: Rückstände sind kaum aufzuholen. Erste Sequenz im Voraus festlegen.',ev:'Daten',refs:[GP_REF.bishop12,GP_REF.girules]},
+    {t:'2–3 verlässliche Takedowns/Wrestle-Ups statt Guard Pull als Default',why:'88 % Siegquote nach Takedown; GI bestraft Pull ohne Grip; Wrestle-Up ist der Top-„Sweep" im No-Gi-Meta. Single Leg + Fußfeger + Arm Drag reichen.',ev:'Daten',refs:[GP_REF.heroesTD,GP_REF.adcc24]},
+    {t:'Lange Hebel ausspielen: Triangle/Armbar-Komplex + Knee Shield unten, D’Arce im Scramble',why:'Triangle = Nr.-3-Gi-Sub (Daten); bei ~183 cm/84 kg sind Distanz-Guards und Front-Headlock-Angriffe dein struktureller Vorteil (Heuristik).',ev:'Heuristik',refs:[GP_REF.ibjjf23,GP_REF.tall]},
+    {t:'Heel-Hook-Defense ist Pflicht, Straight Ankle als Offensiv-Option',why:'Inside Heel Hook = Sub Nr. 2 im No-Gi und in deiner Advanced-Division legal (inkl. Reaping) — auch gegen dich. Straight Ankle (Nr. 3) ist zusätzlich im Gi legal.',ev:'Daten',refs:[GP_REF.digitsu25,GP_REF.girules]},
+    {t:'Gewicht aktiv managen: Limit ist 84,09 kg — ohne jede Toleranz',why:'−185 lbs, Wiegen ohne Gi, 1× für Gi+No-Gi, bis 60 min vor Divisionsstart; drüber = DQ ohne Umstufung/Refund. Korridor ≤83,8 kg halten (Tool-Ampel unten).',ev:'Regelwerk',refs:[GP_REF.gidiv,GP_REF.girules]},
+    {t:'Auf Wiederholbarkeit konditionieren, nicht auf einen Peak',why:'Round Robin: 2–6 Matches je Division, Gi+No-Gi ≈ bis zu ~8 Matches à 5 min. Intervalle im 6–10:1-Profil, zwischen Matches aktiv erholen (Re-Warm-up-Timer im Heute-Tab).',ev:'Studie',refs:[GP_REF.andreato,GP_REF.girules]},
+    {t:'Ellbogen schützen — taktisch wie präventiv',why:'Meistverletztes Gelenk im Wettkampf (Mechanismus Armbar), Risiko steigt ab 30+. Früh tappen ist Strategie, kein Ego-Thema: Round Robin heißt, du kämpfst danach weiter.',ev:'Studie',refs:[GP_REF.scoggin,GP_REF.age30]},
+    {t:'Submission-Versuche bewusst mitnehmen',why:'GI-Tiebreaker: Siege > Submissions > direkter Vergleich > Punkte. Starker Sub-Versuch, der out of bounds stoppt = 2 Punkte; Referee Decision geht primär an die größere Sub-Gefahr. Führung verwalten ist hier doppelt falsch.',ev:'Regelwerk',refs:[GP_REF.girules]}
+  ];
+  var GP_RULES=[
+    'Keine Advantages — Gleichstand geht über weniger Penalties, dann Referee Decision (Sub-Gefahr &gt; Dominanz &gt; Aggression).',
+    'Tiebreaker im Round Robin: <b>Siege &gt; Submissions</b> &gt; direkter Vergleich &gt; erzielte Punkte &gt; wenigste Gegenpunkte.',
+    'Back Control 4 Punkte <b>nur mit beiden Hooks</b> — Body Triangle zählt nicht. Turtle ≥3 s verhindert Pass-Punkte.',
+    'Starker Submission-Versuch, der out of bounds abgebrochen wird = <b>2 Punkte</b>.',
+    'Stalling: nach 20 s Inaktivität Penalty (1. Warnung · 2. = 2 Punkte für den Gegner · 3. = DQ). 3 Schritte Rückzug vom Guard-Spieler = Penalty.',
+    'Braungurt Gi: Kneebar, Toe Hold, Wristlock legal. <b>Heel Hooks &amp; Reaping nur No-Gi Advanced</b> (deine No-Gi-Division!) — offensiv wie defensiv relevant.',
+    'Master = 30+ ohne weitere Alters-Splits (keine M2/M3 wie bei der IBJJF) — Gegner können 30 sein. Alternativ: Adult möglich, nie abwärts.',
+    'Matchdauer 5 min · randomisierte Brackets · je 1 Gi- + 1 No-Gi-Division (+ optional Absolute).'
+  ];
+  function gpEvBadge(ev){
+    var st = ev==='Daten' ? '' :
+      ev==='Studie' ? 'style="background:rgba(43,123,240,.14);color:var(--blue);border-color:rgba(43,123,240,.3)"' :
+      ev==='Regelwerk' ? 'style="background:rgba(255,206,58,.12);color:var(--gold);border-color:rgba(255,206,58,.3)"' :
+      'style="background:rgba(255,177,58,.14);color:var(--warn);border-color:rgba(255,177,58,.3)"';
+    return '<span class="evidence" '+st+'>'+ev+'</span>';
+  }
+  function gpRefHTML(refs){
+    return (refs&&refs.length)?('<div class="srcrow">'+refs.map(function(r){ return '<a class="src" href="'+r.url+'" target="_blank" rel="noopener">'+r.label+'</a>'; }).join('')+'</div>'):'';
+  }
+  function renderGameplan(){
+    var el=document.getElementById('gameplan'); if(!el) return;
+    var lw=DB.weight.length?DB.weight[DB.weight.length-1].kg:null;
+    var wc=giWeightCheck(lw), wHtml;
+    if(wc.status==='unbekannt'){
+      wHtml='<div class="note warn">⚖️ Noch kein Gewicht geloggt. Limit Männer −185 lbs = <b>84,09 kg</b> · <b>keine Toleranz</b> · Wiegen ohne Gi · drüber = DQ ohne Umstufung.</div>';
+    } else {
+      var col=wc.status==='ok'?'var(--good)':wc.status==='knapp'?'var(--warn)':'var(--bad)';
+      var mTxt=wc.margin.toFixed(2).replace('.',',');
+      var line=wc.status==='ok'?('✓ Letztes Gewicht '+wc.kg.toFixed(1).replace('.',',')+' kg → Puffer '+mTxt+' kg zum Limit 84,09 kg.')
+        :wc.status==='knapp'?('⚠ Letztes Gewicht '+wc.kg.toFixed(1).replace('.',',')+' kg → nur '+mTxt+' kg Puffer zum Limit 84,09 kg (keine Toleranz!). Korridor ≤83,8 kg anpeilen.')
+        :('⛔ Letztes Gewicht '+wc.kg.toFixed(1).replace('.',',')+' kg → '+Math.abs(wc.margin).toFixed(2).replace('.',',')+' kg ÜBER dem Limit 84,09 kg. Ohne Korrektur: DQ ohne Umstufung/Refund.');
+      wHtml='<div class="note" style="border-color:'+col+';color:'+col+'">'+line+'</div>';
+    }
+    el.innerHTML=
+      '<div class="lead">Dein Profil: <b>Braungurt · ~183 cm / ~84 kg (lange Hebel) · Männer Master 30+ · Gi (Brown) + No-Gi (Advanced) · Round Robin</b>. Alles unten ist recherchiert und nach Evidenz markiert: '+gpEvBadge('Daten')+' = gezählte Turnierdaten, '+gpEvBadge('Studie')+' = peer-reviewed, '+gpEvBadge('Regelwerk')+' = offizielles GI-Rulebook, '+gpEvBadge('Heuristik')+' = Expertenkonsens ohne Zahlen.</div>'+
+      wHtml+
+      '<h3 style="margin-top:14px">Die Zahlen, die dein Spiel steuern sollten</h3>'+
+      GP_STATS.map(function(s){ return '<div style="display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line)"><b style="font-family:\'Bebas Neue\';font-size:24px;color:var(--gold);flex:0 0 84px;letter-spacing:.5px">'+s.v+'</b><div style="flex:1"><div>'+s.l+' '+gpEvBadge(s.ev)+'</div>'+gpRefHTML(s.refs)+'</div></div>'; }).join('')+
+      '<h3 style="margin-top:16px">Dein Game Plan · 10 Prioritäten</h3>'+
+      GP_RECS.map(function(r,i){ return '<div style="padding:9px 0;border-bottom:1px solid var(--line)"><div><b style="color:var(--ink)">'+(i+1)+' · '+r.t+'</b> '+gpEvBadge(r.ev)+'</div><div class="note" style="margin-top:4px">'+r.why+'</div>'+gpRefHTML(r.refs)+'</div>'; }).join('')+
+      '<h3 style="margin-top:16px">GI-Regel-Hebel (verifiziert, Rulebook 09.02.2026)</h3>'+
+      '<div style="line-height:1.8">'+GP_RULES.map(function(r){ return '<div style="padding:4px 0">• '+r+'</div>'; }).join('')+'</div>'+gpRefHTML([GP_REF.girules,GP_REF.gidiv])+
+      '<div class="note" style="margin-top:12px"><b>Ehrlich einsortiert:</b> Daten stammen v. a. von Adult-Black-Belt-Elite (Worlds/ADCC) — für Masters &amp; Braungurt existieren keine öffentlichen Statistiken, die Übertragung ist plausibel, aber Annahme. Regeln vor dem Event live prüfen (ohne Gewähr). Das Tool schlägt vor — entscheiden tust du und dein Coach. Vollständiger Quellen-Report: <b>TECHNIK-EVIDENZ.md</b> im Projektordner.</div>';
+  }
+
   function renderTechnik(){
-    initCoachCats(); renderCoachLog();
+    initCoachCats(); renderCoachLog(); renderGameplan();
     renderLegendSel(); renderLegendDetail(); renderSystems(); renderConcepts(); renderPath();
     var ft=document.getElementById('tech-filter');
     if(ft&&!ft._b){ ft._b=1; ft.addEventListener('click',function(e){ var b=e.target.closest('.pillbtn'); if(!b) return; vidFilter=b.dataset.f; ft.querySelectorAll('.pillbtn').forEach(function(x){ x.classList.toggle('on',x.dataset.f===vidFilter); }); renderLegendDetail(); renderSystems(); }); }
@@ -1918,7 +2486,7 @@
     pullup:{n:'Klimmzug',cue:'Voller Hang, zuerst Schulterblätter aktivieren, dann Brust Richtung Stange. Kontrolliert ablassen. Top für BJJ-Griffkraft.',url:'https://www.youtube.com/watch?v=GBqAZP6jquc',ch:'Calisthenic Movement'},
     latpull:{n:'Latzug',cue:'Brust auf, Ellbogen nach unten-hinten ziehen, kein Schwung aus dem Rücken.',url:sURL('lat pulldown proper form'),ch:'Suche'},
     row:{n:'Langhantelrudern',cue:'Hüfte gebeugt, Rücken neutral. Hantel zum unteren Bauch ziehen, Schulterblätter zusammen, oben kurz halten.',url:'https://www.youtube.com/watch?v=G8l_8chR5BE',ch:'Alan Thrall'},
-    ohp:{n:'Schulterdrücken (OHP)',cue:'Stange/KB von der Schulter senkrecht nach oben. Po und Bauch fest, kein Hohlkreuz, Kopf am Ende leicht „durch".',url:'https://www.youtube.com/watch?v=wol7Hko8RhY',ch:'Alan Thrall'},
+    ohp:{n:'Schulterdrücken (OHP)',cue:'Stange/KB von der Schulter senkrecht nach oben. Po und Bauch fest, kein Hohlkreuz, Kopf am Ende leicht „durch“.',url:'https://www.youtube.com/watch?v=wol7Hko8RhY',ch:'Alan Thrall'},
     swing:{n:'KB Swing (Hardstyle)',cue:'Explosiver Hüft-Hinge — die Hüfte schnellt, der Arm ist nur das Seil. KB bis Brusthöhe, oben Po und Bauch hart anspannen.',url:'https://www.youtube.com/watch?v=fvQoQsDk40M',ch:'StrongFirst'},
     tgu:{n:'Turkish Get-Up',cue:'Vom Liegen Schritt für Schritt zum Stand, Blick stets am KB. Ganzkörper-Stabilität und gesunde Schultern.',url:'https://www.youtube.com/watch?v=0bWRPC49-KI',ch:'StrongFirst'},
     cleanpress:{n:'KB Clean & Press',cue:'Sauberer Clean in die Rack-Position (KB legt sich sanft an), dann fester Press über Kopf.',url:'https://www.youtube.com/watch?v=qQ2C_3dCkNo',ch:'StrongFirst'},
@@ -2012,7 +2580,7 @@
     if(!DB.bloodlog.length){ list.innerHTML='<div class="empty">Noch keine Befunde.</div>'; return; }
     list.innerHTML=DB.bloodlog.slice().reverse().map(function(b){
       var v=[]; if(b.tt)v.push('TT '+b.tt); if(b.ft)v.push('fT '+b.ft); if(b.e2)v.push('E2 '+b.e2); if(b.shbg)v.push('SHBG '+b.shbg); if(b.vd)v.push('VitD '+b.vd); if(b.fer)v.push('Ferr '+b.fer); if(b.crp)v.push('CRP '+b.crp);
-      return '<div class="bentry"><b>'+fmtD(b.date)+'</b>'+(b.note?' · '+b.note:'')+'<div class="bvals">'+(v.join(' · ')||'—')+'</div></div>';
+      return '<div class="bentry"><b>'+fmtD(b.date)+'</b>'+(b.note?' · '+esc(b.note):'')+'<div class="bvals">'+(v.join(' · ')||'—')+'</div></div>';
     }).join('');
   }
   function saveBlood(){
@@ -2074,7 +2642,7 @@
     var el=document.getElementById('meal-log'); if(!el) return;
     var order=['breakfast','lunch','snack','dinner'];
     var dates=Object.keys(DB.meals||{}).filter(function(k){ var m=DB.meals[k]; return m&&Object.keys(m).some(function(x){return m[x];}); }).sort().reverse().slice(0,21);
-    if(!dates.length){ el.innerHTML='<div class="empty">Noch nichts dokumentiert. Im Heute-Tab unter „Tagesverlauf" bei einer Mahlzeit auf „✎ anpassen".</div>'; return; }
+    if(!dates.length){ el.innerHTML='<div class="empty">Noch nichts dokumentiert. Im Heute-Tab unter „Tagesverlauf“ bei einer Mahlzeit auf „✎ anpassen“.</div>'; return; }
     el.innerHTML=dates.map(function(k){ var m=DB.meals[k];
       var rows=order.filter(function(mk){return m[mk];}).map(function(mk){ return '<div class="tlp" style="margin-top:3px"><b style="color:var(--ink)">'+MEAL_LBL[mk]+':</b> '+esc(m[mk])+'</div>'; }).join('');
       return '<div class="course" style="display:block;align-items:stretch"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:13px;color:var(--gold)">'+fmtD(k)+(k===TODAY?' · heute':'')+'</b><button class="btn ghost" data-mealdel="'+k+'" style="padding:4px 10px;flex:0 0 auto" aria-label="Tag löschen">✕</button></div>'+rows+'</div>';
@@ -2130,7 +2698,7 @@
     var t=(ovr||scheduleTime(wd)), sessMin=t?hm2min(t):(isTrain?1140:660);
     var yoga=(LOC.schedKey==='gb')?YOGA[wd]:null;
     var ev=[];
-    ev.push({t:400,time:'nach dem Aufwachen',ic:'🌅',title:'Morgenroutine',cls:'am',body:'Tageslicht 5–10 min · Wasser + Elektrolyte · kurze Mobility. Bei Früh-Yoga nur leicht (Kaffee/Banane), richtig frühstücken danach. Koffein erst 60–90 min nach dem Aufwachen.'});
+    ev.push({t:400,time:'nach dem Aufwachen',ic:'🌅',title:'Morgenroutine',cls:'am',body:'Tageslicht 5–10 min · Wasser + Elektrolyte · kurze Mobility. Bei Früh-Yoga nur leicht (Kaffee/Banane), richtig frühstücken danach. Koffein eher 60–90 min nach dem Aufwachen (Tipp nach Huberman, Datenlage dünn).'});
     if(yoga==='morgens'){
       ev.push({t:450,time:'07:30–08:30 Uhr',ic:'🧘',title:'Yoga · Early Bird',cls:'am',tag:'Innersmile',body:yogaBody('morgens')});
       ev.push({t:540,time:'nach Yoga',ic:'🍳',title:'Frühstück',cls:'meal',meal:'breakfast',tag:'≈ 50 g Protein',body:'3 Eier + 250 g Skyr (0,2 %) + '+(isTrain?'80':'50')+' g Haferflocken + 150 g Beeren.'});
@@ -2142,7 +2710,7 @@
     if(!isTrain) ev.push({t:960,time:'nachmittags',ic:'🥗',title:'Snack',cls:'meal',meal:'snack',tag:'leicht',body:'250 g Magerquark + 30 g Nüsse (oder 1 Apfel).'});
     if(isTrain){
       var loc=plan.type==='bjj'?' · 📍 '+LOC.gym:(plan.type==='strength'?' · 📍 '+LOC.equip:'');
-      ev.push({t:sessMin,time:(t?t+' Uhr':'abends'),ic:plan.ic,title:plan.t,cls:plan.type,body:plan.d+loc+'<br><span style="color:var(--faint)">Ums Training: vorher 1 Banane (≈ 120 g); danach 30 g Whey + 1 Banane. Optional Koffein 3–6 mg/kg ~45 min vorher.</span>'});
+      ev.push({t:sessMin,time:(t?t+' Uhr':'abends'),ic:plan.ic,title:plan.t,cls:plan.type,body:plan.d+loc+'<br><span style="color:var(--faint)">Ums Training: vorher 1 Banane (≈ 120 g); danach 30 g Whey + 1 Banane. Optional Koffein 3–6 mg/kg ~60 min vorher.</span>'});
       if(yoga==='abends') ev.push({t:hm2min('18:30'),time:'18:30–20:00 · optional',ic:'🧘',title:'Yoga abends',cls:'pm',tag:'Innersmile',body:yogaBody('abends')});
       var dinT=Math.max(1170,sessMin+110);
       ev.push({t:dinT,time:'abends',ic:'🍽️',title:'Abendessen',cls:'meal',meal:'dinner',tag:'auffüllen',body:'200 g Lachs oder Rind + 300 g Gemüse + 150 g Kartoffeln + 1 TL Olivenöl.'});
@@ -2160,7 +2728,8 @@
   var mealEditing=null;
   function timelineHTML(r,ctx){
     ctx=ctx||{}; var meals=ctx.meals||{}, ed=!!ctx.editable;
-    var head='<div class="role" style="margin-bottom:10px">'+(r.isTrain?'Trainingstag · ~3.050 kcal':'Ruhetag · ~2.750 kcal')+' · Protein ~185 g · Mengen = Richtwerte für ~83–85 kg, nach Hunger &amp; Gewichtstrend anpassen'+(ed?' · Mahlzeiten antippbar zum Dokumentieren':'')+'</div>';
+    var NP=nutriPhase(dToComp);
+    var head='<div class="role" style="margin-bottom:10px">'+(r.isTrain?'Trainingstag · '+NP.ktL+' kcal':'Ruhetag · '+NP.krL+' kcal')+(NP.bulk?' · Lean Bulk (+250–350 kcal)':'')+' · Protein ~185 g · Mengen = Richtwerte für ~83–84 kg, nach Hunger &amp; Gewichtstrend anpassen'+(ed?' · Mahlzeiten antippbar zum Dokumentieren':'')+'</div>';
     return head+'<div class="tl">'+r.ev.map(function(e){
       if(e.meal && ed && mealEditing===e.meal){
         var cur=meals[e.meal]||'';
@@ -2206,7 +2775,7 @@
     var el=document.getElementById('week-routines'); if(!el) return;
     el.innerHTML=
       '<h3>🌅 Morgens — nach dem Aufwachen</h3>'+
-      '<div class="tlp">• <b style="color:var(--ink)">Tageslicht 5–10 min</b> möglichst früh — stellt die innere Uhr, stabilisiert Schlaf & Stimmung.<br>• <b style="color:var(--ink)">Wasser + Elektrolyte</b> gegen nächtlichen Flüssigkeitsverlust.<br>• <b style="color:var(--ink)">30–40 g Protein</b> im Frühstück (Muskelschutz, Sättigung).<br>• <b style="color:var(--ink)">Koffein erst 60–90 min nach dem Aufwachen</b> — glättet den Vormittag.<br>• 5 min Mobility / Atmung.</div>'+
+      '<div class="tlp">• <b style="color:var(--ink)">Tageslicht 5–10 min</b> möglichst früh — stellt die innere Uhr, stabilisiert Schlaf & Stimmung.<br>• <b style="color:var(--ink)">Wasser + Elektrolyte</b> gegen nächtlichen Flüssigkeitsverlust.<br>• <b style="color:var(--ink)">30–40 g Protein</b> im Frühstück (Muskelschutz, Sättigung).<br>• <b style="color:var(--ink)">Koffein eher 60–90 min nach dem Aufwachen</b> — Tipp nach Huberman (Adenosin/Cortisol-Idee): mechanistisch plausibel, direkte Belege dünn/umstritten.<br>• 5 min Mobility / Atmung.</div>'+
       '<div class="srcrow"><a class="src" href="https://bjsm.bmj.com/content/55/7/356" target="_blank" rel="noopener">Walsh 2021, BJSM</a><a class="src" href="'+sURL('morning bright light circadian phase advance')+'" target="_blank" rel="noopener">Tageslicht & Zirkadianik</a></div>'+
       '<h3 style="margin-top:18px">😴 Abends — vor dem Schlafen</h3>'+
       '<div class="tlp">• <b style="color:var(--ink)">Helles Licht/Bildschirme 1 h vorher dimmen</b> — schützt die Melatonin-Ausschüttung.<br>• <b style="color:var(--ink)">Kein Koffein nach ~14 Uhr</b> (Halbwertszeit ~5–6 h).<br>• <b style="color:var(--ink)">Kühl & dunkel</b> (~18 °C), ruhig.<br>• <b style="color:var(--ink)">Feste Schlafenszeit</b> — Regelmäßigkeit schlägt jede Einzelmaßnahme.<br>• <b style="color:var(--ink)">4-7-8-Atmung</b> 5 min zum Runterfahren.</div>'+
@@ -2227,7 +2796,7 @@
     var el=document.getElementById('week-metrics'); if(!el) return;
     var sc=avgReadiness7(), wl=weekLoad();
     var acute=0,chronic28=0; Object.keys(DB.load).forEach(function(k){ var p=k.split('-'); var dd=new Date(+p[0],+p[1]-1,+p[2]); var ago=daysBetween(dd,NOW); if(ago>=0&&ago<7)acute+=DB.load[k].load; if(ago>=0&&ago<28)chronic28+=DB.load[k].load; });
-    var chronic=chronic28/4, acwr=(chronic>0&&acute>0)?(acute/chronic).toFixed(2):'–';
+    var _ar=acwrRatio(acute,chronic28), acwr=(_ar!=null)?_ar.toFixed(2):'–';
     var lastW=DB.weight.length?DB.weight[DB.weight.length-1].kg.toFixed(1):'–';
     var bl=DB.bloodlog.length?fmtD(DB.bloodlog[DB.bloodlog.length-1].date):'–';
     el.innerHTML=
@@ -2256,6 +2825,8 @@
   function wgCopy(){ var t=wgTextStr(),st=document.getElementById('wg-status'); try{ navigator.clipboard.writeText(t).then(function(){ if(st) st.textContent='✓ '+WGROC.length+' Positionen kopiert — in Bring!/Erinnerungen einfügen.'; },function(){ if(st) st.textContent='Kopieren nicht möglich — Liste manuell markieren.'; }); }catch(e){ if(st) st.textContent='Kopieren nicht möglich.'; } }
 
   function esc(s){ return (''+(s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  // Nur sichere Schemata in nutzer-eingegebenen Links zulassen (verhindert javascript:/data: in href)
+  function safeURL(u){ u=(''+(u==null?'':u)).trim(); return /^(https?:|mailto:)/i.test(u)?esc(u):'#'; }
 
   var RECIPES=[
     {n:'Protein-Frühstück',tag:'≈ 50 g Protein',ing:['3 Eier','250 g Skyr (0,2 %)','80 g Haferflocken','150 g Beeren','optional: Zimt'],steps:['Eier mit Prise Salz verquirlen, in wenig Öl 2–3 Min zu Rührei braten.','Skyr mit Haferflocken & Beeren verrühren.','Zusammen servieren.']},
@@ -2324,12 +2895,14 @@
   function renderVision(){ var el=document.getElementById('vision-road'); if(!el) return; el.innerHTML='<div class="tl">'+VISION.map(function(v){ return '<div class="tlitem bjj"><div class="tlh">'+v.b+'</div><div class="tlp">'+v.d+'</div></div>'; }).join('')+'</div>'; }
   function pv(id){ var e=document.getElementById(id); return e?e.value:''; }
   function sv(id,v){ var e=document.getElementById(id); if(e) e.value=(v==null?'':v); }
+  // wie sv, überschreibt aber nicht das gerade fokussierte Feld (verhindert Tipp-Verlust bei Re-Render)
+  function svNF(id,v){ var e=document.getElementById(id); if(e&&document.activeElement!==e) e.value=(v==null?'':v); }
   function renderBjjProfile(){
     var p=DB.profile||{}, x=totalXP(), L2=levelFor(x);
     var pct=L2.next?Math.max(3,Math.min(100,Math.round((x-L2.cur.x)/(L2.next.x-L2.cur.x)*100))):100;
     var belt=p.bjjBelt||'Braun', st=(p.bjjStripes!=null&&p.bjjStripes!=='')?p.bjjStripes:'';
     var hero=document.getElementById('bjj-hero');
-    if(hero) hero.innerHTML='<div class="hero"><div class="hero-top"><div><div class="hname">'+esc(p.name||'Dein Name')+'</div><div class="hsub">'+esc(belt)+'gurt'+(st!==''?' · '+esc(st)+' Grade':'')+(p.bjjGym?' · '+esc(p.bjjGym):'')+(p.bjjSince?' · seit '+esc(p.bjjSince):'')+'</div>'+(p.bjjCoach?'<div class="hsub">Coach: '+esc(p.bjjCoach)+'</div>':'')+'</div><div class="lvlbadge">LV '+(L2.idx+1)+'<small>'+esc(L2.cur.t)+'</small></div></div><div class="xpbar"><div class="xpfill" style="width:'+pct+'%"></div></div><div class="hsub" style="margin-top:6px">'+x+' XP'+(L2.next?' · noch '+(L2.next.x-x)+' bis „'+esc(L2.next.t)+'"':' · Maximalstufe — Faixa-Preta-Mindset')+'</div>'+(p.bjjBio?'<div class="hbio">'+esc(p.bjjBio)+'</div>':'<div class="hbio" style="color:var(--faint)">Trag unten deine Geschichte ein — sie erscheint hier.</div>')+'</div>';
+    if(hero) hero.innerHTML='<div class="hero"><div class="hero-top"><div><div class="hname">'+esc(p.name||'Dein Name')+'</div><div class="hsub">'+esc(belt)+'gurt'+(st!==''?' · '+esc(st)+' Grade':'')+(p.bjjGym?' · '+esc(p.bjjGym):'')+(p.bjjSince?' · seit '+esc(p.bjjSince):'')+'</div>'+(p.bjjCoach?'<div class="hsub">Coach: '+esc(p.bjjCoach)+'</div>':'')+'</div><div class="lvlbadge">LV '+(L2.idx+1)+'<small>'+esc(L2.cur.t)+'</small></div></div><div class="xpbar"><div class="xpfill" style="width:'+pct+'%"></div></div><div class="hsub" style="margin-top:6px">'+x+' XP'+(L2.next?' · noch '+(L2.next.x-x)+' bis „'+esc(L2.next.t)+'“':' · Maximalstufe — Faixa-Preta-Mindset')+'</div>'+(p.bjjBio?'<div class="hbio">'+esc(p.bjjBio)+'</div>':'<div class="hbio" style="color:var(--faint)">Trag unten deine Geschichte ein — sie erscheint hier.</div>')+'</div>';
     sv('bp-name',p.name); var bs=document.getElementById('bp-belt'); if(bs) bs.value=belt; sv('bp-stripes',st); sv('bp-gym',p.bjjGym); sv('bp-coach',p.bjjCoach); sv('bp-since',p.bjjSince); sv('bp-bio',p.bjjBio);
   }
   function saveBjjProfile(){
@@ -2373,20 +2946,32 @@
   function gURL(q){ return 'https://www.google.com/search?q='+encodeURIComponent(q); }
   var MOshort=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   function daysToISO(iso){ var p=iso.split('-'); return Math.ceil((new Date(+p[0],+p[1]-1,+p[2])-NOW)/MS); }
+  /* Regionen: Nord = SH·HH·HB·NI·MV·BE·BB · Mitte = NRW·HE·RLP·SL·TH·SN·ST · Süd = BY·BW.
+     Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 15.08.2026. */
+  var TREGION={alle:'Alle',nord:'Nord',mitte:'Mitte',sued:'Süd'};
+  var tournRegion='alle';
   var TOURN=[
-    {id:'nuernberg-open',date:'2026-07-18',name:'Nürnberg Open 2026',loc:'Nürnberg',
-      info:'Fighting + BJJ Gi + No-Gi · 1. AJJC Nürnberg.',reg:'Anmeldung offen — früh sichern.',link:'https://www.ajjc-nuernberg.de',linkLabel:'ajjc-nuernberg.de'},
-    {id:'gi-hamburg-aug',date:'2026-08-15',name:'Grappling Industries Hamburg',loc:'Sporthalle Wandsbek, Rüterstraße 75, Hamburg',target:true,
-      info:'Gi & No-Gi · Round Robin. Einlass 7:30, Start 9:00. Wiegen am Wettkampftag.',reg:'Offen (Smoothcomp) · Normalpreis 70 € bis 25.07.',link:'https://grapplingindustries.smoothcomp.com/en/event/20032/register',linkLabel:'Smoothcomp · anmelden'},
-    {id:'gi-berlin-sep',date:'2026-09-05',name:'Grappling Industries Berlin',loc:'Berlin',
+    {id:'gi-hamburg-aug',date:'2026-08-15',name:'Grappling Industries Hamburg',loc:'Sporthalle Wandsbek, Rüterstraße 75, Hamburg',region:'nord',target:true,
+      info:'Gi & No-Gi · Round Robin. Einlass 7:30, Start 9:00. Wiegen am Wettkampftag ohne Gi · Männer Master 30+ · −185 lbs = 84,09 kg, keine Toleranz.',reg:'Offen (Smoothcomp) · Normalpreis 70 € bis 25.07.',link:'https://grapplingindustries.smoothcomp.com/en/event/20032/register',linkLabel:'Smoothcomp · anmelden'},
+    {id:'gi-berlin-sep',date:'2026-09-05',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
       info:'Gi & No-Gi · alle Level.',reg:'Offen/startet — auf Smoothcomp eintragen.',link:'https://grapplingindustries.smoothcomp.com/en/event/25900',linkLabel:'Smoothcomp'},
-    {id:'herrenberg',date:'2026-10-03',name:'BJJ-Turnier Herrenberg',loc:'German Top Team, Daimlerstraße 13, Herrenberg',
+    {id:'ajp-hamburg-sep',date:'2026-09-12',name:'AJP Tour Germany National',loc:'Hamburg',region:'nord',
+      info:'Gi, No-Gi & Kids · AJP-Ranglisten-Turnier.',reg:'Über AJP/Smoothcomp anmelden.',link:gURL('AJP Tour Germany National Hamburg 2026 smoothcomp'),linkLabel:'AJP/Smoothcomp suchen'},
+    {id:'duesseldorf-fall',date:'2026-09-12',name:'Düsseldorf Fall Open · European Cup',loc:'Düsseldorf',region:'mitte',
+      info:'Gi, No-Gi & Kids · European-Cup-Wertung.',reg:'Auf Smoothcomp anmelden.',link:gURL('Düsseldorf Fall Open Championship 2026 European Cup smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'whitebelt-kassel',date:'2026-09-19',name:'Whitebelt Trials Germany',loc:'Kassel',region:'mitte',
+      info:'Gi & No-Gi · speziell für Weißgurte & Einsteiger.',reg:'Auf Smoothcomp anmelden.',link:gURL('Whitebelt Trials Germany Kassel 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'cauliflower-luebeck',date:'2026-09-19',name:'Candidate of Cauliflower',loc:'Lübeck',region:'nord',
+      info:'No-Gi.',reg:'Auf Smoothcomp anmelden.',link:gURL('Candidate of Cauliflower Lübeck 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'combate-hemsbach',date:'2026-09-26',name:'Combate Open · D-BJJ',loc:'Hemsbach',region:'sued',
+      info:'Gi, No-Gi & Kids.',reg:'Auf Smoothcomp anmelden.',link:gURL('Combate Open D-BJJ Hemsbach 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'herrenberg',date:'2026-10-03',name:'BJJ-Turnier Herrenberg',loc:'German Top Team, Daimlerstraße 13, Herrenberg',region:'sued',
       info:'German Top Team Kampfsportschule Herrenberg.',reg:'Anmeldestart unbekannt — Ausschreibung prüfen.',link:gURL('German Top Team Herrenberg BJJ Turnier 2026'),linkLabel:'Ausschreibung suchen'},
-    {id:'nuernberg-okt',date:'2026-10-10',name:'BJJ-Turnier Nürnberg (2 Tage)',loc:'Nürnberg',
+    {id:'nuernberg-okt',date:'2026-10-10',name:'BJJ-Turnier Nürnberg (2 Tage)',loc:'Nürnberg',region:'sued',
       info:'Zweitägiges Turnier (10.–11.10.).',reg:'Anmeldestart unbekannt — Ausschreibung prüfen.',link:gURL('AJJC Nürnberg BJJ Turnier Oktober 2026'),linkLabel:'Ausschreibung suchen'},
-    {id:'gi-berlin-nov',date:'2026-11-21',name:'Grappling Industries Berlin',loc:'Berlin',
+    {id:'gi-berlin-nov',date:'2026-11-21',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
       info:'Gi & No-Gi · alle Level.',reg:'Sollte offen sein (~3,5 Mon. vorher) — Smoothcomp prüfen.',link:gURL('Grappling Industries Berlin November 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
-    {id:'gi-hamburg-dec',date:'2026-12-12',name:'Grappling Industries Hamburg',loc:'Hamburg',
+    {id:'gi-hamburg-dec',date:'2026-12-12',name:'Grappling Industries Hamburg',loc:'Hamburg',region:'nord',
       info:'Gi & No-Gi · Round Robin.',reg:'Sollte offen sein (~3 Mon. vorher) — Smoothcomp prüfen.',link:gURL('Grappling Industries Hamburg Dezember 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'}
   ];
   function tnToCalendar(t){
@@ -2406,13 +2991,22 @@
     if(sm){
       if(chosen.length){ var up=chosen.map(function(t){ return {t:t,d:daysToISO(t.date)}; }).filter(function(o){ return o.d>=0; }).sort(function(a,b){ return a.d-b.d; })[0];
         sm.innerHTML='<span class="chip"><b>'+chosen.length+'</b> ausgewählt</span>'+(up?'<span class="chip blue">nächster: <b>'+up.t.name.replace('Grappling Industries','GI')+'</b> in '+up.d+' T</span>':''); }
-      else sm.innerHTML='<span class="lead">Noch kein Turnier ausgewählt — tippe „Teilnahme".</span>';
+      else sm.innerHTML='<span class="lead">Noch kein Turnier ausgewählt — tippe „Teilnahme“.</span>';
     }
-    el.innerHTML=TOURN.map(function(t){
+    // Regionsfilter (Nord / Mitte / Süd)
+    var rf=document.getElementById('tourn-region');
+    if(rf){
+      rf.querySelectorAll('.pillbtn').forEach(function(b){ var c=TOURN.filter(function(t){return b.dataset.r==='alle'||t.region===b.dataset.r;}).length; b.classList.toggle('on', b.dataset.r===tournRegion); });
+      if(!rf._b){ rf._b=1; rf.addEventListener('click',function(e){ var b=e.target.closest('.pillbtn'); if(!b) return; tournRegion=b.dataset.r; renderTurniere(); }); }
+    }
+    var list=TOURN.filter(function(t){ return tournRegion==='alle'||t.region===tournRegion; })
+                  .sort(function(a,b){ return a.date<b.date?-1:1; });
+    if(!list.length){ el.innerHTML='<div class="note">Für diese Region ist aktuell nichts gelistet — prüfe die Live-Quellen unten.</div>'; }
+    else el.innerHTML=list.map(function(t){
       var p=t.date.split('-'), dd=+p[2], mo=MOshort[+p[1]-1], dl=daysToISO(t.date), on=!!sel[t.id], hasAppt=(DB.appts||[]).some(function(a){return a.id==='tn-'+t.id;});
       return '<div class="tourn'+(on?' sel':'')+(t.target?' target':'')+'">'+
         '<div class="th"><div class="tdate"><div class="dday">'+dd+'</div><div class="dmon">'+mo+'</div></div>'+
-        '<div class="tn"><div class="tnm">'+t.name+(t.target?' <span class="tbadge">Hauptziel</span>':'')+'</div><div class="tloc">📍 '+t.loc+'</div>'+(dl>=0?'<div class="cd2">⏳ in '+dl+' Tag'+(dl!==1?'en':'')+'</div>':'<div class="cd2" style="color:var(--faint)">vorbei</div>')+'</div></div>'+
+        '<div class="tn"><div class="tnm">'+t.name+(t.target?' <span class="tbadge">Hauptziel</span>':'')+'</div><div class="tloc">📍 '+t.loc+' <span class="chip" style="margin:0 0 0 4px;padding:1px 8px">'+(TREGION[t.region]||'—')+'</span></div>'+(dl>=0?'<div class="cd2">⏳ in '+dl+' Tag'+(dl!==1?'en':'')+'</div>':'<div class="cd2" style="color:var(--faint)">vorbei</div>')+'</div></div>'+
         '<div class="tinfo">'+t.info+'<br><b style="color:var(--ink)">Anmeldung:</b> '+t.reg+'</div>'+
         '<div class="trow"><button class="tpart'+(on?' on':'')+'" data-id="'+t.id+'">'+(on?'✓ Teilnahme':'Teilnahme')+'</button><button class="btn ghost" data-tncal="'+t.id+'" style="font-size:14px;padding:8px 13px">'+(hasAppt?'✓ im Kalender · .ics':'📅 Termin + .ics')+'</button><a class="btn ghost" style="font-size:14px;padding:8px 13px" href="'+t.link+'" target="_blank" rel="noopener">'+t.linkLabel+' ↗</a></div>'+
         '</div>';
@@ -2427,9 +3021,9 @@
   var LX={
     roger:{era:'2004–2010 · Gracie Barra',sig:'Cross-Collar-Choke aus dem Mount',key:'Maximale Effizienz — jede Position dient dem nächsten, höchstprozentigen Schritt.',apply:'Gi: Schließe deine Mount-Würge-Kette (Cross-Collar als Dauerdrohung, die den Armbar öffnet). Übe sauberes Stacking & Ellbogen verschließen.',mistake:'Zu früh submitten, bevor die Position 100 % sitzt — erst kontrollieren, dann würgen.',links:[{t:'Roger Gracie — Profil & Titel',ch:'BJJ Heroes',url:gURL('Roger Gracie BJJ Heroes profile')}]},
     marcelo:{era:'2003–2011 · Alliance / MGInAction',sig:'Rear-Naked-Choke & High-Elbow-Guillotine',key:'Wenige Techniken, aus jedem Winkel verstanden — Tiefe schlägt Breite.',apply:'Gi & No-Gi: Butterfly + Arm-Drag → Rückennahme. Baue deine RNC-Mechanik (Handpositionen, Kopfdruck) systematisch.',mistake:'Butterfly passiv spielen — du musst ständig Haken/Unterhaken und Druck anbieten.',links:[{t:'Marcelo Garcia — Match-Studie',ch:'BJJ Scout',url:gURL('Marcelo Garcia BJJ Scout breakdown')}]},
-    rickson:{era:'1980er–90er · Gracie',sig:'Mount-Druck & „unsichtbare" Details',key:'Connection & Base — unsichtbare Details vor sichtbaren Techniken.',apply:'Gi: Investiere in Basis, Gewicht und Atmung — die „langweiligen" Fundamentals, die dein ganzes Spiel tragen.',mistake:'Details der Position überspringen, um zur Technik zu eilen.',links:[{t:'Rickson — Invisible JJ (Doku/Talks)',ch:'YouTube-Suche',url:sURL('Rickson Gracie invisible jiu jitsu concepts')}]},
+    rickson:{era:'1980er–90er · Gracie',sig:'Mount-Druck & „unsichtbare“ Details',key:'Connection & Base — unsichtbare Details vor sichtbaren Techniken.',apply:'Gi: Investiere in Basis, Gewicht und Atmung — die „langweiligen“ Fundamentals, die dein ganzes Spiel tragen.',mistake:'Details der Position überspringen, um zur Technik zu eilen.',links:[{t:'Rickson — Invisible JJ (Doku/Talks)',ch:'YouTube-Suche',url:sURL('Rickson Gracie invisible jiu jitsu concepts')}]},
     buchecha:{era:'2012–2021 · Checkmat',sig:'Dynamisches Passing & komplettes Allround-Game',key:'Komplett — kein Loch im Top- oder Bottom-Game.',apply:'Gi & No-Gi: Verbinde Passing-Druck mit aktiver Guard — trainiere beide Seiten gleich hart.',mistake:'Sich auf Athletik verlassen statt auf Timing und Technik.',links:[{t:'Buchecha — Profil (13× Weltmeister)',ch:'BJJ Heroes',url:gURL('Marcus Buchecha Almeida BJJ Heroes')}]},
-    gordon:{era:'2016–heute · New Wave (ex-DDS)',sig:'Inside-Heel-Hook & RNC (Straight-Jacket)',key:'Kontrolle, die zur Submission führt — System statt Einzeltechnik.',apply:'No-Gi: Lerne die Ashi-Garami-Familie sauber (Eintritt → Kontrolle → Break-Mechanik) und das Seatbelt-Backsystem.',mistake:'Heel-Hooks ohne Kontrolle „reißen" — gefährlich & ineffektiv. Erst Position, dann Rotation.',links:[{t:'Gordon Ryan — System-Analyse',ch:'YouTube-Suche',url:sURL('Gordon Ryan back system breakdown')}]},
+    gordon:{era:'2016–heute · New Wave (ex-DDS)',sig:'Inside-Heel-Hook & RNC (Straight-Jacket)',key:'Kontrolle, die zur Submission führt — System statt Einzeltechnik.',apply:'No-Gi: Lerne die Ashi-Garami-Familie sauber (Eintritt → Kontrolle → Break-Mechanik) und das Seatbelt-Backsystem.',mistake:'Heel-Hooks ohne Kontrolle „reißen“ — gefährlich & ineffektiv. Erst Position, dann Rotation.',links:[{t:'Gordon Ryan — System-Analyse',ch:'YouTube-Suche',url:sURL('Gordon Ryan back system breakdown')}]},
     lo:{era:'2012–2022 · NS Brotherhood',sig:'Single-Leg-X & Passing-Druck',key:'Bewegung erzeugt Position — Timing schlägt Kraft.',apply:'Gi: Open Guard mit ständiger Fußarbeit; lerne den Single-Leg-X-Sweep als roten Faden.',mistake:'Statisch in der Open Guard liegen — Lo war nie still.',links:[{t:'Leandro Lo — Highlight',ch:'YouTube-Suche',url:sURL('Leandro Lo highlight guard passing')}]},
     keenan:{era:'2013–heute · Legion (ex-Atos)',sig:'Worm Guard (Lapel-System)',key:'Den Gi des Gegners als zusätzliche Gliedmaße nutzen.',apply:'Gi: Wenn du Lapel magst — Worm Guard als vernetztes System lernen (Eintritt, Sweep, Pass-Verhinderung).',mistake:'Lapel-Guards ohne Plan — sie brauchen klare Folgeschritte, sonst verhedderst du dich selbst.',links:[{t:'Keenan — Worm-Guard-Studie',ch:'BJJ Scout',url:gURL('Keenan Cornelius worm guard BJJ Scout')}]},
     rafa:{era:'2009–2016 · AOJ',sig:'Berimbolo & Leg-Drag',key:'Footwork + Finten erzeugen Rückennahmen.',apply:'Gi: Wenn du modern spielst — DLR → Berimbolo → Rückennahme; Leg-Drag als Pass-Antwort.',mistake:'Berimbolo erzwingen ohne DLR-Kontrolle — endet im Scramble gegen dich.',links:[{t:'Rafael Mendes — AOJ',ch:'Art of Jiu Jitsu',url:'https://artofjiujitsu.com/pages/rafael-mendes'}]},
@@ -2440,7 +3034,7 @@
     ['Position vor Submission','Erst eine stabile, dominante Position sichern — dann angreifen. Verhindert, dass du beim Submission-Versuch die Position verlierst.'],
     ['Frames','Knochenstrukturen (Unterarme, Schienbeine) als Distanzhalter gegen Druck — kosten weniger Kraft als reine Muskelspannung.'],
     ['Base & Posture','Tiefer Schwerpunkt und aufrechte Wirbelsäule. Ohne Base wirst du gesweept, ohne Posture gewürgt.'],
-    ['Connection / Druck','Körpergewicht „kleben" lassen statt mit Muskelkraft zu drücken — Grundlage von Pressure-Passing und Pins.'],
+    ['Connection / Druck','Körpergewicht „kleben“ lassen statt mit Muskelkraft zu drücken — Grundlage von Pressure-Passing und Pins.'],
     ['Hüftbewegung (Shrimp/Bridge)','Die Hüfte erzeugt Raum und Winkel — Motor jeder Guard-Retention und Flucht.'],
     ['Grip Fighting (Gi)','Wer zuerst die Griffe gewinnt, diktiert den Austausch. Greifen, brechen, kontern — vor der Technik.'],
     ['Winkel (Angles)','Nie frontal arbeiten. Ein Winkel öffnet Sweeps, Pässe und Rückennahmen.'],
@@ -2495,7 +3089,7 @@
     var d; try{ d=JSON.parse(raw); }catch(e){ fail('Das ist kein gültiges JSON-Backup'+note+'. Bitte die unveränderte Export-Datei verwenden.'); return false; }
     if(!d||typeof d!=='object'||Array.isArray(d)){ fail('Backup hat das falsche Format'+note+' — erwartet wird ein JSON-Objekt mit deinen Daten.'); return false; }
     var ARR={strength:1,niggles:1,weight:1,bloodlog:1,appts:1,journey:1,coachlog:1,sessions:1,strengthsets:1};
-    var OBJ={profile:1,checklist:1,readiness:1,load:1,shop:1,tournaments:1,schedule:1,over:1,meals:1};
+    var OBJ={profile:1,checklist:1,readiness:1,load:1,shop:1,tournaments:1,schedule:1,over:1,meals:1,comp:1};
     var applied=0,skipped=[];
     Object.keys(ARR).concat(Object.keys(OBJ)).forEach(function(k){
       if(d[k]==null) return;
@@ -2505,7 +3099,7 @@
     if(!applied){ fail('Keine gültigen Daten-Felder im Backup gefunden'+note+' — nichts importiert.'); return false; }
     if(!DB.schedule||typeof DB.schedule!=='object') DB.schedule={gb:{},ber:{}};
     if(!DB.schedule.gb)DB.schedule.gb={}; if(!DB.schedule.ber)DB.schedule.ber={};
-    save('as_profile',DB.profile);save('as_checklist',DB.checklist);save('as_readiness',DB.readiness);save('as_load',DB.load);save('as_strength',DB.strength);save('as_niggles',DB.niggles);save('as_weightlog',DB.weight);save('as_bloodlog',DB.bloodlog);save('as_shop',DB.shop);save('as_tournaments',DB.tournaments);save('as_schedule',DB.schedule);save('as_appts',DB.appts);save('as_journey',DB.journey);save('as_coachlog',DB.coachlog);save('as_over',DB.over);save('as_sessions',DB.sessions);save('as_meals',DB.meals);save('as_strengthsets',DB.strengthsets);
+    save('as_profile',DB.profile);save('as_checklist',DB.checklist);save('as_readiness',DB.readiness);save('as_load',DB.load);save('as_strength',DB.strength);save('as_niggles',DB.niggles);save('as_weightlog',DB.weight);save('as_bloodlog',DB.bloodlog);save('as_shop',DB.shop);save('as_tournaments',DB.tournaments);save('as_schedule',DB.schedule);save('as_appts',DB.appts);save('as_journey',DB.journey);save('as_coachlog',DB.coachlog);save('as_over',DB.over);save('as_sessions',DB.sessions);save('as_meals',DB.meals);save('as_strengthsets',DB.strengthsets);save('as_comp',DB.comp);
     renderAll(); renderBlood(); renderShop(); renderDash(); renderW(); renderBackupStatus();
     if(st){ st.classList.remove('warn'); st.innerHTML='✓ Backup importiert'+note+' — '+applied+' Bereich(e) wiederhergestellt'+(skipped.length?', '+skipped.length+' übersprungen (falsches Format)':'')+'.'; }
     var btn=document.getElementById('imp-btn'); if(btn){ btn.textContent='Importiert ✓'; setTimeout(function(){btn.textContent='Aus Text importieren';},1800); }
@@ -2545,6 +3139,11 @@
     var ls=document.getElementById('lockscreen'), body=document.getElementById('lock-body'); if(!ls) return;
     var l=await lockGet();
     if(!l||!l.hash){ ls.classList.add('hidden'); return; }
+    if(!_crypto()){
+      body.innerHTML='<div class="lead" style="text-align:center">Diese Sperre wurde auf einer sicheren Verbindung (https) gesetzt und lässt sich nur dort entsperren — öffne die App über deine <b>GitHub-Pages-Adresse</b>.</div>'+
+        '<div class="note" style="margin-top:10px;font-size:11.5px">Falls du nicht mehr an die https-Adresse kommst: Website-Daten dieses Geräts im Browser löschen und danach dein <b>.json-Backup</b> neu importieren.</div>';
+      return;
+    }
     body.innerHTML='<div class="lead" style="text-align:center;margin-bottom:10px">Gesperrt — bitte Passwort eingeben.</div>'+
       '<input type="password" id="lock-pw" autocomplete="current-password" placeholder="Passwort" aria-label="Passwort" style="width:100%">'+
       '<button class="btn" id="lock-go" style="width:100%;margin-top:10px">Entsperren</button>'+
@@ -2577,15 +3176,411 @@
     }
   }
 
-  function renderAll(){ renderReadiness(); renderCoach(); renderHeute(); renderTaperGuard(); renderCompProtocol(); renderHRzones(); renderOnboard(); }
+  /* ---------- build-freie Selbstchecks (opt-in via ?selftest oder #selftest) ---------- */
+  function runSelfTests(){
+    var fails=[], n=0;
+    function ok(name,cond){ n++; if(!cond) fails.push(name); }
+    function near(a,b){ return Math.abs(a-b)<0.01; }
+    ok('num: deutsches Komma', num('83,7')===83.7);
+    ok('num: Ganzzahl', num('12')===12);
+    ok('num: leer→NaN', isNaN(num('')));
+    ok('readyScore: 4×5=100', readyScore({sleep:5,doms:5,energy:5,joints:5})===100);
+    ok('readyScore: 4×1=20', readyScore({sleep:1,doms:1,energy:1,joints:1})===20);
+    ok('readyScore: <4 Metriken→null', readyScore({sleep:5,doms:5,energy:5})===null);
+    ok('readyScore: leer→null', readyScore(null)===null);
+    ok('e1rm: 100×5≈116,7', near(e1rm({kg:100,reps:5}),116.667));
+    ok('e1rm: ohne reps→0', e1rm({kg:100})===0);
+    ok('acwr: 700/(2800÷4)=1,0', near(acwrRatio(700,2800),1.0));
+    ok('acwr: 0 akut→null', acwrRatio(0,2800)===null);
+    ok('esc: HTML neutralisiert', esc('<img src=x onerror=alert(1)>')==='&lt;img src=x onerror=alert(1)&gt;');
+    ok('esc: Quote & Ampersand', esc('"&')==='&quot;&amp;');
+    ok('safeURL: https ok', safeURL('https://x.de')==='https://x.de');
+    ok('safeURL: javascript→#', safeURL('javascript:alert(1)')==='#');
+    ok('icsEsc: , ; \\n', icsEsc('a,b;c\nd')==='a\\,b\\;c\\nd');
+    ok('daysBetween: +1 Tag', daysBetween(new Date(2026,7,15),new Date(2026,7,16))===1);
+    ok('daysBetween: 1.6.→15.8.=75', daysBetween(new Date(2026,5,1),new Date(2026,7,15))===75);
+    ok('taper: Tag 11 inaktiv', taperState(0,11,0).active===false);
+    ok('taper: Tag 10 aktiv', taperState(0,10,0).active===true);
+    ok('taper: Tag 10 → 40 %', taperState(0,10,0).volPct===40);
+    ok('taper: Tag 6 → 40 %', taperState(0,6,0).volPct===40);
+    ok('taper: Tag 5 → 55 %', taperState(0,5,0).volPct===55);
+    ok('taper: Tag 3 → 55 %', taperState(0,3,0).volPct===55);
+    ok('taper: Tag 2 → 80 %', taperState(0,2,0).volPct===80);
+    ok('taper: Tag 0 → 80 %', taperState(0,0,0).volPct===80);
+    ok('taper: vor Start inaktiv', taperState(3,8,0).active===false);
+    ok('taper: nach Turnier inaktiv', taperState(0,-1,0).active===false);
+    ok('taper: Deckel Tag 2 = 150', taperState(0,2,0).loadCap===150);
+    ok('taper: Last 160>150 → over', taperState(0,2,160).over===true);
+    ok('taper: Last 140≤150 → ok', taperState(0,2,140).over===false);
+    ok('taper: Last 360>350 → over (Tag 10)', taperState(0,10,360).over===true);
+    ok('taper: Deckel sinkt zur Matte', taperState(0,2,0).loadCap < taperState(0,10,0).loadCap);
+    ok('hmToMin: 09:00=540', hmToMin('09:00')===540);
+    ok('hmToMin: 7:05=425', hmToMin('7:05')===425);
+    ok('hmToMin: 25:00→null', hmToMin('25:00')===null);
+    ok('hmToMin: leer→null', hmToMin('')===null);
+    ok('minToHM: 540=09:00', minToHM(540)==='09:00');
+    ok('minToHM: wrap −30=23:30', minToHM(-30)==='23:30');
+    ok('timer: 6 Schritte', compTimerSteps(540).length===6);
+    ok('timer: aufsteigend sortiert', compTimerSteps(540).every(function(s,i,a){return i===0||a[i-1].t<s.t;}));
+    ok('timer: Koffein −60', compTimerSteps(540)[3].t===480);
+    ok('timer: Carbs-Abstand 120–180', (540-compTimerSteps(540)[1].t)>=120 && (540-compTimerSteps(540)[1].t)<=180);
+    ok('timer: Warm-up-Abstand 20–30', (540-compTimerSteps(540)[4].t)>=20 && (540-compTimerSteps(540)[4].t)<=30);
+    ok('timer: Ankunft = Einlass 7:30 bei 9:00-Match', compTimerSteps(540)[2].t===450);
+    ok('timer: vor Aufwachen cur=-1', compTimerState(540,300).cur===-1);
+    ok('timer: 8:50 → cur=Warm-up', compTimerState(540,530).cur===4);
+    ok('timer: 8:50 → next in 10 min', compTimerState(540,530).minsToNext===10);
+    ok('timer: 9:00 → done', compTimerState(540,540).done===true);
+    ok('rewarmup: 3 min → Phase 0', reWarmupState(3).ph===0);
+    ok('rewarmup: 10 min → Phase 1', reWarmupState(10).ph===1);
+    ok('rewarmup: 20 min → Phase 2', reWarmupState(20).ph===2);
+    /* Niggle-Eskalation */
+    function NG(arr){ return arr.map(function(x){ return {date:x[0],area:x[1],sev:x[2]}; }); }
+    var T='2026-06-10';
+    ok('niggle: leer → keine Warnung', niggleEscalation([],T).length===0);
+    ok('niggle: null robust', niggleEscalation(null,T).length===0);
+    var r3=niggleEscalation(NG([['2026-06-08','Knie',3],['2026-06-09','Knie',4],['2026-06-10','Knie',3]]),T);
+    ok('niggle: genau 3 Tage ≥3 → rot', r3.length===1 && r3[0].level==='rot' && r3[0].stelle==='Knie' && r3[0].tage===3);
+    var g2=niggleEscalation(NG([['2026-06-09','Schulter',3],['2026-06-10','Schulter',3]]),T);
+    ok('niggle: 2 Tage ≥3 → gelb', g2.length===1 && g2[0].level==='gelb' && g2[0].tage===2);
+    ok('niggle: 1 Tag → nichts', niggleEscalation(NG([['2026-06-10','Knie',5]]),T).length===0);
+    var lk=niggleEscalation(NG([['2026-06-07','Knie',4],['2026-06-09','Knie',4],['2026-06-10','Knie',4]]),T);
+    ok('niggle: Lücke unterbricht Serie (gelb statt rot)', lk.length===1 && lk[0].level==='gelb' && lk[0].tage===2);
+    ok('niggle: Schweregrad 2 zählt nicht', niggleEscalation(NG([['2026-06-08','Knie',2],['2026-06-09','Knie',2],['2026-06-10','Knie',2]]),T).length===0);
+    ok('niggle: Sev-2-Tag bricht Serie', niggleEscalation(NG([['2026-06-08','Knie',4],['2026-06-09','Knie',2],['2026-06-10','Knie',3]]),T).length===0);
+    var mx=niggleEscalation(NG([['2026-06-08','Knie',3],['2026-06-09','Knie',3],['2026-06-10','Knie',3],['2026-06-09','Schulter',4],['2026-06-10','Schulter',4]]),T);
+    ok('niggle: mehrere Stellen, rot zuerst', mx.length===2 && mx[0].level==='rot' && mx[0].stelle==='Knie' && mx[1].level==='gelb' && mx[1].stelle==='Schulter');
+    var gy=niggleEscalation(NG([['2026-06-07','Knie',3],['2026-06-08','Knie',3],['2026-06-09','Knie',3]]),T);
+    ok('niggle: Serie endet gestern → zählt noch (rot)', gy.length===1 && gy[0].level==='rot' && gy[0].tage===3);
+    ok('niggle: Serie endet vorgestern → erloschen', niggleEscalation(NG([['2026-06-06','Knie',4],['2026-06-07','Knie',4],['2026-06-08','Knie',4]]),T).length===0);
+    var mb=niggleEscalation(NG([['2026-05-30','Rücken',3],['2026-05-31','Rücken',3],['2026-06-01','Rücken',3]]),'2026-06-01');
+    ok('niggle: Serie über Monatsgrenze → rot', mb.length===1 && mb[0].level==='rot' && mb[0].tage===3);
+    var dd=niggleEscalation(NG([['2026-06-09','Knie',3],['2026-06-10','Knie',3],['2026-06-10','Knie',5]]),T);
+    ok('niggle: Doppel-Log am selben Tag = 1 Tag', dd.length===1 && dd[0].tage===2 && dd[0].level==='gelb');
+    var l5=niggleEscalation(NG([['2026-06-06','Hüfte',3],['2026-06-07','Hüfte',3],['2026-06-08','Hüfte',3],['2026-06-09','Hüfte',3],['2026-06-10','Hüfte',3]]),T);
+    ok('niggle: 5-Tage-Serie → rot, tage=5', l5.length===1 && l5[0].level==='rot' && l5[0].tage===5);
+    /* Wettkampf-Coach (Evidenz & Gewichts-Check) */
+    ok('giWeight: 83,0 → ok', giWeightCheck(83.0).status==='ok');
+    ok('giWeight: Marge 83,0 = 1,09', near(giWeightCheck(83.0).margin,1.09));
+    ok('giWeight: 83,6 → knapp', giWeightCheck(83.6).status==='knapp');
+    ok('giWeight: 84,09 = Limit → knapp, Marge 0', giWeightCheck(84.09).status==='knapp' && near(giWeightCheck(84.09).margin,0));
+    ok('giWeight: 84,2 → über', giWeightCheck(84.2).status==='ueber');
+    ok('giWeight: null → unbekannt', giWeightCheck(null).status==='unbekannt');
+    ok('gameplan: genau 10 Empfehlungen', GP_RECS.length===10);
+    var EVOK={'Daten':1,'Studie':1,'Heuristik':1,'Regelwerk':1};
+    ok('gameplan: Evidenz-Labels gültig', GP_RECS.concat(GP_STATS).every(function(r){ return EVOK[r.ev]===1; }));
+    ok('gameplan: jede Empfehlung/Statistik hat Quelle', GP_RECS.concat(GP_STATS).every(function(r){ return r.refs&&r.refs.length>0; }));
+    ok('gameplan: alle Quellen https', GP_RECS.concat(GP_STATS).every(function(r){ return r.refs.every(function(f){ return /^https:\/\//.test(f.url); }); }));
+    /* Go-Check Wettkampfwoche */
+    function GC(over){ var b={dToComp:3,kg:83.4,ready3:[85,82,90],sleep3:[4,5,4],niggles:[],taperOver:false}; for(var k in (over||{})) b[k]=over[k]; return goCheck(b); }
+    ok('gocheck: Tag 8 → aus', goCheck({dToComp:8}).show===false);
+    ok('gocheck: Tag −1 → aus', goCheck({dToComp:-1}).show===false);
+    ok('gocheck: null robust', goCheck(null).show===false);
+    ok('gocheck: Tag 7 → an', goCheck({dToComp:7}).show===true);
+    ok('gocheck: Tag 0 → an, 5 Signale', GC({dToComp:0}).items.length===5);
+    ok('gocheck: alles grün → GO', GC().overall==='gruen');
+    ok('gocheck: grün → Aktion „Plan fahren"', GC().action.indexOf('Plan fahren')>=0);
+    ok('gocheck: kein Gewicht → offen → gesamt gelb', GC({kg:null}).overall==='gelb' && GC({kg:null}).items[0].state==='offen');
+    ok('gocheck: 84,0 kg → Gewicht gelb', GC({kg:84.0}).items[0].state==='gelb');
+    ok('gocheck: 84,5 kg → Gewicht rot → gesamt rot', GC({kg:84.5}).overall==='rot');
+    ok('gocheck: Readiness-Schnitt 70 → gelb', GC({ready3:[70,70,70]}).items[1].state==='gelb');
+    ok('gocheck: Readiness 50 → rot', GC({ready3:[50,null,null]}).items[1].state==='rot');
+    ok('gocheck: Readiness leer → offen', GC({ready3:[null,null,null]}).items[1].state==='offen');
+    ok('gocheck: Schlaf 3er-Schnitt → gelb', GC({sleep3:[3,3,3]}).items[2].state==='gelb');
+    ok('gocheck: Schlaf 2 → rot', GC({sleep3:[2,2,2]}).items[2].state==='rot');
+    ok('gocheck: Niggle rot schlägt durch', GC({niggles:['gelb','rot']}).items[3].state==='rot' && GC({niggles:['rot']}).overall==='rot');
+    ok('gocheck: Taper-Über Tag 6 → gelb', GC({dToComp:6,taperOver:true}).items[4].state==='gelb');
+    ok('gocheck: Taper-Über Tag 2 → rot', GC({dToComp:2,taperOver:true}).items[4].state==='rot');
+    ok('gocheck: Aktion = erstes rotes Signal', GC({kg:84.5,ready3:[50,50,50]}).action.indexOf('Gewicht')===0);
+    /* Nach-Turnier-Schleifen: Lean-Bulk · Technik-Schleife · Debrief */
+    ok('nutri: Tag 0 → Camp', nutriPhase(0).bulk===false);
+    ok('nutri: Tag 5 → Camp, 3.050 kcal', nutriPhase(5).ktL==='~3.050');
+    ok('nutri: Tag −1 → Bulk, 3.350 kcal', nutriPhase(-1).bulk===true && nutriPhase(-1).ktL==='~3.350');
+    ok('nutri: null robust → Camp', nutriPhase(null).bulk===false);
+    var RT='2026-06-10';
+    ok('retest: leer/null robust', retestDue([],RT).length===0 && retestDue(null,RT).length===0);
+    ok('retest: heute fällig → due', retestDue([{retest:'2026-06-10',done:false}],RT).length===1);
+    ok('retest: erledigt → nicht due', retestDue([{retest:'2026-06-01',done:true}],RT).length===0);
+    ok('retest: morgen → nicht due', retestDue([{retest:'2026-06-11',done:false}],RT).length===0);
+    ok('retest: ohne retest-Feld (Alt-Einträge) → nicht due', retestDue([{id:'x'}],RT).length===0);
+    var rts=retestDue([{retest:'2026-06-09',done:false,id:'b'},{retest:'2026-06-01',done:false,id:'a'}],RT);
+    ok('retest: älteste zuerst', rts.length===2 && rts[0].id==='a');
+    ok('retest: Monatsgrenze (Mai→Juni)', retestDue([{retest:'2026-05-31',done:false}],RT).length===1);
+    ok('debrief: Tag −1 ohne Debrief → fällig', debriefDue(-1,false)===true);
+    ok('debrief: Tag 0 → nicht fällig', debriefDue(0,false)===false);
+    ok('debrief: Tag −14 → noch fällig, −15 → nicht mehr', debriefDue(-14,false)===true && debriefDue(-15,false)===false);
+    ok('debrief: vorhanden → nicht fällig', debriefDue(-3,true)===false);
+    ok('debrief: null robust', debriefDue(null,false)===false);
+    /* Krank-Modus & Wiedereinstieg */
+    ok('illDays: seit heute → Tag 1', illnessDays('2026-06-17','2026-06-17')===1);
+    ok('illDays: 7 Tage', illnessDays('2026-06-15','2026-06-21')===7);
+    ok('illDays: null → 0', illnessDays(null,'2026-06-17')===0);
+    ok('rtt: kein Start → inaktiv', rttState(null,'2026-06-17').active===false);
+    ok('rtt: vor Start → inaktiv', rttState('2026-06-17','2026-06-16').active===false);
+    ok('rtt: Tag 1 → 50 %, kein Sparring', (function(){ var s=rttState('2026-06-17','2026-06-17'); return s.active&&s.day===1&&s.volPct===50&&s.spar===false; })());
+    ok('rtt: Tag 3 → 70 %, leichtes Sparring', (function(){ var s=rttState('2026-06-17','2026-06-19'); return s.day===3&&s.volPct===70&&s.spar==='leicht'; })());
+    ok('rtt: Tag 5 → 90 %, Sparring normal', (function(){ var s=rttState('2026-06-17','2026-06-21'); return s.day===5&&s.volPct===90&&s.spar==='normal'; })());
+    ok('rtt: Tag 6 → fertig, inaktiv', (function(){ var s=rttState('2026-06-17','2026-06-22'); return s.active===false&&s.done===true; })());
+    ok('rtt: Volumen steigt monoton', (function(){ var p=-1,okk=true; for(var i=0;i<5;i++){ var d=new Date(2026,5,17+i); var s=rttState('2026-06-17',key(d)); if(s.volPct<p) okk=false; p=s.volPct; } return okk; })());
+    ok('rtt: über Monatsgrenze', (function(){ var s=rttState('2026-06-29','2026-07-01'); return s.active&&s.day===3; })());
+    var pass=n-fails.length;
+    var msg='Alter Schwede Selbsttest: '+pass+'/'+n+' OK'+(fails.length?(' · FEHLER: '+fails.join(', ')):'');
+    try{ (fails.length?console.error:console.log)(msg); }catch(e){}
+    try{
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;left:8px;bottom:8px;z-index:10001;max-width:92vw;padding:10px 14px;border-radius:10px;font:12px/1.4 monospace;cursor:pointer;'+(fails.length?'background:#3a0f0f;color:#ff9a8a;border:1px solid #ff6a5a':'background:#0f2a20;color:#7ff0c4;border:1px solid #37d39b');
+      d.textContent=msg+'  (tippen zum Schließen)'; d.addEventListener('click',function(){ d.remove(); });
+      document.body.appendChild(d);
+    }catch(e){}
+    return fails.length===0;
+  }
+
+  /* ===================== GRACIE BARRA · INTERNATIONALES CURRICULUM =====================
+     GB1-Fundamentals: 16-Wochen-Zyklus, weltweit synchronisiert (alle GB-Schulen unterrichten
+     dieselbe Woche). Rekonstruktion aus öffentlichen Quellen (GB-Schulblogs, BJJ Legends, GB1-
+     Aufbau nach Almeida/Feitosa) — pro Woche per Notiz korrigierbar, Kalibrierung auf die eigene
+     Schule (GB Sternschanze). „Was läuft gerade" = Ankerwoche fortgezählt über die Kalenderwochen.
+     Jede Woche: 2 Klassen (A/B) mit je Selbstverteidigung + Takedown + Bodentechniken. */
+  var GB_CURRICULUM=[
+    {w:1, pos:'Basis', theme:'Grundlagen & Positions-Hierarchie',
+     sdA:'Befreiung aus Handgelenk-Griffen', sdB:'Sicheres Aufstehen unter Druck (technical stand-up)',
+     td:'Doppelbein (double leg) – Grundform',
+     tech:['Positions-Hierarchie & Punkteschema','Grund-Kontrolle & -Flucht','Fallschule / Breakfalls'],
+     tags:['grundlagen','position','stand-up','aufstehen','doppelbein','double leg','fallschule','breakfall','basis']},
+    {w:2, pos:'Guard', theme:'Closed Guard – Kontrolle (unten)',
+     sdA:'Verteidigung gegen frontales Würgen im Stand', sdB:'Distanz halten & clinchen gegen Schläge',
+     td:'Einbein (single leg)',
+     tech:['Closed Guard halten & Haltung brechen','Scheren-Sweep (scissor)','Hüftstoß-Sweep (hip bump)'],
+     tags:['closed guard','guard','geschlossene guard','sweep','scissor','hip bump','single leg','einbein']},
+    {w:3, pos:'Guard', theme:'Closed Guard – Angriffe',
+     sdA:'Abwehr gerader Schlag + Clinch', sdB:'Befreiung aus Revers-/Kragengriff',
+     td:'Hüftwurf (o-goshi)',
+     tech:['Cross-Collar-Choke aus der Guard','Armbar (juji-gatame) aus der Guard','Übergang Armbar ↔ Omoplata'],
+     tags:['guard','choke','würg','cross collar','armbar','juji','omoplata','hüftwurf','o-goshi']},
+    {w:4, pos:'Guard', theme:'Closed Guard – Sweeps & Übergänge',
+     sdA:'Befreiung aus vorderem Umklammern (über die Arme)', sdB:'Kopf-Kontrolle & Wurf im Clinch',
+     td:'Doppelbein – Ecke/Wende zum Finish',
+     tech:['Kimura aus der Guard','Hip-Bump-Sweep → Mount','Übergang Guard → Rückennahme'],
+     tags:['guard','kimura','sweep','back','rücken','mount','clinch','hip bump']},
+    {w:5, pos:'Passing', theme:'Guard-Passing – Grundlagen (oben)',
+     sdA:'Lösen einer Umklammerung', sdB:'Aus der Bodenlage sicher aufstehen',
+     td:'Ausheber / Körperwurf',
+     tech:['Guard öffnen & Haltung halten','Knee-Cut-Pass','Toreando (bullfighter) Pass'],
+     tags:['pass','passing','guard pass','knee cut','knie','toreando','bullfighter','öffnen']},
+    {w:6, pos:'Passing', theme:'Guard-Passing – Druck & Kontrolle',
+     sdA:'Verteidigung gegen Umklammern von hinten (über die Arme)', sdB:'Konter gegen Wurfversuch (sprawl)',
+     td:'Innensichel (kouchi / ouchi-gari)',
+     tech:['Over-Under-Pass','Stack-Pass (doppelter Unterhaken)','Druck- & Gewichtsverteilung'],
+     tags:['pass','passing','druck','over under','stack','sprawl','unterhaken']},
+    {w:7, pos:'Side Control', theme:'Side Control – Kontrolle & Angriffe (oben)',
+     sdA:'Schläge am Boden abwehren (oben)', sdB:'Kopfschloss am Boden kontrollieren',
+     td:'Kouchi-Gari',
+     tech:['Side-Control-Kontrolle & Griffe','Americana (keylock)','Übergang Side Control → Mount'],
+     tags:['side control','seitenkontrolle','100 kilos','americana','keylock','mount','kesa']},
+    {w:8, pos:'Side Control', theme:'Side Control – Escapes (unten)',
+     sdA:'Rahmen & Ellbogen gegen Schläge (unten)', sdB:'Nach dem Escape sicher aufstehen',
+     td:'Ouchi-Gari',
+     tech:['Ellbogen-Knie-Escape (shrimp) → Guard','Unterhaken-Recovery zur Guard','Rahmen halten & abdrehen'],
+     tags:['side control','escape','flucht','shrimp','ellbogen','frame','rahmen','guard recovery','unterhaken']},
+    {w:9, pos:'Mount', theme:'Mount – Kontrolle & Angriffe (oben)',
+     sdA:'Frontales Würgen am Boden abwehren', sdB:'Schläge aus der Mount kontrollieren',
+     td:'Body-Lock-Takedown',
+     tech:['Mount halten (low & high)','Armbar aus der Mount','Cross-Collar-Choke aus der Mount'],
+     tags:['mount','montada','armbar','cross collar','choke','würg','body lock']},
+    {w:10, pos:'Mount', theme:'Mount & Knee-on-Belly',
+     sdA:'Kopfschloss-Verteidigung (stehend & am Boden)', sdB:'Kopfschloss + Wurf mit Kopf-Kontrolle',
+     td:'Hüft- & Handwürfe',
+     tech:['Mount: Halten, Übergänge, Submissions','Knee-on-Belly: Druck & Kontrolle','Knee-on-Belly: Submissions & Übergänge'],
+     tags:['mount','knee on belly','knie bauch','joelho na barriga','headlock','kopfschloss','hüftwurf']},
+    {w:11, pos:'Mount', theme:'Mount – Escapes (unten)',
+     sdA:'Befreiung aus rückwärtigem Umklammern (über die Arme)', sdB:'Rückwurf aus dem Clinch',
+     td:'Rückwurf (rear takedown)',
+     tech:['Upa / Bridge-&-Roll-Escape','Ellbogen-Knie-Escape aus der Mount','Rahmen gegen High Mount'],
+     tags:['mount','escape','flucht','upa','bridge','brücke','elbow knee','bear hug','umklammern']},
+    {w:12, pos:'Back', theme:'Rücken & Turtle – Rückennahme',
+     sdA:'Bärenumklammerung vorne (über Arme) → Hüftwurf → Knee-on-Belly', sdB:'Bärenumklammerung hinten (über Arme) → Rückwurf → Side Control',
+     td:'Rückennahme aus der Turtle',
+     tech:['Rückenkontrolle: Seatbelt + Haken setzen','Rear Naked Choke (mata leão)','Clock Choke & Two-Collar-Choke'],
+     tags:['back','rücken','turtle','schildkröte','rnc','mata leao','naked choke','würg','clock','seatbelt','haken','hooks']},
+    {w:13, pos:'Back', theme:'Rücken – Verteidigung & Escapes',
+     sdA:'Würger von hinten (im Stand) abwehren', sdB:'Nach der Flucht Kontrolle zurückgewinnen',
+     td:'Aufnahme / Konter zum Rücken',
+     tech:['Hand-Fighting gegen den Choke','Haken lösen & abdrehen','Flucht Rücken → Guard/Top'],
+     tags:['back','rücken','escape','flucht','hand fight','choke defense','würg','haken','hooks']},
+    {w:14, pos:'Half Guard', theme:'Half Guard – oben & unten',
+     sdA:'Niederringen abwehren & rahmen', sdB:'Aus der Half Guard aufstehen',
+     td:'Umleiten / Re-Shot',
+     tech:['Half Guard unten: Unterhaken & Old-School-Sweep','Knie-Schild (knee shield)','Half Guard passen (oben)'],
+     tags:['half guard','halbe guard','unterhaken','old school','knee shield','knieschild','pass','sweep']},
+    {w:15, pos:'Takedowns', theme:'Takedowns & Clinch',
+     sdA:'Distanzmanagement gegen Schläge', sdB:'Clinch aufbauen & kontrollieren',
+     td:'Doppelbein / Einbein / Hüftwurf-Serie',
+     tech:['Griffkampf & Clinch-Kontrolle','Wurfabwehr: Sprawl & Whizzer','Sicher zu Boden (Landung & Position)'],
+     tags:['takedown','wurf','clinch','griff','doppelbein','einbein','sprawl','whizzer','judo','wrestling','ringen']},
+    {w:16, pos:'Review', theme:'Integration & Review',
+     sdA:'Freie Selbstverteidigungs-Szenarien', sdB:'Kombinationen aus dem gesamten Zyklus',
+     td:'Wurf nach Wahl',
+     tech:['Positions-Sparring (alle Positionen)','Wiederholung der Kern-Submissions','Offene Fragen & Feinschliff'],
+     tags:['review','wiederholung','sparring','integration','positionssparring','drill']}
+  ];
+  var GB_VIEW=null; // aktuell betrachtete Woche im Zyklus-Browser
+
+  function gbEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function gbFmt(k){ try{ var d=keyToDate(k); return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'; }catch(e){ return k; } }
+  function gbWeek(w){ return GB_CURRICULUM[((w-1)%16+16)%16]; }
+  function gbMonday(d){ var x=midnight(new Date(d)); var wd=(x.getDay()+6)%7; x.setDate(x.getDate()-wd); return x; }
+  function gbCurrentWeek(){
+    if(!DB.gb||!DB.gb.anchorWeek||!DB.gb.anchorDate) return null;
+    var am=gbMonday(keyToDate(DB.gb.anchorDate)), cm=gbMonday(NOW);
+    var dw=Math.round((cm-am)/(7*86400000));
+    return ((DB.gb.anchorWeek-1+dw)%16+16)%16 + 1;
+  }
+  function gbNote(w){ return (DB.gb&&DB.gb.notes&&DB.gb.notes[w])||''; }
+  // Abgleich: Sessions der letzten 21 Tage, deren Freitext (Fokus/Notiz/Runden) ein Wochen-Tag trifft
+  function gbMatches(week){
+    var lim=key(new Date(NOW.getTime()-21*86400000)), tags=week.tags||[], hits=[];
+    (DB.sessions||[]).forEach(function(s){
+      if(!s || s.date<lim) return;
+      var hay=((s.focus||'')+' '+(s.note||'')+' '+(s.rounds||'')).toLowerCase();
+      if(hay.trim() && tags.some(function(t){ return hay.indexOf(t)>=0; })) hits.push(s);
+    });
+    return hits;
+  }
+  function gbAbgleichHTML(week){
+    var hits=gbMatches(week);
+    if(hits.length){
+      var last=hits[hits.length-1];
+      return '<div style="margin-top:10px"><span class="chip" style="background:rgba(55,211,155,.16);border-color:rgba(55,211,155,.5);color:var(--good)">✓ passt zu deinem Training</span>'
+        +'<div class="note" style="margin-top:5px">'+hits.length+' Session(s) der letzten 3 Wochen berühren dieses Thema — zuletzt '+gbFmt(last.date)+(last.focus?' · „'+gbEsc(last.focus)+'“':'')+'.</div></div>';
+    }
+    return '<div style="margin-top:10px"><span class="chip" style="background:rgba(255,177,58,.16);border-color:rgba(255,177,58,.5);color:var(--warn)">✗ Lücke</span>'
+      +'<div class="note" style="margin-top:5px">In den letzten 3 Wochen nichts dazu geloggt. Beim nächsten Training gezielt draufgehen — oder passend im „Training"-Tab eintragen.</div></div>';
+  }
+  function gbWeekHTML(w, opts){
+    opts=opts||{}; var wk=gbWeek(w);
+    var chips=wk.tech.map(function(t){ return '<span class="chip"><b>›</b> '+gbEsc(t)+'</span>'; }).join('');
+    var h='<div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap">'
+      +'<span style="font-family:\'Space Mono\',monospace;font-weight:700;color:var(--gold);font-size:13px">WOCHE '+w+'/16</span>'
+      +'<b style="color:var(--ink)">'+gbEsc(wk.theme)+'</b>'
+      +'<span class="chip blue" style="margin-top:0"><b>'+gbEsc(wk.pos)+'</b></span></div>'
+      +'<div style="margin-top:10px;display:grid;gap:8px">'
+      +'<div><b style="color:var(--gold);font-size:13px">🥋 Selbstverteidigung</b><div class="note" style="margin-top:2px">A · '+gbEsc(wk.sdA)+'<br>B · '+gbEsc(wk.sdB)+'</div></div>'
+      +'<div><b style="color:var(--gold);font-size:13px">🤼 Takedown</b><div class="note" style="margin-top:2px">'+gbEsc(wk.td)+'</div></div>'
+      +'<div><b style="color:var(--gold);font-size:13px">🧩 Bodentechniken</b><div style="margin-top:3px">'+chips+'</div></div>'
+      +'</div>';
+    if(opts.abgleich) h+=gbAbgleichHTML(wk);
+    if(opts.note){
+      h+='<div style="margin-top:12px"><label class="note" for="gb-note">Korrektur/Notiz zu Woche '+w+' (an deine Schule angepasst) — wird gespeichert:</label>'
+        +'<textarea id="gb-note" style="width:100%;min-height:52px;margin-top:4px" placeholder="z. B. bei uns diese Woche eher Lapel-Guard / abweichende Reihenfolge …">'+gbEsc(gbNote(w))+'</textarea></div>';
+    }
+    return h;
+  }
+  function gbCalibHTML(cur){
+    var opts=''; for(var i=1;i<=16;i++){ opts+='<option value="'+i+'"'+((cur||1)===i?' selected':'')+'>Woche '+i+' — '+gbEsc(gbWeek(i).theme)+'</option>'; }
+    return '<div class="bgrid"><div class="bf" style="grid-column:1/-1"><label>Welche Zyklus-Woche unterrichtet deine Schule <b>diese Woche</b>?</label>'
+      +'<select id="gb-cal-week">'+opts+'</select></div></div>'
+      +'<div class="inrow" style="margin-top:8px"><button class="btn" id="gb-cal-set">Diese Kalenderwoche = ausgewählte</button>'
+      +(cur?'<button class="btn ghost" id="gb-cal-reset">Kalibrierung löschen</button>':'')+'</div>'
+      +(cur?'<div class="note" style="margin-top:6px">✓ Kalibriert: diese Woche = <b style="color:var(--gold)">Woche '+cur+'</b>. Der Zyklus zählt automatisch weiter.</div>'
+           :'<div class="note" style="margin-top:6px">Noch nicht kalibriert — frag einmal deinen Coach „welche Woche läuft gerade?" und stell sie hier ein.</div>');
+  }
+  function bindGBOnce(){
+    var sec=document.getElementById('s-gb'); if(!sec||sec._b) return; sec._b=1;
+    var prev=document.getElementById('gb-prev'), next=document.getElementById('gb-next'), jump=document.getElementById('gb-jump');
+    if(prev) prev.addEventListener('click',function(){ GB_VIEW=((GB_VIEW-2+16)%16)+1; renderGB(); });
+    if(next) next.addEventListener('click',function(){ GB_VIEW=(GB_VIEW%16)+1; renderGB(); });
+    if(jump) jump.addEventListener('click',function(){ GB_VIEW=gbCurrentWeek()||1; renderGB(); });
+    var br=document.getElementById('gb-browse');
+    if(br) br.addEventListener('input',function(e){ if(e.target.id==='gb-note'){ DB.gb=DB.gb||{}; DB.gb.notes=DB.gb.notes||{}; DB.gb.notes[GB_VIEW]=e.target.value; save('as_gb',DB.gb); } });
+    var cb=document.getElementById('gb-calib');
+    if(cb) cb.addEventListener('click',function(e){
+      if(e.target.id==='gb-cal-set'){ var w=+(document.getElementById('gb-cal-week')||{}).value||1; DB.gb=DB.gb||{}; DB.gb.anchorWeek=w; DB.gb.anchorDate=TODAY; save('as_gb',DB.gb); GB_VIEW=w; renderGB(); renderGBToday(); }
+      else if(e.target.id==='gb-cal-reset'){ DB.gb=DB.gb||{}; delete DB.gb.anchorWeek; delete DB.gb.anchorDate; save('as_gb',DB.gb); renderGB(); renderGBToday(); }
+    });
+  }
+  function renderGB(){
+    if(!document.getElementById('s-gb')) return;
+    bindGBOnce();
+    var cur=gbCurrentWeek(); if(GB_VIEW==null) GB_VIEW=cur||1;
+    var a=document.getElementById('gb-current');
+    if(cur) a.innerHTML=gbWeekHTML(cur,{abgleich:true});
+    else a.innerHTML='<div class="lead">Noch nicht kalibriert. Sag mir einmal unten, welche Zyklus-Woche gerade läuft — danach zeigt „Alter Schwede" jede Woche automatisch das international unterrichtete Thema.</div>';
+    var lbl=document.getElementById('gb-wlabel'); if(lbl) lbl.textContent='Woche '+GB_VIEW+' / 16'+(cur&&cur===GB_VIEW?' · aktuell':'');
+    document.getElementById('gb-browse').innerHTML=gbWeekHTML(GB_VIEW,{abgleich:true,note:true});
+    document.getElementById('gb-calib').innerHTML=gbCalibHTML(cur);
+  }
+  function renderGBToday(){
+    var el=document.getElementById('gb-today'); if(!el) return;
+    var cur=gbCurrentWeek();
+    if(!cur){ el.innerHTML='<span class="chip" role="button" tabindex="0" id="gb-badge" style="cursor:pointer">🌐 <b>GB-Curriculum</b> · tippen zum Kalibrieren</span>'; }
+    else { var wk=gbWeek(cur), hit=gbMatches(wk).length;
+      el.innerHTML='<span class="chip'+(hit?'':' blue')+'" role="button" tabindex="0" id="gb-badge" style="cursor:pointer">🌐 <b>GB int. · Woche '+cur+'</b> '+gbEsc(wk.theme)+(hit?' · ✓ trainiert':'')+'</span>'; }
+    var b=document.getElementById('gb-badge');
+    function go(){ var t=document.getElementById('tab-gb'); if(t) t.click(); }
+    if(b){ b.addEventListener('click',go); b.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } }); }
+  }
+
+  /* ===================== GRACIE BARRA · GESAMTSYSTEM (Referenz) =====================
+     Programme, Gürtel (Erwachsene & Kids), Methodik & Etikette. Aggregiert aus offiziellen
+     GB-Programm-/Gürtel-/Methodik-Seiten & GB-Schulseiten (2025/26). Zeiten sind typisch und
+     variieren je Schule/Person. Erwachsenen-Gürtel wird auf DB.profile.bjjBelt personalisiert. */
+  var GBSYS_ADULT=[
+    {n:'Weiß',   c:'#e8e6df', t:'#111', time:'1–2 Jahre', d:'Fundament: GB1, Selbstverteidigung & Kernpositionen. Ab 3 Streifen → GB2.'},
+    {n:'Blau',   c:'#2b6fe0', t:'#fff', time:'2–4 Jahre', d:'Breites Repertoire, erste eigene Spiele. Öffnet GB3.'},
+    {n:'Lila',   c:'#7b3ff2', t:'#fff', time:'2–5 Jahre', d:'Verfeinerung, Spezialisierung, Lehr-Assistenz.'},
+    {n:'Braun',  c:'#6b4423', t:'#fff', time:'1–3 Jahre', d:'Feinschliff & Reife vor dem Schwarzgurt.'},
+    {n:'Schwarz',c:'#1a1a1a', t:'#fff', time:'ab min. 3 J. (nach Braun)', d:'Meisterschaft — danach schwarze Grade, später rote Grade (Coral/Rot).'}
+  ];
+  var GBSYS_KIDS=[
+    {n:'Weiß',c:'#e8e6df',t:'#111'},{n:'Grau',c:'#9aa0a6',t:'#111'},{n:'Gelb',c:'#f2c200',t:'#111'},{n:'Orange',c:'#ff8c1a',t:'#111'},{n:'Grün',c:'#37b24d',t:'#fff'}
+  ];
+  function gbsysBeltRow(b, mineName){
+    var is = mineName && b.n.toLowerCase()===String(mineName).toLowerCase();
+    return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.08)">'
+      +'<span style="flex:none;width:60px;height:20px;border-radius:3px;background:'+b.c+';color:'+b.t+';font-size:10px;font-weight:800;display:grid;place-items:center;border:1px solid rgba(0,0,0,.35)'+(is?';box-shadow:0 0 0 2px var(--gold)':'')+'">'+(is?'DU':'')+'</span>'
+      +'<b style="flex:none;width:64px;color:'+(is?'var(--gold)':'var(--ink)')+'">'+b.n+'</b>'
+      +'<span class="chip" style="margin:0;flex:none">'+gbEsc(b.time)+'</span>'
+      +'<span class="note" style="flex:1;min-width:130px">'+gbEsc(b.d)+'</span></div>';
+  }
+  function renderGBSys(){
+    if(!document.getElementById('s-gbsys')) return;
+    var belt=(DB.profile&&DB.profile.bjjBelt)||'', since=(DB.profile&&DB.profile.bjjSince)||'', gym=(DB.profile&&DB.profile.bjjGym)||'';
+    var you=document.getElementById('gbsys-you');
+    if(you){
+      if(belt){
+        var yrs = /^\d{4}$/.test(String(since)) ? (new Date().getFullYear()-(+since)) : null;
+        var prog = /blau|lila|braun|schwarz/i.test(belt) ? 'GB1 · GB2 · GB3' : (/wei|white/i.test(belt)?'GB1 (+ GB2 ab 3 Streifen Weißgurt)':'GB1');
+        var nextMap={'weiß':'Blaugurt','weiss':'Blaugurt','blau':'Lilagurt','lila':'Braungurt','braun':'Schwarzgurt','schwarz':'schwarze Grade'};
+        var next=nextMap[String(belt).toLowerCase()]||null;
+        you.innerHTML='<span class="chip" style="margin:0"><b>Dein Rang</b> · '+gbEsc(belt)+'gurt</span> '
+          +(yrs?'<span class="chip blue" style="margin:0"><b>'+yrs+' Jahre</b> dabei</span> ':'')
+          +'<div class="note" style="margin-top:8px">Für dich offen: <b style="color:var(--gold)">'+prog+'</b>.'+(next?' Nächster Meilenstein: <b style="color:var(--gold)">'+next+'</b>.':'')+(gym?' Deine Schule: '+gbEsc(gym)+'.':'')+'</div>';
+      } else {
+        you.innerHTML='<div class="note">Trag deinen Gürtel im „Profil"-Tab ein — dann markiere ich hier deinen Stand in der Leiter.</div>';
+      }
+    }
+    var bl=document.getElementById('gbsys-belts');
+    if(bl) bl.innerHTML=GBSYS_ADULT.map(function(b){return gbsysBeltRow(b,belt);}).join('');
+    var kb=document.getElementById('gbsys-kids-belts');
+    if(kb) kb.innerHTML=GBSYS_KIDS.map(function(b){return '<span class="chip" style="background:'+b.c+';color:'+b.t+';border-color:rgba(0,0,0,.3)">'+b.n+'</span>';}).join('');
+  }
+
+  function renderAll(){ renderReadiness(); renderCoach(); renderHeute(); renderTaperGuard(); renderIllness(); renderCompTimer(); renderGoCheck(); renderNiggleAlert(); renderLoopAlerts(); renderCompProtocol(); renderHRzones(); renderOnboard(); renderGBToday(); }
 
   /* ---------- init ---------- */
   (async function(){
     await loadDB();
     await initLock();
-    tickCountdown(); bindAccordions(); bind(); renderAll(); renderBlood(); renderShop();
-    drawGuides(document.getElementById('w-chart'));
+    tickCountdown(); bindAccordions(); bind(); renderAll(); renderBlood(); renderShop(); applyNutriPhase();
+    drawGuides(document.getElementById('w-chart'),nutriPhase(dToComp).bulk);
     updateNavFades();
+    /* Wettkampftag-Timer: minütlich nachführen (nur wenn aktiv & kein Input fokussiert) */
+    setInterval(function(){
+      if((dToComp===0||DB.comp.demo)){
+        var ct=document.getElementById('comp-timer');
+        if(ct&&!(ct.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')) renderCompTimer();
+      }
+    },30000);
+    if(/selftest/i.test(location.search)||/selftest/i.test(location.hash)) runSelfTests();
   })();
 })();
 </script>
