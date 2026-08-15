@@ -1003,6 +1003,7 @@
         <button class="pillbtn" data-r="nord">🧭 Nord</button>
         <button class="pillbtn" data-r="mitte">Mitte</button>
         <button class="pillbtn" data-r="sued">Süd</button>
+        <button class="pillbtn" data-r="intl">🌍 Intl</button>
       </div>
       <div id="tourn-list"></div>
       <div class="note" id="tourn-status"></div>
@@ -2948,7 +2949,7 @@
   function daysToISO(iso){ var p=iso.split('-'); return Math.ceil((new Date(+p[0],+p[1]-1,+p[2])-NOW)/MS); }
   /* Regionen: Nord = SH·HH·HB·NI·MV·BE·BB · Mitte = NRW·HE·RLP·SL·TH·SN·ST · Süd = BY·BW.
      Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 15.08.2026. */
-  var TREGION={alle:'Alle',nord:'Nord',mitte:'Mitte',sued:'Süd'};
+  var TREGION={alle:'Alle',nord:'Nord',mitte:'Mitte',sued:'Süd',intl:'International'};
   var tournRegion='alle';
   var TOURN=[
     {id:'gi-hamburg-aug',date:'2026-08-15',name:'Grappling Industries Hamburg',loc:'Sporthalle Wandsbek, Rüterstraße 75, Hamburg',region:'nord',target:true,
