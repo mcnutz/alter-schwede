@@ -593,10 +593,10 @@
       <div class="role">Physiotherapie · Niggles früh erkennen</div>
       <div class="lead">Kleine Wehwehchen loggen, bevor sie Verletzungen werden.</div>
       <div class="inrow">
-        <select id="ng-area" style="flex:1;min-width:120px"><option>Nacken</option><option>Schulter</option><option>Ellbogen</option><option>Hand/Finger</option><option>Rücken</option><option>Hüfte</option><option>Knie</option><option>Sprunggelenk</option><option>Sonstiges</option></select>
-        <select id="ng-sev"><option value="1">1 leicht</option><option value="2">2</option><option value="3">3 mittel</option><option value="4">4</option><option value="5">5 stark</option></select>
+        <select id="ng-area" aria-label="Körperstelle der Beschwerde" style="flex:1;min-width:120px"><option>Nacken</option><option>Schulter</option><option>Ellbogen</option><option>Hand/Finger</option><option>Rücken</option><option>Hüfte</option><option>Knie</option><option>Sprunggelenk</option><option>Sonstiges</option></select>
+        <select id="ng-sev" aria-label="Schweregrad 1 bis 5"><option value="1">1 leicht</option><option value="2">2</option><option value="3">3 mittel</option><option value="4">4</option><option value="5">5 stark</option></select>
       </div>
-      <div class="inrow"><input id="ng-note" placeholder="Notiz (optional)" style="flex:1"><button class="btn" id="ng-save">Loggen</button></div>
+      <div class="inrow"><input id="ng-note" placeholder="Notiz (optional)" aria-label="Notiz zur Beschwerde (optional)" style="flex:1"><button class="btn" id="ng-save">Loggen</button></div>
       <div id="ng-list" style="margin-top:12px"></div>
       <div class="note warn"><b>Rote Flaggen → Physio/Arzt:</b> scharfer Gelenkschmerz, Taubheit/Kribbeln, Schwellung, „Knacken“ mit Funktionsverlust, oder Schmerz &gt; 2 Wochen. Grundregel: <b>um den Schmerz herum trainieren, nicht durch ihn.</b></div>
     </div>
@@ -647,7 +647,7 @@
         <div class="bf"><label for="bl-fer">Ferritin</label><input type="text" inputmode="decimal" id="bl-fer" placeholder="ng/ml"></div>
         <div class="bf"><label for="bl-crp">hs-CRP</label><input type="text" inputmode="decimal" id="bl-crp" placeholder="mg/l"></div>
       </div>
-      <div class="inrow" style="margin-top:10px"><input id="bl-note" placeholder="Notiz / Labor (optional)" style="flex:1;min-width:140px"><button class="btn" id="bl-save">Befund speichern</button></div>
+      <div class="inrow" style="margin-top:10px"><input id="bl-note" placeholder="Notiz / Labor (optional)" aria-label="Notiz oder Labor zum Befund (optional)" style="flex:1;min-width:140px"><button class="btn" id="bl-save">Befund speichern</button></div>
       <div id="blood-list" style="margin-top:12px"></div>
       <div class="note">Einheiten variieren je Labor — trag die Werte so ein, wie sie auf deinem Befund stehen, und bleib konsistent. Felder leer lassen ist ok. <b>Kein medizinischer Rat:</b> Referenzbereiche und Interpretation gehören in die Hand deiner Ärztin/deines Arztes.</div>
     </div>
@@ -685,7 +685,7 @@
       <div class="lead">Tippe an, was du brauchst. Dann „Teilen“ (öffnet die iPhone-Teilen-Ansicht → Bring!, Erinnerungen, Notizen …) oder „Kopieren“.</div>
       <div id="shop-list"></div>
       <h3>Eigene Artikel</h3>
-      <textarea id="shop-custom" placeholder="Eigene Zeilen, je eine pro Artikel:&#10;Kokosöl&#10;Heidelbeeren" style="width:100%;min-height:64px"></textarea>
+      <textarea id="shop-custom" aria-label="Eigene Einkaufs-Artikel, je Zeile einer" placeholder="Eigene Zeilen, je eine pro Artikel:&#10;Kokosöl&#10;Heidelbeeren" style="width:100%;min-height:64px"></textarea>
       <div class="inrow" style="margin-top:12px"><button class="btn" id="shop-share">Teilen → Bring! / Erinnerungen</button><button class="btn ghost" id="shop-copy">Kopieren</button><button class="btn ghost" id="shop-clear">Auswahl leeren</button></div>
       <div class="note" id="shop-status">Nichts ausgewählt.</div>
       <div class="note"><b>So landet die Liste in Bring!:</b> „Teilen“ tippen → in der Teilen-Ansicht <b>Bring!</b> wählen → Artikel werden übernommen. Für <b>Apple Erinnerungen</b> dort <b>Erinnerungen</b> wählen. Klappt das Teilen am Desktop nicht, nutze „Kopieren“ und füge die Liste in der App ein.</div>
@@ -726,7 +726,7 @@
     <div class="card">
       <h2><span class="dot"></span>Gewichtslog</h2>
       <div class="lead">Recomp: Waage steht fast still — Korridor 83,0–83,8 kg, Limit −185 lbs = 84,09 kg (keine Toleranz, Wiegen ohne Gi).</div>
-      <div class="inrow"><input type="text" id="w-kg" inputmode="decimal" placeholder="kg (z. B. 83,7)" style="flex:1;min-width:90px"><button class="btn" id="w-add">Eintragen</button></div>
+      <div class="inrow"><input type="text" id="w-kg" inputmode="decimal" placeholder="kg (z. B. 83,7)" aria-label="Gewicht in Kilogramm eintragen" style="flex:1;min-width:90px"><button class="btn" id="w-add">Eintragen</button></div>
       <div class="chartwrap"><div class="cap"><span>Verlauf</span><span id="w-range">—</span></div>
         <svg id="w-chart" viewBox="0 0 320 120" width="100%" height="120" preserveAspectRatio="none"></svg>
         <div style="display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:8px">
@@ -739,13 +739,13 @@
     <div class="card">
       <h2><span class="dot"></span>Profil &amp; Backup</h2>
       <div class="role">Digitale Strategie · überlebt Umzug &amp; Gerätewechsel</div>
-      <div class="inrow"><input id="p-name" placeholder="Dein Name (optional)" style="flex:1"><input type="text" id="p-kg" inputmode="decimal" placeholder="Startgewicht" style="width:120px"><input type="number" id="p-hr" placeholder="max. HF (bpm)" style="width:130px"><button class="btn ghost" id="p-save">Sichern</button></div>
+      <div class="inrow"><input id="p-name" placeholder="Dein Name (optional)" aria-label="Dein Name (optional)" style="flex:1"><input type="text" id="p-kg" inputmode="decimal" placeholder="Startgewicht" aria-label="Startgewicht in Kilogramm" style="width:120px"><input type="number" id="p-hr" placeholder="max. HF (bpm)" aria-label="Maximale Herzfrequenz in Schlägen pro Minute" style="width:130px"><button class="btn ghost" id="p-save">Sichern</button></div>
       <div class="inrow" style="margin-top:12px"><button class="btn" id="exp-btn">Backup exportieren (.json)</button><button class="btn ghost" id="imp-file-btn">📂 Backup-Datei laden</button><button class="btn ghost" id="imp-btn">Aus Text importieren</button></div>
       <input type="file" id="imp-file" accept=".json,application/json,.txt,text/plain" style="display:none">
       <div class="note" id="backup-status"></div>
       <div class="note">Das Backup ist eine <b>.json-Datei</b> (kein HTML). Zum Wiederherstellen entweder „Backup-Datei laden“ und die gespeicherte <code>alter-schwede-backup-….json</code> auswählen — oder den Text unten einfügen und „Aus Text importieren“.</div>
       <div class="note warn"><b>Mehrere Geräte (iCloud &amp; Co.):</b> Die Datei in iCloud zu legen teilt nur die <i>App</i> — <b>nicht deine Einträge</b>. Jedes Gerät speichert lokal im Browser. Zum Übertragen: auf Gerät A „Backup exportieren (.json)“ (Datei z. B. in iCloud sichern), auf Gerät B „Backup-Datei laden“. Tipp: nach längeren Sessions exportieren, dann hast du überall denselben Stand.</div>
-      <textarea id="io-area" placeholder="Backup-Text erscheint hier (zum Kopieren) – oder hier einfügen und „Aus Text importieren“ tippen." style="width:100%;margin-top:10px;min-height:80px;display:none"></textarea>
+      <textarea id="io-area" aria-label="Backup-Text zum Kopieren oder Einfügen" placeholder="Backup-Text erscheint hier (zum Kopieren) – oder hier einfügen und „Aus Text importieren“ tippen." style="width:100%;margin-top:10px;min-height:80px;display:none"></textarea>
     </div>
 
     <div class="card">
@@ -1457,7 +1457,7 @@
     form.innerHTML='<div class="lift" style="color:var(--faint);font-size:11px"><span>Übung</span><span style="text-align:center">kg</span><span style="text-align:center">Wdh.</span></div>'+
       lifts.map(function(l){
         var v=(existing&&existing.lifts[l[0]])?existing.lifts[l[0]]:{kg:'',reps:''};
-        return '<div class="lift"><div class="ln">'+l[1]+'</div><input type="text" inputmode="decimal" data-k="'+l[0]+'" data-f="kg" value="'+v.kg+'" placeholder="–"><input type="text" inputmode="numeric" data-k="'+l[0]+'" data-f="reps" value="'+v.reps+'" placeholder="–"></div>';
+        return '<div class="lift"><div class="ln">'+l[1]+'</div><input type="text" inputmode="decimal" data-k="'+l[0]+'" data-f="kg" value="'+v.kg+'" placeholder="–" aria-label="'+esc(l[1])+' — Gewicht in kg"><input type="text" inputmode="numeric" data-k="'+l[0]+'" data-f="reps" value="'+v.reps+'" placeholder="–" aria-label="'+esc(l[1])+' — Wiederholungen"></div>';
       }).join('');
     var last=lastStrength(day); var ll=document.getElementById('strength-last');
     if(last){ ll.innerHTML='<b>Letzte Einheit '+day+'</b> ('+last.date+'): '+KEYLIFTS[LOC.variant][day].map(function(l){ var x=last.lifts[l[0]]; return x&&x.kg?l[1]+' '+x.kg+'×'+x.reps:null; }).filter(Boolean).join(' · '); }
@@ -1511,7 +1511,7 @@
       (e.cue?'<div class="exc" style="margin-top:4px">'+esc(e.cue)+(e.url?' <a class="exl" style="margin-top:0" href="'+e.url+'" target="_blank" rel="noopener">▶ Video</a>':'')+'</div>':'')+
       '<div class="exc" style="margin-top:3px;color:#7db4ff">💡 '+(last?('letztes Mal '+setLabel(last)+(dist?' — Distanz/Last steigern':' — steigern, wenn alle Wdh. sauber')):('Orientierung: '+(REC[slug]||'nach Gefühl, 1–3 Wdh. in Reserve')))+'</div>'+
       (chips?'<div style="margin-top:8px">'+chips+'</div>':'')+
-      '<div class="inrow" style="margin-top:8px;gap:6px;align-items:center"><input type="text" inputmode="decimal" id="wk-kg-'+slug+'" value="'+pkg+'" placeholder="kg" style="width:74px"><span style="color:var(--faint)">'+(dist?'kg ·':'×')+'</span><input type="text" inputmode="numeric" id="wk-reps-'+slug+'" value="'+preps+'" placeholder="'+(dist?'Meter':'Wdh.')+'" style="width:74px">'+(dist?'<span style="color:var(--faint)">m</span>':'')+'<button class="btn" data-wlog="'+slug+'" style="padding:8px 14px">✓ Satz</button><span class="role" style="margin:0 0 0 auto">'+prog+'</span></div>'+
+      '<div class="inrow" style="margin-top:8px;gap:6px;align-items:center"><input type="text" inputmode="decimal" id="wk-kg-'+slug+'" value="'+pkg+'" placeholder="kg" style="width:74px" aria-label="'+esc(e.n)+' — Gewicht in kg"><span style="color:var(--faint)">'+(dist?'kg ·':'×')+'</span><input type="text" inputmode="numeric" id="wk-reps-'+slug+'" value="'+preps+'" placeholder="'+(dist?'Meter':'Wdh.')+'" style="width:74px" aria-label="'+esc(e.n)+' — '+(dist?'Distanz in Metern':'Wiederholungen')+'">'+(dist?'<span style="color:var(--faint)">m</span>':'')+'<button class="btn" data-wlog="'+slug+'" style="padding:8px 14px">✓ Satz</button><span class="role" style="margin:0 0 0 auto">'+prog+'</span></div>'+
       '</div>';
   }
   function warmupBlock(){
@@ -2150,7 +2150,7 @@
     document.querySelectorAll('#sched-toggle .btn').forEach(function(b){ b.classList.toggle('on', b.dataset.sk===schedSel); });
     var order=[1,2,3,4,5,6,0]; var html='';
     order.forEach(function(wd){ var t=tplFor(schedSel)[wd]; var val=(DB.schedule[schedSel]&&DB.schedule[schedSel][wd])?DB.schedule[schedSel][wd]:'';
-      html+='<div class="lift" style="grid-template-columns:1fr 120px"><div class="ln">'+WDlong[wd]+'<small>'+t.t+'</small></div><input type="time" data-wd="'+wd+'" value="'+val+'"></div>'; });
+      html+='<div class="lift" style="grid-template-columns:1fr 120px"><div class="ln">'+WDlong[wd]+'<small>'+t.t+'</small></div><input type="time" data-wd="'+wd+'" value="'+val+'" aria-label="'+WDlong[wd]+' — Uhrzeit '+esc(t.t)+'"></div>'; });
     var ed=document.getElementById('week-editor'); if(!ed) return; ed.innerHTML=html;
     ed.querySelectorAll('input[type=time]').forEach(function(inp){ inp.addEventListener('change',function(){ DB.schedule[schedSel][inp.dataset.wd]=inp.value; save('as_schedule',DB.schedule); if(schedSel===LOC.schedKey) renderHeute(); }); });
   }
