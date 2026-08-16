@@ -3023,34 +3023,38 @@
   }
   function renderTurniere(){
     var el=document.getElementById('tourn-list'); if(!el) return; var sel=DB.tournaments||{};
+    var prof=DB.profile||{}; function isTgt(t){ return prof.targetId ? t.id===prof.targetId : !!t.target; }
     var chosen=TOURN.filter(function(t){ return sel[t.id]; });
     var sm=document.getElementById('tourn-summary');
     if(sm){
+      var tgt=TOURN.filter(isTgt)[0];
+      var tgtChip=tgt?('<span class="chip">🎯 Hauptziel: <b>'+esc(tgt.name.replace('Grappling Industries','GI'))+'</b> · '+fmtD(tgt.date)+'</span>'):'';
       if(chosen.length){ var up=chosen.map(function(t){ return {t:t,d:daysToISO(t.date)}; }).filter(function(o){ return o.d>=0; }).sort(function(a,b){ return a.d-b.d; })[0];
-        sm.innerHTML='<span class="chip"><b>'+chosen.length+'</b> ausgewählt</span>'+(up?'<span class="chip blue">nächster: <b>'+up.t.name.replace('Grappling Industries','GI')+'</b> in '+up.d+' T</span>':''); }
-      else sm.innerHTML='<span class="lead">Noch kein Turnier ausgewählt — tippe „Teilnahme“.</span>';
+        sm.innerHTML=tgtChip+'<span class="chip"><b>'+chosen.length+'</b> markiert</span>'+(up?'<span class="chip blue">nächstes markiertes: <b>'+up.t.name.replace('Grappling Industries','GI')+'</b> in '+up.d+' T</span>':''); }
+      else sm.innerHTML=tgtChip+'<span class="lead" style="display:block;margin-top:6px">Tipp „🎯 Als Hauptziel“, um dein Camp auf ein Turnier auszurichten (Countdown/Phasen/Taper). „Teilnahme“ markiert ein Turnier nur.</span>';
     }
     // Regionsfilter (Nord / Mitte / Süd)
     var rf=document.getElementById('tourn-region');
     if(rf){
-      rf.querySelectorAll('.pillbtn').forEach(function(b){ var c=TOURN.filter(function(t){return b.dataset.r==='alle'||t.region===b.dataset.r;}).length; b.classList.toggle('on', b.dataset.r===tournRegion); });
+      rf.querySelectorAll('.pillbtn').forEach(function(b){ b.classList.toggle('on', b.dataset.r===tournRegion); });
       if(!rf._b){ rf._b=1; rf.addEventListener('click',function(e){ var b=e.target.closest('.pillbtn'); if(!b) return; tournRegion=b.dataset.r; renderTurniere(); }); }
     }
     var list=TOURN.filter(function(t){ return tournRegion==='alle'||t.region===tournRegion; })
                   .sort(function(a,b){ return a.date<b.date?-1:1; });
     if(!list.length){ el.innerHTML='<div class="note">Für diese Region ist aktuell nichts gelistet — prüfe die Live-Quellen unten.</div>'; }
     else el.innerHTML=list.map(function(t){
-      var p=t.date.split('-'), dd=+p[2], mo=MOshort[+p[1]-1], dl=daysToISO(t.date), on=!!sel[t.id], hasAppt=(DB.appts||[]).some(function(a){return a.id==='tn-'+t.id;});
-      return '<div class="tourn'+(on?' sel':'')+(t.target?' target':'')+'">'+
+      var pp=t.date.split('-'), dd=+pp[2], mo=MOshort[+pp[1]-1], dl=daysToISO(t.date), on=!!sel[t.id], hasAppt=(DB.appts||[]).some(function(a){return a.id==='tn-'+t.id;}), tg=isTgt(t);
+      return '<div class="tourn'+(on?' sel':'')+(tg?' target':'')+'">'+
         '<div class="th"><div class="tdate"><div class="dday">'+dd+'</div><div class="dmon">'+mo+'</div></div>'+
-        '<div class="tn"><div class="tnm">'+t.name+(t.target?' <span class="tbadge">Hauptziel</span>':'')+'</div><div class="tloc">📍 '+t.loc+' <span class="chip" style="margin:0 0 0 4px;padding:1px 8px">'+(TREGION[t.region]||'—')+'</span></div>'+(dl>=0?'<div class="cd2">⏳ in '+dl+' Tag'+(dl!==1?'en':'')+'</div>':'<div class="cd2" style="color:var(--faint)">vorbei</div>')+'</div></div>'+
+        '<div class="tn"><div class="tnm">'+t.name+(tg?' <span class="tbadge">Hauptziel</span>':'')+'</div><div class="tloc">📍 '+t.loc+' <span class="chip" style="margin:0 0 0 4px;padding:1px 8px">'+(TREGION[t.region]||'—')+'</span></div>'+(dl>=0?'<div class="cd2">⏳ in '+dl+' Tag'+(dl!==1?'en':'')+'</div>':'<div class="cd2" style="color:var(--faint)">vorbei</div>')+'</div></div>'+
         '<div class="tinfo">'+t.info+'<br><b style="color:var(--ink)">Anmeldung:</b> '+t.reg+'</div>'+
-        '<div class="trow"><button class="tpart'+(on?' on':'')+'" data-id="'+t.id+'">'+(on?'✓ Teilnahme':'Teilnahme')+'</button><button class="btn ghost" data-tncal="'+t.id+'" style="font-size:14px;padding:8px 13px">'+(hasAppt?'✓ im Kalender · .ics':'📅 Termin + .ics')+'</button><a class="btn ghost" style="font-size:14px;padding:8px 13px" href="'+t.link+'" target="_blank" rel="noopener">'+t.linkLabel+' ↗</a></div>'+
+        '<div class="trow"><button class="btn ghost" data-tgt="'+t.id+'" style="font-size:14px;padding:8px 13px'+(tg?';border-color:var(--gold);color:var(--gold)':'')+'">'+(tg?'🎯 Hauptziel ✓':'🎯 Als Hauptziel')+'</button><button class="tpart'+(on?' on':'')+'" data-id="'+t.id+'">'+(on?'✓ Teilnahme':'Teilnahme')+'</button><button class="btn ghost" data-tncal="'+t.id+'" style="font-size:14px;padding:8px 13px">'+(hasAppt?'✓ im Kalender · .ics':'📅 Termin + .ics')+'</button><a class="btn ghost" style="font-size:14px;padding:8px 13px" href="'+t.link+'" target="_blank" rel="noopener">'+t.linkLabel+' ↗</a></div>'+
         '</div>';
     }).join('');
     if(!el._b){ el._b=1; el.addEventListener('click',function(e){
+      var tg=e.target.closest('[data-tgt]'); if(tg){ var tt=TOURN.filter(function(x){return x.id===tg.dataset.tgt;})[0]; if(tt){ DB.profile.targetId=tt.id; DB.profile.targetName=tt.name; DB.profile.targetDate=tt.date; save('as_profile',DB.profile); recalcTarget(); var st0=document.getElementById('tourn-status'); if(st0) st0.innerHTML='🎯 Hauptziel gesetzt: <b>'+esc(tt.name)+'</b> ('+fmtD(tt.date)+'). Countdown, Phasen &amp; Timer sind neu berechnet.'; } return; }
       var cal=e.target.closest('[data-tncal]'); if(cal){ var ct=TOURN.filter(function(x){return x.id===cal.dataset.tncal;})[0]; if(ct) tnToCalendar(ct); return; }
-      var b=e.target.closest('.tpart'); if(!b) return; var id=b.dataset.id; DB.tournaments=DB.tournaments||{}; DB.tournaments[id]=!DB.tournaments[id]; save('as_tournaments',DB.tournaments); renderTurniere();
+      var b=e.target.closest('.tpart'); if(!b) return; var id=b.dataset.id; if(!id) return; DB.tournaments=DB.tournaments||{}; DB.tournaments[id]=!DB.tournaments[id]; save('as_tournaments',DB.tournaments); renderTurniere();
     }); }
   }
 
@@ -3602,7 +3606,7 @@
   }
 
   /* ---------- Konfigurierbares Ziel (Setter im Daten-Tab) ---------- */
-  function recalcTarget(){ applyTarget(); tickCountdown(); renderAll(); renderDash(); renderW(); renderTarget(); }
+  function recalcTarget(){ applyTarget(); tickCountdown(); renderAll(); renderDash(); renderW(); renderTarget(); renderTurniere(); }
   function renderTarget(){
     var p=DB.profile||{};
     svNF('tgt-name',p.targetName||''); svNF('tgt-date',p.targetDate||'');
@@ -3615,12 +3619,12 @@
     if(sb&&!sb._b){ sb._b=1; sb.addEventListener('click',function(){
       var d=pv('tgt-date'), stx=document.getElementById('tgt-status');
       if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){ if(stx) stx.textContent='Bitte ein gültiges Datum wählen.'; return; }
-      DB.profile.targetName=pv('tgt-name').trim(); DB.profile.targetDate=d; save('as_profile',DB.profile);
+      DB.profile.targetName=pv('tgt-name').trim(); DB.profile.targetDate=d; delete DB.profile.targetId; save('as_profile',DB.profile);
       recalcTarget(); if(stx) stx.innerHTML='✓ Ziel gesetzt — Countdown, Phasen &amp; Timer neu berechnet.';
     }); }
     var rb=document.getElementById('tgt-reset');
     if(rb&&!rb._b){ rb._b=1; rb.addEventListener('click',function(){
-      delete DB.profile.targetName; delete DB.profile.targetDate; save('as_profile',DB.profile);
+      delete DB.profile.targetName; delete DB.profile.targetDate; delete DB.profile.targetId; save('as_profile',DB.profile);
       recalcTarget(); var stx=document.getElementById('tgt-status'); if(stx) stx.textContent='Zurück auf Standard: GI Hamburg, 15.08.2026.';
     }); }
   }
