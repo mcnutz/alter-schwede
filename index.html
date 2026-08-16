@@ -373,7 +373,7 @@
     </div>
     <div class="brand">
       <h1>ALTER <b>SCHWEDE</b></h1>
-      <div class="sub">Wettkampf-Steuerung bis zur ersten Matte</div>
+      <div class="sub">Wettkampf-Steuerung · Camp · Matte · Aufbau</div>
     </div>
   </header>
 
@@ -1047,7 +1047,7 @@
     <div class="card"><div class="note">Termine &amp; Anmeldestarts aus deinem Kalender (Stand Mai 2026). „Anmeldung sollte offen sein“ = geschätzt — prüfe den Link. Ohne Gewähr; maßgeblich sind Smoothcomp bzw. die Veranstalter.</div></div>
   </section>
 
-  <footer>„Alter Schwede“ · Camp bis GI Hamburg 15.08.2026 · Optimiert mit den Perspektiven Sportmedizin, Trainerteam, Physiotherapie &amp; digitaler Strategie.<br>Kein medizinischer Rat. Bei Schmerz, Krankheit oder Verletzung Fachperson hinzuziehen.</footer>
+  <footer>„Alter Schwede“ · Camp, Wettkampftag und Aufbau · Optimiert mit den Perspektiven Sportmedizin, Trainerteam, Physiotherapie &amp; digitaler Strategie.<br>Kein medizinischer Rat. Bei Schmerz, Krankheit oder Verletzung Fachperson hinzuziehen.</footer>
 </div>
 
 <script>
@@ -1136,11 +1136,11 @@
   var SAY={
     strength:['Heute Eisen. Saubere Wiederholungen, 1–2 in Reserve. Kein Ego an der Stange.','Volumen schlägt Maximallast. Schlag deine letzte Einheit im Log.','Beine und Griff — die gewinnen die Scrambles.'],
     bjj:['Matte ruft. Technik vor Tempo, atme durch die Nase.','Lebe heute in schlechten Positionen und arbeite dich raus.','Weniger Kraft, mehr Hebel. Lass die anderen sich verausgaben.'],
-    cond:['Berg hoch! Kurze Sprints, gehen runter. Der Tank gewinnt Kämpfe.','Wald, Wind, Wille. Macht dich am 15.08. härter.','Open Mat locker — spielen, lernen, keine Kriege.'],
+    cond:['Berg hoch! Kurze Sprints, gehen runter. Der Tank gewinnt Kämpfe.','Wald, Wind, Wille. Macht dich am Wettkampftag härter.','Open Mat locker — spielen, lernen, keine Kriege.'],
     recovery:['Heute ruhst du — das ist Training. Sauna, dehnen, schlafen.','Der Körper baut auf, wenn du ruhst. Protein rein, früh ins Bett.','Mobilität für Hüfte und Schulter. Morgen bist du scharf.'],
     taper:['Taper. Volumen runter, Schärfe rauf. Nicht mehr kaputt machen.','Diese Woche tankst du auf. Schlaf ist dein bestes Supplement.'],
     prestart:['Moin. Wir starten am 1. Juni in Hamburg. Heute: Einkauf, Waage, GB-Kurszeiten checken.','Gi packen, Gracie-Lebensmittel besorgen, Schlaf regeln.'],
-    done:['Turnier durch. Frisch und stark angetreten — jetzt Lean Bulk.','Erste Matte abgehakt. Auswerten, erholen, weiter geht\u2019s.']
+    done:['Turnier durch. Auswerten, erholen, weiter geht\u2019s.'] /* Fallback — im Normalfall spricht postCompLine(): fragen statt behaupten */
   };
   function pick(a){ return a[ daysBetween(START,NOW>START?NOW:START) % a.length ]; }
 
@@ -1227,7 +1227,8 @@
     if(o.rttDay) return {t:'🩺 Wiedereinstieg Tag '+o.rttDay+' — dosiert nach Stufenplan',tab:'heute'};
     if(o.niggleRed) return {t:'🚨 Niggle-Eskalation — Physio/Arzt abklären',tab:'koerper'};
     if(o.dToStart>0) return {t:'📋 Setup: Kurszeiten & Einkauf klären',tab:'heute'};
-    if(o.dToComp<0) return {t:'🎯 Nächstes Ziel setzen — dann läuft das Camp weiter',tab:'daten'};
+    if(o.dToComp<0&&o.debriefOpen) return {t:'📝 Debrief ausfüllen — solange die Matches frisch sind',tab:'turniere'};
+    if(o.dToComp<0) return {t:'🎯 Nächstes Ziel setzen — dann läuft das Camp weiter',tab:'turniere'};
     if(!o.readyDone) return {t:'🟢 Readiness eintragen — 4 Punkte, 10 Sekunden',tab:'heute'};
     if(o.band==='red') return {t:'🔴 Nur Technik & Mobility — kein hartes Sparring/Kraft',tab:'heute'};
     if(!o.weighed) return {t:'⚖️ Morgens wiegen — Gewichtstrend füttern',tab:'heute'};
@@ -1243,7 +1244,7 @@
       ill:!!(ill&&ill.since&&!ill.returnStart),
       rttDay:(rtt.active?rtt.day:0),
       niggleRed:niggleEscalation(DB.niggles,TODAY).some(function(w){return w.level==='rot';}),
-      dToStart:dToStart, dToComp:dToComp,
+      dToStart:dToStart, dToComp:dToComp, debriefOpen:(dToComp<0&&!debriefDone()),
       readyDone:(sc!=null), band:(b?b.c:null),
       weighed:(todayWeight()!=null),
       taperOver:!!(taperState(dToStart,dToComp,DB.load[TODAY]?DB.load[TODAY].load:0).over),
@@ -1275,7 +1276,7 @@
     if(_ill&&_ill.since&&!_ill.returnStart){ document.getElementById('coach-line').textContent='Krank, alter Schwede. Heute zählt Ruhe, nicht Disziplin. Niemals mit Fieber trainieren — die Form holst du in einer Woche locker zurück.'; return; }
     if(_ill&&_ill.returnStart){ var _rs=rttState(_ill.returnStart,TODAY); if(_rs.active){ document.getElementById('coach-line').textContent='Wiedereinstieg '+_rs.label.toLowerCase()+': ~'+_rs.volPct+' % Volumen, '+(_rs.spar===false?'noch kein Sparring':_rs.spar==='leicht'?'leichte Runden':'Sparring normal')+'. Geduld schlägt Nachholen.'; return; } }
     if(dToStart>0) line=pick(SAY.prestart);
-    else if(dToComp<0) line=pick(SAY.done);
+    else if(dToComp<0) line=postCompLine(-dToComp,debriefDone());
     else{
       var sc=readyScore(DB.readiness[TODAY]); var b=readyBand(sc);
       if(b&&b.c==='red') line='Ampel rot, alter Schwede. Heute Technik & Mobility, sonst nichts. Ego runterschlucken — das ist die kluge Wahl.';
@@ -1323,24 +1324,30 @@
     var pi=phaseIndex(), ph=PHASES[pi];
     var dEl=document.getElementById('today-date'), lead=document.getElementById('phase-lead');
     if(dToStart>0){ dEl.textContent='Start am Mo, 1. Juni'; lead.textContent='Noch '+dToStart+' Tag'+(dToStart>1?'e':'')+' bis Programmstart — heute Setup.'; }
-    else if(dToComp<0){ dEl.textContent='Camp abgeschlossen'; lead.textContent='Turnier absolviert — Auswertung & Aufbau.'; }
+    else if(dToComp<0){ var _pc0=postCompPhase(-dToComp,debriefDone()); dEl.textContent=_pc0.head; lead.textContent=_pc0.lead; }
     else { dEl.textContent=WDlong[NOW.getDay()]+', '+NOW.getDate()+'. '+MO[NOW.getMonth()]; lead.textContent='Phase '+ph.n+' · '+ph.name+' — '+ph.focus; }
 
     var pb=document.getElementById('phasebar'); pb.innerHTML='';
     PHASES.forEach(function(_,i){ var s=document.createElement('div'); s.className='seg'+(i<pi?' done':'')+(i===pi&&dToStart<=0&&dToComp>=0?' now':''); pb.appendChild(s); });
 
     var weeks=Math.max(0,Math.ceil((dToComp>=0?dToComp:0)/7));
-    document.getElementById('phase-chips').innerHTML='<span class="chip"><b>'+(dToComp>=0?dToComp:0)+'</b> Tage</span><span class="chip blue"><b>'+weeks+'</b> Wochen</span><span class="chip">📍 <b>'+LOC.gym+'</b></span><span class="chip">'+nutriPhase(dToComp).chip+'</span>';
+    document.getElementById('phase-chips').innerHTML=(dToComp<0
+        ? '<span class="chip"><b>'+(-dToComp)+'</b> Tag'+(dToComp===-1?'':'e')+' nach dem Wettkampf</span><span class="chip blue">Phase <b>'+postCompPhase(-dToComp,debriefDone()).label+'</b></span>'
+        : '<span class="chip"><b>'+dToComp+'</b> Tage</span><span class="chip blue"><b>'+weeks+'</b> Wochen</span>')
+      +'<span class="chip">📍 <b>'+LOC.gym+'</b></span><span class="chip">'+nutriPhase(dToComp).chip+'</span>';
 
-    document.getElementById('techfocus').textContent=(dToComp>=0&&dToStart<=0)?TECHFOCUS[pi]:'🎯 Vorbereitung: Equipment & Kurszeiten organisieren, Schlaf regeln.';
+    document.getElementById('techfocus').textContent=(dToComp>=0&&dToStart<=0)?TECHFOCUS[pi]
+      :(dToComp<0?'🎯 Technik-Fokus: deine Debrief-Prioritäten — geloggte Schwäche, gezielter Drill, Re-Test nach 2 Wochen.'
+                 :'🎯 Vorbereitung: Equipment & Kurszeiten organisieren, Schlaf regeln.');
 
     var ts=document.getElementById('today-session');
     if(dToStart>0){
       ts.innerHTML='<div class="sess recovery"><div class="ic">📋</div><div><div class="t">Setup-Tag (Hamburg)</div><div class="d">Einkauf · GB Sternschanze Kurszeiten · Waage · Schlafrhythmus</div></div></div>';
       renderChecklist([{id:'shop',label:'Einkauf Gruppe-1 & -2 Lebensmittel'},{id:'kurs',label:'GB Sternschanze Kurszeiten checken'},{id:'reg',label:'GI-Anmeldung im Blick (bis 25.07.)'},{id:'sleep',label:'Früh schlafen'}]);
     } else if(dToComp<0){
-      ts.innerHTML='<div class="sess strength"><div class="ic">🏆</div><div><div class="t">Turnier absolviert</div><div class="d">Auswerten, erholen — dann Lean Bulk.</div></div></div>';
-      document.getElementById('checklist').innerHTML='<div class="empty">Camp abgeschlossen. Gut gemacht.</div>';
+      var _pc=postCompPhase(-dToComp,debriefDone());
+      ts.innerHTML='<div class="sess recovery"><div class="ic">'+_pc.sess.ic+'</div><div><div class="t">'+esc(_pc.sess.t)+'</div><div class="d">'+esc(_pc.sess.d)+'</div></div></div>';
+      renderChecklist(_pc.items);
     } else {
       var plan=tplFor(LOC.schedKey)[NOW.getDay()]; var def=scheduleTime(NOW.getDay()); var ct=DB.over[TODAY]||def; var moved=DB.over[TODAY]&&DB.over[TODAY]!==def;
       var rdyB=readyBand(readyScore(DB.readiness[TODAY])); var rb=rdyB?rdyB.c:null;
@@ -1686,6 +1693,44 @@
   function nutriPhase(d){
     if(d==null||isNaN(d)||d>=0) return {bulk:false,ktL:'~3.050',krL:'~2.750',chip:'Korridor <b>83,0–83,8 kg</b>'};
     return {bulk:true,ktL:'~3.350',krL:'~3.050',chip:'Lean Bulk → <b>86–87 kg</b>'};
+  }
+  /* ---------- Nach dem Wettkampf: der Tag danach ist Coaching, kein Abspann ----------
+     Das Camp endet nicht mit dem Turnier — es kippt in Regeneration → Wiederaufbau → neues Ziel.
+     Reine Logik, damit die Texte testbar bleiben. */
+  function activeTournament(){ var p=DB.profile||{}; return (TOURN||[]).filter(function(t){ return p.targetId?(t.id===p.targetId):!!t.target; })[0]||null; }
+  function debriefDone(){ var t=activeTournament(); return !!(t&&DB.profile.debriefs&&DB.profile.debriefs[t.id]); }
+  function postCompPhase(d,hasDebrief){
+    var deb=hasDebrief?[]:[{id:'debrief',label:'📝 Debrief ausfüllen',sub:'Turniere-Tab · solange die Matches frisch sind'}];
+    if(d<=3) return {n:1,label:'Regeneration',head:'Tag '+d+' nach dem Wettkampf',
+      lead:'Regeneration — Erholung ist jetzt die Leistung, nicht die nächste harte Einheit.',
+      sess:{ic:'🧖',t:'Erholung statt Training',d:'Lockere Bewegung, Schlaf, auffüllen. Hartes Sparring frühestens, wenn du dich wirklich frisch fühlst.'},
+      items:deb.concat([
+        {id:'pcsleep',label:'Schlaf 8–9 h',sub:'größter Hebel nach Wettkampfbelastung'},
+        {id:'pcfood',label:'Auffüllen: Protein + Kohlenhydrate',sub:'Speicher zurück, kein Defizit direkt nach dem Turnier'},
+        {id:'pcmove',label:'Lockere Bewegung 20–30 min',sub:'Spaziergang, Mobility, lockeres Schwimmen'},
+        {id:'pcniggle',label:'Blessuren ehrlich checken & loggen',sub:'Körper-Tab · was aus dem Turnier übrig ist'}])};
+    if(d<=14) return {n:2,label:'Wiederaufbau',head:'Wiederaufbau · Tag '+d+' nach dem Wettkampf',
+      lead:'Wiederaufbau — dosiert zurück ins Training, die Debrief-Prioritäten sind dein Fokus.',
+      sess:{ic:'🥋',t:'Zurück auf die Matte — dosiert',d:'Technik und Drilling zuerst, Intensität schrittweise. Deine drei Prioritäten gezielt drillen.'},
+      items:deb.concat([
+        {id:'pcdrill',label:'Debrief-Prioritäten drillen',sub:'Technik-Tab · Re-Test läuft mit'},
+        {id:'prot',label:'Protein ~185 g'},
+        {id:'rpe',label:'Session loggen (RPE)',sub:'Lastkontrolle wieder aufbauen'},
+        {id:'sleep',label:'Schlaf 7,5–9 h'}])};
+    return {n:3,label:'Neues Ziel',head:'Zwischen zwei Zielen',
+      lead:'Kein aktives Ziel — ohne Datum kein Camp. Such dir das nächste Turnier, dann rechnet alles wieder mit.',
+      sess:{ic:'🎯',t:'Nächstes Ziel setzen',d:'Turniere-Tab: „🎯 Als Hauptziel“ — Countdown, Phasen und Taper kalibrieren sich automatisch.'},
+      items:deb.concat([
+        {id:'pctarget',label:'🎯 Nächstes Turnier festlegen',sub:'Turniere- oder Daten-Tab'},
+        {id:'pcbase',label:'Grundlagen halten: Kraft 2×, Matte 3–4×'},
+        {id:'sleep',label:'Schlaf 7,5–9 h'}])};
+  }
+  // Der Coach BEHAUPTET nicht, wie es lief — er fragt. Das Tool war nicht dabei.
+  function postCompLine(d,hasDebrief){
+    if(!hasDebrief&&d<=2) return 'Turnier durch. Wie ist es gelaufen? Trag den Debrief ein, solange alles frisch ist — heute zählt Erholung, nicht die Analyse im Kopf.';
+    if(!hasDebrief) return 'Der Wettkampf verblasst schneller, als du denkst. Hol den Debrief nach — drei Prioritäten reichen, die tragen den nächsten Block.';
+    if(d<=3) return 'Debrief steht. Jetzt Erholung: Schlaf, auffüllen, lockere Bewegung. Blessuren ehrlich loggen statt wegdrücken.';
+    return 'Deine Prioritäten stehen. Fehlt nur das Nächste: Ziel setzen, dann läuft das Camp wieder — Technik vor Tempo.';
   }
   function applyNutriPhase(){
     if(!nutriPhase(dToComp).bulk) return;
@@ -2840,7 +2885,7 @@
   function renderTodayTimeline(){
     var el=document.getElementById('today-timeline'); if(!el) return;
     if(dToStart>0){ el.innerHTML='<div class="note">Der volle Tagesverlauf erscheint ab Programmstart (Mo, 1. Juni). Heute steht Setup an.</div>'; return; }
-    if(dToComp<0){ el.innerHTML='<div class="note">Camp abgeschlossen — kein Tagesplan mehr.</div>'; return; }
+    if(dToComp<0&&-dToComp<=3){ el.innerHTML='<div class="note">🧖 <b>Regeneration.</b> Heute kein Plan-Training: essen wie an einem Ruhetag (Protein hoch, Speicher auffüllen), viel schlafen, lockere Bewegung. Der volle Tagesverlauf kommt zurück, sobald du wieder aufbaust.</div>'; return; }
     el.innerHTML=timelineHTML(dayEvents(NOW.getDay(), DB.over[TODAY]||''), { editable:true, meals:(DB.meals&&DB.meals[TODAY])||{} });
     if(!el._b){ el._b=1; el.addEventListener('click',function(ev){
       var t=ev.target; if(!t.closest) return;
@@ -3437,13 +3482,28 @@
     ok('nextAction: Wiedereinstieg Tag 3', /Wiedereinstieg Tag 3/.test(NA({rttDay:3}).t));
     ok('nextAction: Niggle rot → Körper-Tab', NA({niggleRed:true}).tab==='koerper');
     ok('nextAction: vor Start → Setup', /Setup/.test(NA({dToStart:5,dToComp:80}).t));
-    ok('nextAction: Turnier vorbei → Ziel setzen (Daten)', (function(){ var a=NA({dToComp:-1}); return /Ziel/.test(a.t)&&a.tab==='daten'; })());
+    ok('nextAction: Turnier vorbei + Debrief erledigt → Ziel setzen (Turniere)', (function(){ var a=NA({dToComp:-1,debriefOpen:false}); return /Ziel/.test(a.t)&&a.tab==='turniere'; })());
     ok('nextAction: Readiness offen zuerst', /Readiness/.test(NA({readyDone:false,weighed:false}).t));
     ok('nextAction: Ampel rot → Technik & Mobility', /Technik & Mobility/.test(NA({band:'red'}).t));
     ok('nextAction: nicht gewogen → wiegen', /wiegen/.test(NA({weighed:false}).t));
     ok('nextAction: Taper-Deckel', /Taper-Deckel/.test(NA({taperOver:true}).t));
     ok('nextAction: abends ohne Log → Session loggen', /loggen/.test(NA({sessLogged:false,hour:19}).t));
     ok('nextAction: alles erledigt → Plan fahren', /Plan fahren: BJJ Gi/.test(NA({}).t));
+    /* Nach dem Wettkampf: Phasen, Checkliste, Coach-Stimme */
+    ok('postComp: Tag 1 → Regeneration', postCompPhase(1,false).label==='Regeneration');
+    ok('postComp: Tag 3 → noch Regeneration', postCompPhase(3,false).label==='Regeneration');
+    ok('postComp: Tag 4 → Wiederaufbau', postCompPhase(4,false).label==='Wiederaufbau');
+    ok('postComp: Tag 15 → Neues Ziel', postCompPhase(15,true).label==='Neues Ziel');
+    ok('postComp: Kopfzeile nennt den Tag', postCompPhase(2,false).head.indexOf('Tag 2')>=0);
+    ok('postComp: ohne Debrief steht Debrief oben', postCompPhase(1,false).items[0].id==='debrief');
+    ok('postComp: mit Debrief kein Debrief-Punkt', postCompPhase(1,true).items.every(function(i){return i.id!=='debrief';}));
+    ok('postComp: jede Phase hat Checkliste', [1,4,15].every(function(d){ return postCompPhase(d,true).items.length>0; }));
+    ok('postCompLine: Tag 1 ohne Debrief fragt nach', /Wie ist es gelaufen/.test(postCompLine(1,false)));
+    ok('postCompLine: behauptet NIE ein Ergebnis', [1,2,5,20].every(function(d){ return [true,false].every(function(h){ return !/(frisch und stark|gut gekämpft|starke Leistung|gewonnen)/i.test(postCompLine(d,h)); }); }));
+    ok('postCompLine: ohne Debrief immer Debrief-Aufforderung', /[Dd]ebrief/.test(postCompLine(9,false)));
+    ok('postCompLine: mit Debrief spät → neues Ziel', /Ziel/.test(postCompLine(20,true)));
+    ok('nextAction: Tag danach → Debrief vor Ziel', (function(){ var a=nextAction({dToComp:-1,debriefOpen:true,dToStart:-90}); return /Debrief/.test(a.t)&&a.tab==='turniere'; })());
+    ok('nextAction: Debrief erledigt → Ziel setzen', /Ziel/.test(nextAction({dToComp:-1,debriefOpen:false,dToStart:-90}).t));
     /* Tageszeit-Layout */
     ok('eveningLayout: 8 Uhr → morgens', eveningLayout(8)===false);
     ok('eveningLayout: 17 Uhr → noch nicht abends', eveningLayout(17)===false);
