@@ -413,7 +413,7 @@
     <div id="retest-alert"></div>
     <div id="debrief-hint"></div>
     <div id="comp-protocol"></div>
-    <div class="card">
+    <div class="card" id="card-readiness">
       <h2><span class="dot"></span>Readiness-Check</h2>
       <div class="role">Sportmedizin · Autoregulation</div>
       <div class="lead">Jeden Morgen 4× tippen. Bestimmt, wie hart du heute gehst.</div>
@@ -428,10 +428,10 @@
       <div class="role">Optional · gibt dem Readiness-Score Kontext · pro Tag gespeichert</div>
       <div class="lead">Warum fühlt sich der Tag so an? Aufstehzeit, woher der Muskelkater kommt, Stimmung — und ein freies Tagebuch. Hilft dir (und dem Coach), Muster zu erkennen.</div>
       <div class="bgrid">
-        <div class="bf"><label>Aufgestanden um</label><input type="time" id="dy-wake"></div>
-        <div class="bf"><label>Stimmung / Stress</label><select id="dy-mood"><option value="">—</option><option>entspannt</option><option>neutral</option><option>angespannt</option><option>gestresst</option></select></div>
-        <div class="bf" style="grid-column:1/-1"><label>Muskelkater — wo &amp; woher?</label><input id="dy-doms" placeholder="z. B. Nacken &amp; Lats vom Sparring gestern"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Tagebuch (frei)</label><textarea id="dy-journal" style="min-height:84px" placeholder="Schlaf, Ernährung, Kopf, was lief gut/schlecht…"></textarea></div>
+        <div class="bf"><label for="dy-wake">Aufgestanden um</label><input type="time" id="dy-wake"></div>
+        <div class="bf"><label for="dy-mood">Stimmung / Stress</label><select id="dy-mood"><option value="">—</option><option>entspannt</option><option>neutral</option><option>angespannt</option><option>gestresst</option></select></div>
+        <div class="bf" style="grid-column:1/-1"><label for="dy-doms">Muskelkater — wo &amp; woher?</label><input id="dy-doms" placeholder="z. B. Nacken &amp; Lats vom Sparring gestern"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="dy-journal">Tagebuch (frei)</label><textarea id="dy-journal" style="min-height:84px" placeholder="Schlaf, Ernährung, Kopf, was lief gut/schlecht…"></textarea></div>
       </div>
       <div class="note" id="dy-status">Wird beim Tippen automatisch gespeichert.</div>
       <div id="diary-list" style="margin-top:12px"></div>
@@ -459,18 +459,18 @@
       <ul class="check" id="checklist"></ul>
     </div>
 
-    <div class="card">
+    <div class="card" id="card-session">
       <h2><span class="dot"></span>Session loggen</h2>
       <div class="role">Sportmedizin · Trainingslast (<abbr title="session-RPE: wahrgenommene Anstrengung (RPE 1–10) × Dauer in Minuten = Last-Einheiten" style="text-decoration:underline dotted;cursor:help">sRPE</abbr>) · pro Session</div>
       <div class="lead">Nach jedem Training erfassen — du kannst mehrere Sessions pro Tag loggen (z. B. Kraft morgens, BJJ abends). Last = RPE × Minuten (Last-Einheiten, LE) fließt in die ACWR-Lastkontrolle.</div>
       <div class="bgrid">
-        <div class="bf"><label>Art</label><select id="se-type"></select></div>
-        <div class="bf"><label>RPE 1–10</label><input type="number" id="se-rpe" min="1" max="10" step="1" placeholder="wie hart?"></div>
-        <div class="bf"><label>Dauer (min)</label><input type="number" id="se-min" min="5" max="300" step="5" placeholder="wie lang?"></div>
-        <div class="bf"><label>Runden / Sparring</label><input id="se-rounds" placeholder="z. B. 6×5 min"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Schwerpunkt / Techniken</label><input id="se-focus" placeholder="z. B. Rückenkontrolle, Armbar-Defense, Knee-Cut-Pass"></div>
-        <div class="bf"><label>Partner (optional)</label><input id="se-partner" placeholder="mit wem?"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Notiz</label><input id="se-note" placeholder="Was lief gut/schlecht?"></div>
+        <div class="bf"><label for="se-type">Art</label><select id="se-type"></select></div>
+        <div class="bf"><label for="se-rpe">RPE 1–10</label><input type="number" id="se-rpe" min="1" max="10" step="1" placeholder="wie hart?"></div>
+        <div class="bf"><label for="se-min">Dauer (min)</label><input type="number" id="se-min" min="5" max="300" step="5" placeholder="wie lang?"></div>
+        <div class="bf"><label for="se-rounds">Runden / Sparring</label><input id="se-rounds" placeholder="z. B. 6×5 min"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="se-focus">Schwerpunkt / Techniken</label><input id="se-focus" placeholder="z. B. Rückenkontrolle, Armbar-Defense, Knee-Cut-Pass"></div>
+        <div class="bf"><label for="se-partner">Partner (optional)</label><input id="se-partner" placeholder="mit wem?"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="se-note">Notiz</label><input id="se-note" placeholder="Was lief gut/schlecht?"></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="se-save">Session speichern</button></div>
       <div class="note" id="se-status"></div>
@@ -517,9 +517,9 @@
       <div class="note" id="wk-share-status">Fasst dein heutiges Training zusammen (Aufwärmen, Sätze, Volumen, PRs, Sessions). „Teilen“ öffnet am iPhone die Teilen-Ansicht → <b>Nachrichten/iMessage</b> wählen. Am Desktop nutze „Kopieren“.</div>
       <h3 style="margin-top:14px">Weitere / freie Übung</h3>
       <div class="bgrid">
-        <div class="bf" style="grid-column:1/-1"><label>Übung</label><select id="wk-ex"></select></div>
-        <div class="bf"><label>Gewicht (kg)</label><input type="text" inputmode="decimal" id="wk-xkg" placeholder="kg"></div>
-        <div class="bf"><label>Wiederholungen</label><input type="text" inputmode="numeric" id="wk-xreps" placeholder="Wdh."></div>
+        <div class="bf" style="grid-column:1/-1"><label for="wk-ex">Übung</label><select id="wk-ex"></select></div>
+        <div class="bf"><label for="wk-xkg">Gewicht (kg)</label><input type="text" inputmode="decimal" id="wk-xkg" placeholder="kg"></div>
+        <div class="bf"><label for="wk-xreps">Wiederholungen</label><input type="text" inputmode="numeric" id="wk-xreps" placeholder="Wdh."></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn ghost" id="wk-xadd">+ Satz (frei)</button></div>
     </div>
@@ -621,11 +621,11 @@
       <div class="role">Arzt &amp; Co. · mit Countdown · als Kalender (.ics) exportierbar</div>
       <div class="lead">Trag Termine ein — z. B. Arztbesuche. Jeder Termin lässt sich einzeln als Kalenderdatei exportieren (Erinnerung 2 h vorher); „Alle als .ics“ packt alles in eine Datei.</div>
       <div class="bgrid">
-        <div class="bf"><label>Datum</label><input type="date" id="ap-date"></div>
-        <div class="bf"><label>Von</label><input type="time" id="ap-t0"></div>
-        <div class="bf"><label>Bis (optional)</label><input type="time" id="ap-t1"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Titel</label><input id="ap-title" placeholder="z. B. Hausarzt – Blutwerte"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Notiz (optional)</label><input id="ap-note" placeholder="Worum geht's?"></div>
+        <div class="bf"><label for="ap-date">Datum</label><input type="date" id="ap-date"></div>
+        <div class="bf"><label for="ap-t0">Von</label><input type="time" id="ap-t0"></div>
+        <div class="bf"><label for="ap-t1">Bis (optional)</label><input type="time" id="ap-t1"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="ap-title">Titel</label><input id="ap-title" placeholder="z. B. Hausarzt – Blutwerte"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="ap-note">Notiz (optional)</label><input id="ap-note" placeholder="Worum geht's?"></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="ap-add">Termin hinzufügen</button><button class="btn ghost" id="ap-ics-all">Alle als .ics</button><button class="btn ghost" id="ap-share">Teilen</button></div>
       <div id="appt-list" style="margin-top:12px"></div>
@@ -638,14 +638,14 @@
       <div id="blood-due"></div>
       <h3>Neuen Befund eintragen</h3>
       <div class="bgrid">
-        <div class="bf"><label>Datum</label><input type="date" id="bl-date"></div>
-        <div class="bf"><label>Gesamt-Testosteron</label><input type="text" inputmode="decimal" id="bl-tt" placeholder="z. B. 6.2"></div>
-        <div class="bf"><label>Freies Testosteron</label><input type="text" inputmode="decimal" id="bl-ft" placeholder="pg/ml"></div>
-        <div class="bf"><label>Östradiol (E2)</label><input type="text" inputmode="decimal" id="bl-e2" placeholder="pg/ml"></div>
-        <div class="bf"><label>SHBG</label><input type="text" inputmode="decimal" id="bl-shbg" placeholder="nmol/l"></div>
-        <div class="bf"><label>Vitamin D</label><input type="text" inputmode="decimal" id="bl-vd" placeholder="ng/ml"></div>
-        <div class="bf"><label>Ferritin</label><input type="text" inputmode="decimal" id="bl-fer" placeholder="ng/ml"></div>
-        <div class="bf"><label>hs-CRP</label><input type="text" inputmode="decimal" id="bl-crp" placeholder="mg/l"></div>
+        <div class="bf"><label for="bl-date">Datum</label><input type="date" id="bl-date"></div>
+        <div class="bf"><label for="bl-tt">Gesamt-Testosteron</label><input type="text" inputmode="decimal" id="bl-tt" placeholder="z. B. 6.2"></div>
+        <div class="bf"><label for="bl-ft">Freies Testosteron</label><input type="text" inputmode="decimal" id="bl-ft" placeholder="pg/ml"></div>
+        <div class="bf"><label for="bl-e2">Östradiol (E2)</label><input type="text" inputmode="decimal" id="bl-e2" placeholder="pg/ml"></div>
+        <div class="bf"><label for="bl-shbg">SHBG</label><input type="text" inputmode="decimal" id="bl-shbg" placeholder="nmol/l"></div>
+        <div class="bf"><label for="bl-vd">Vitamin D</label><input type="text" inputmode="decimal" id="bl-vd" placeholder="ng/ml"></div>
+        <div class="bf"><label for="bl-fer">Ferritin</label><input type="text" inputmode="decimal" id="bl-fer" placeholder="ng/ml"></div>
+        <div class="bf"><label for="bl-crp">hs-CRP</label><input type="text" inputmode="decimal" id="bl-crp" placeholder="mg/l"></div>
       </div>
       <div class="inrow" style="margin-top:10px"><input id="bl-note" placeholder="Notiz / Labor (optional)" style="flex:1;min-width:140px"><button class="btn" id="bl-save">Befund speichern</button></div>
       <div id="blood-list" style="margin-top:12px"></div>
@@ -764,13 +764,13 @@
       <div id="bjj-hero"></div>
       <h3>Profil bearbeiten</h3>
       <div class="bgrid">
-        <div class="bf"><label>Name</label><input id="bp-name" placeholder="Dein Name"></div>
-        <div class="bf"><label>Gurt</label><select id="bp-belt"><option>Weiß</option><option>Blau</option><option>Lila</option><option>Braun</option><option>Schwarz</option></select></div>
-        <div class="bf"><label>Grade (Stripes)</label><input type="number" min="0" max="4" id="bp-stripes" placeholder="0–4"></div>
-        <div class="bf"><label>Gym</label><input id="bp-gym" placeholder="z. B. Gracie Barra"></div>
-        <div class="bf"><label>Coach</label><input id="bp-coach" placeholder="z. B. André Nunes"></div>
-        <div class="bf"><label>Training seit (Jahr)</label><input id="bp-since" placeholder="z. B. 2016"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Deine Geschichte</label><textarea id="bp-bio" style="min-height:96px" placeholder="Wie hat alles angefangen? Wendepunkte, Coaches, Siege, Rückschläge, Ziele…"></textarea></div>
+        <div class="bf"><label for="bp-name">Name</label><input id="bp-name" placeholder="Dein Name"></div>
+        <div class="bf"><label for="bp-belt">Gurt</label><select id="bp-belt"><option>Weiß</option><option>Blau</option><option>Lila</option><option>Braun</option><option>Schwarz</option></select></div>
+        <div class="bf"><label for="bp-stripes">Grade (Stripes)</label><input type="number" min="0" max="4" id="bp-stripes" placeholder="0–4"></div>
+        <div class="bf"><label for="bp-gym">Gym</label><input id="bp-gym" placeholder="z. B. Gracie Barra"></div>
+        <div class="bf"><label for="bp-coach">Coach</label><input id="bp-coach" placeholder="z. B. André Nunes"></div>
+        <div class="bf"><label for="bp-since">Training seit (Jahr)</label><input id="bp-since" placeholder="z. B. 2016"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="bp-bio">Deine Geschichte</label><textarea id="bp-bio" style="min-height:96px" placeholder="Wie hat alles angefangen? Wendepunkte, Coaches, Siege, Rückschläge, Ziele…"></textarea></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="bp-save">Profil speichern</button></div>
       <div class="note" id="bp-status">Das Level steigt mit deiner Aktivität (Reise-Einträge + geloggtes Training). Es ist ein Motivations-Level, <b>kein offizieller Gurt</b> — den vergibt nur dein Coach.</div>
@@ -790,13 +790,13 @@
       <div id="bjj-map" style="height:300px;border-radius:14px;overflow:hidden;margin:10px 0;background:var(--bg2)"></div>
       <div id="map-fallback" class="note" style="display:none"></div>
       <div class="bgrid">
-        <div class="bf"><label>Art</label><select id="jr-type"><option value="seminar">Seminar</option><option value="gymbesuch">Fremdes Gym besucht</option><option value="gymwechsel">Gym-Wechsel</option><option value="wettkampf">Wettkampf</option><option value="meilenstein">Meilenstein</option></select></div>
-        <div class="bf"><label>Datum</label><input type="date" id="jr-date"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Titel</label><input id="jr-title" placeholder="z. B. Seminar mit John Danaher"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Ort</label><input id="jr-place" placeholder="Gym / Stadt"></div>
-        <div class="bf"><label>Breite (lat)</label><input id="jr-lat" placeholder="53.5626"></div>
-        <div class="bf"><label>Länge (lng)</label><input id="jr-lng" placeholder="9.9637"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Notiz (optional)</label><input id="jr-note" placeholder="Was war besonders?"></div>
+        <div class="bf"><label for="jr-type">Art</label><select id="jr-type"><option value="seminar">Seminar</option><option value="gymbesuch">Fremdes Gym besucht</option><option value="gymwechsel">Gym-Wechsel</option><option value="wettkampf">Wettkampf</option><option value="meilenstein">Meilenstein</option></select></div>
+        <div class="bf"><label for="jr-date">Datum</label><input type="date" id="jr-date"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="jr-title">Titel</label><input id="jr-title" placeholder="z. B. Seminar mit John Danaher"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="jr-place">Ort</label><input id="jr-place" placeholder="Gym / Stadt"></div>
+        <div class="bf"><label for="jr-lat">Breite (lat)</label><input id="jr-lat" placeholder="53.5626"></div>
+        <div class="bf"><label for="jr-lng">Länge (lng)</label><input id="jr-lng" placeholder="9.9637"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="jr-note">Notiz (optional)</label><input id="jr-note" placeholder="Was war besonders?"></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="jr-add">Eintrag hinzufügen</button><button class="btn ghost" id="jr-find">📍 Koordinaten finden</button><button class="btn ghost" id="jr-share">Reise teilen</button></div>
       <div class="note">„Koordinaten finden“ öffnet OpenStreetMap mit deinem Ort — dort Rechtsklick → „Adresse anzeigen“ zeigt lat/lng zum Eintragen. Marker brauchen lat + lng.</div>
@@ -811,11 +811,11 @@
       <div class="role">Position/Problem wählen · Plan aus den passenden Legenden · Analyse-Prompt für die KI</div>
       <div class="lead">Wähle, woran du arbeiten willst. Das Tool routet dich zu den Legenden, deren System das löst, gibt dir einen Drill — und baut einen fertigen Analyse-Prompt. <b>Ehrlich:</b> die echte Video-Analyse macht Claude im Chat (oder dein Coach), nicht diese Datei. Prompt kopieren, mit deinem Video hier posten.</div>
       <div class="bgrid">
-        <div class="bf" style="grid-column:1/-1"><label>Woran arbeiten?</label><select id="co-cat"></select></div>
-        <div class="bf"><label>Modus</label><select id="co-mode"><option>Gi &amp; No-Gi</option><option>Gi</option><option>No-Gi</option></select></div>
-        <div class="bf"><label>Lieblingsposition</label><input id="co-fav" placeholder="z. B. Closed Guard"></div>
-        <div class="bf" style="grid-column:1/-1"><label>Dein Problem / Frage</label><textarea id="co-prob" style="min-height:64px" placeholder="z. B. Ich verliere die Rückenkontrolle, sobald der Gegner die Hüfte dreht."></textarea></div>
-        <div class="bf" style="grid-column:1/-1"><label>Video-Link (optional)</label><input id="co-vid" placeholder="YouTube/Drive-Link deiner Rolle"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="co-cat">Woran arbeiten?</label><select id="co-cat"></select></div>
+        <div class="bf"><label for="co-mode">Modus</label><select id="co-mode"><option>Gi &amp; No-Gi</option><option>Gi</option><option>No-Gi</option></select></div>
+        <div class="bf"><label for="co-fav">Lieblingsposition</label><input id="co-fav" placeholder="z. B. Closed Guard"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="co-prob">Dein Problem / Frage</label><textarea id="co-prob" style="min-height:64px" placeholder="z. B. Ich verliere die Rückenkontrolle, sobald der Gegner die Hüfte dreht."></textarea></div>
+        <div class="bf" style="grid-column:1/-1"><label for="co-vid">Video-Link (optional)</label><input id="co-vid" placeholder="YouTube/Drive-Link deiner Rolle"></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="co-run">Plan &amp; Analyse-Prompt</button><button class="btn ghost" id="co-copy">Prompt kopieren</button></div>
       <div id="co-out" style="margin-top:12px"></div>
@@ -1032,13 +1032,13 @@
       <div class="role">Nach jedem Turnier · speist deine Technik-Prioritäten</div>
       <div class="lead">Innerhalb von 48 h ausfüllen, solange die Matches frisch sind. Die drei Prioritäten werden dein Technik-Fokus für den nächsten Block.</div>
       <div class="bgrid">
-        <div class="bf" style="grid-column:1/-1"><label>Turnier</label><select id="db-t"></select></div>
-        <div class="bf" style="grid-column:1/-1"><label>Was lief gut?</label><textarea id="db-good" style="min-height:56px" placeholder="z. B. Body-Lock-Passing hat 3× funktioniert, Kondition hat getragen …"></textarea></div>
-        <div class="bf" style="grid-column:1/-1"><label>Was lief nicht?</label><textarea id="db-bad" style="min-height:56px" placeholder="z. B. Guard Pull gegen den Wrestler war ein Fehler, Grip-Fight verloren …"></textarea></div>
-        <div class="bf" style="grid-column:1/-1"><label>Gegen welche Spiele/Typen?</label><input id="db-games" placeholder="z. B. 2× Wrestler, 1× Lapel-Guard, 1× Leglocker"></div>
-        <div class="bf"><label>Priorität 1</label><input id="db-p1" placeholder="z. B. Heel-Hook-Defense"></div>
-        <div class="bf"><label>Priorität 2</label><input id="db-p2"></div>
-        <div class="bf"><label>Priorität 3</label><input id="db-p3"></div>
+        <div class="bf" style="grid-column:1/-1"><label for="db-t">Turnier</label><select id="db-t"></select></div>
+        <div class="bf" style="grid-column:1/-1"><label for="db-good">Was lief gut?</label><textarea id="db-good" style="min-height:56px" placeholder="z. B. Body-Lock-Passing hat 3× funktioniert, Kondition hat getragen …"></textarea></div>
+        <div class="bf" style="grid-column:1/-1"><label for="db-bad">Was lief nicht?</label><textarea id="db-bad" style="min-height:56px" placeholder="z. B. Guard Pull gegen den Wrestler war ein Fehler, Grip-Fight verloren …"></textarea></div>
+        <div class="bf" style="grid-column:1/-1"><label for="db-games">Gegen welche Spiele/Typen?</label><input id="db-games" placeholder="z. B. 2× Wrestler, 1× Lapel-Guard, 1× Leglocker"></div>
+        <div class="bf"><label for="db-p1">Priorität 1</label><input id="db-p1" placeholder="z. B. Heel-Hook-Defense"></div>
+        <div class="bf"><label for="db-p2">Priorität 2</label><input id="db-p2"></div>
+        <div class="bf"><label for="db-p3">Priorität 3</label><input id="db-p3"></div>
       </div>
       <div class="inrow" style="margin-top:10px"><button class="btn" id="db-save">Debrief speichern</button></div>
       <div class="note" id="db-status"></div>
@@ -1260,6 +1260,13 @@
       var btn=e.target.closest('[data-nav]'); if(!btn) return;
       var tb=document.querySelector('.tab[data-t="'+btn.dataset.nav+'"]'); if(tb){ tb.click(); window.scrollTo({top:0,behavior:'smooth'}); }
     }); }
+  }
+  // Tageszeit-Layout: morgens steht Readiness oben (Default-DOM), ab 18 Uhr rückt „Session loggen“ vor die Readiness-Karte.
+  function eveningLayout(h){ return h>=18; }
+  function orderHeuteCards(){
+    var sec=document.getElementById('s-heute'), rc=document.getElementById('card-readiness'), sc=document.getElementById('card-session');
+    if(!sec||!rc||!sc) return;
+    if(eveningLayout(new Date().getHours())) sec.insertBefore(sc,rc);
   }
   function renderCoach(){
     renderNextAction();
@@ -2122,7 +2129,7 @@
     el.innerHTML='<div class="card" style="border-color:var(--gold)"><h2><span class="dot"></span>⏱️ Wettkampftag-Timer'+(dToComp===0?'':' · Vorschau')+'</h2>'+
       '<div class="role">GI Hamburg · Sporthalle Wandsbek · Einlass 7:30, Start 9:00</div>'+
       '<div class="lead" style="margin-top:6px">'+head+'</div>'+
-      '<div class="inrow" style="margin-top:10px;align-items:center"><label style="min-width:auto">Match 1 geplant</label>'+
+      '<div class="inrow" style="margin-top:10px;align-items:center"><label style="min-width:auto" for="ct-m1">Match 1 geplant</label>'+
       '<input type="time" id="ct-m1" value="'+esc(DB.comp.m1||'09:00')+'" style="width:110px">'+
       '<button class="btn ghost" id="ct-fight">🥋 Kampf beendet</button>'+
       (fights.length?'<button class="btn ghost" id="ct-reset">Zurücksetzen</button>':'')+'</div>'+
@@ -2166,9 +2173,9 @@
     var box=document.getElementById('watch'); if(!box) return; var r=DB.readiness[TODAY]||{};
     box.innerHTML='<div class="role" style="margin-top:8px">⌚ Apple Watch (optional) · morgens ablesen &amp; eintragen</div>'+
       '<div class="inrow">'+
-      '<input type="number" id="wt-rhr" placeholder="Ruhepuls" value="'+(r.rhr||'')+'" style="flex:1;min-width:80px">'+
-      '<input type="number" id="wt-hrv" placeholder="HRV (ms)" value="'+(r.hrv||'')+'" style="flex:1;min-width:80px">'+
-      '<input type="text" id="wt-sleep" inputmode="decimal" placeholder="Schlaf h" value="'+(r.sleepH||'')+'" style="flex:1;min-width:80px">'+
+      '<input type="number" id="wt-rhr" placeholder="Ruhepuls" aria-label="Ruhepuls in Schlägen pro Minute" value="'+(r.rhr||'')+'" style="flex:1;min-width:80px">'+
+      '<input type="number" id="wt-hrv" placeholder="HRV (ms)" aria-label="Herzratenvariabilität in Millisekunden" value="'+(r.hrv||'')+'" style="flex:1;min-width:80px">'+
+      '<input type="text" id="wt-sleep" inputmode="decimal" placeholder="Schlaf h" aria-label="Schlafdauer in Stunden" value="'+(r.sleepH||'')+'" style="flex:1;min-width:80px">'+
       '</div>';
     function upd(id,field,parse){ var inp=box.querySelector(id); inp.addEventListener('change',function(){ var r2=DB.readiness[TODAY]||{}; var v=parse(inp.value); if(isNaN(v)) delete r2[field]; else r2[field]=v; DB.readiness[TODAY]=r2; save('as_readiness',DB.readiness); renderReadyBanner(); renderCoach(); }); }
     upd('#wt-rhr','rhr',function(x){return parseInt(x,10);});
@@ -2409,7 +2416,7 @@
     var c=coCat(); lastCoachPrompt=buildCoachPrompt(c);
     var out=document.getElementById('co-out'); if(!out) return;
     out.innerHTML='<div class="tlitem bjj"><div class="tlh">🎯 '+esc(c.k)+'<span class="tt">'+c.leg.map(esc).join(' · ')+'</span></div><div class="tlp"><b>Prinzip:</b> '+esc(c.pr)+'<br><b>Drill:</b> '+esc(c.dr)+' · <a class="exl" style="margin-top:0" href="'+sURL(c.topic)+'" target="_blank" rel="noopener">Videos ↗</a><br><span style="color:var(--faint)">Diese Legenden findest du im Detail weiter unten in der Videothek.</span></div></div>'+
-      '<div style="margin-top:10px"><label class="role">Analyse-Prompt für Claude (kopieren & im Chat mit Video besprechen)</label><textarea id="co-prompt" style="width:100%;min-height:120px;margin-top:6px">'+esc(lastCoachPrompt)+'</textarea></div>';
+      '<div style="margin-top:10px"><label class="role" for="co-prompt">Analyse-Prompt für Claude (kopieren & im Chat mit Video besprechen)</label><textarea id="co-prompt" style="width:100%;min-height:120px;margin-top:6px">'+esc(lastCoachPrompt)+'</textarea></div>';
     var _rd=new Date(NOW); _rd.setDate(_rd.getDate()+14);
     DB.coachlog=DB.coachlog||[]; DB.coachlog.unshift({id:'co'+Date.now(),date:TODAY,cat:pv('co-cat'),prob:pv('co-prob'),vid:pv('co-vid'),prompt:lastCoachPrompt,k:c.k,drill:c.dr,retest:key(_rd),done:false}); if(DB.coachlog.length>30) DB.coachlog=DB.coachlog.slice(0,30); save('as_coachlog',DB.coachlog);
     var st=document.getElementById('co-status'); if(st) st.textContent='✓ Plan erstellt & in der Historie gespeichert. Prompt kopieren und hier im Chat mit deinem Video posten.';
@@ -3142,8 +3149,10 @@
   ];
   function renderConcepts(){
     var el=document.getElementById('concepts'); if(!el) return;
-    el.innerHTML='<div class="gloss">'+GLOSSARY.map(function(g){ return '<div class="glossit"><div class="gt">'+g[0]+'</div><div class="gd">'+g[1]+'</div></div>'; }).join('')+'</div>'+
-      '<div class="srcrow"><a class="src" href="'+gURL('Stephan Kesting BJJ fundamental concepts Grapplearts')+'" target="_blank" rel="noopener">Grapplearts · Fundamentals</a><a class="src" href="'+sURL('bjj fundamental concepts explained beginner')+'" target="_blank" rel="noopener">Konzepte erklärt (Video)</a></div>';
+    // Progressive Disclosure: Referenzinhalt eingeklappt (Scroll-Last Technik-Tab ↓)
+    el.innerHTML='<div class="grp xl" data-grp><div class="hd">Die 10 Kernprinzipien <span style="display:inline-flex;align-items:center;gap:8px;flex:0 0 auto"><span class="rchip" style="margin:0">'+GLOSSARY.length+' Begriffe</span><span class="arr">▾</span></span></div><div class="bd"><div class="gloss">'+GLOSSARY.map(function(g){ return '<div class="glossit"><div class="gt">'+g[0]+'</div><div class="gd">'+g[1]+'</div></div>'; }).join('')+'</div>'+
+      '<div class="srcrow"><a class="src" href="'+gURL('Stephan Kesting BJJ fundamental concepts Grapplearts')+'" target="_blank" rel="noopener">Grapplearts · Fundamentals</a><a class="src" href="'+sURL('bjj fundamental concepts explained beginner')+'" target="_blank" rel="noopener">Konzepte erklärt (Video)</a></div></div></div>';
+    bindAccordions();
   }
   var PATH=[
     ['Fundament (immer)','Rickson-Konzepte + Gracie-Barra-Fundamentals — Base, Posture, Connection.',['rickson']],
@@ -3155,10 +3164,11 @@
   ];
   function renderPath(){
     var el=document.getElementById('path'); if(!el) return;
-    el.innerHTML='<div class="tsa">'+PATH.map(function(p,i){
+    el.innerHTML='<div class="grp xl" data-grp><div class="hd">Empfohlene Reihenfolge <span style="display:inline-flex;align-items:center;gap:8px;flex:0 0 auto"><span class="rchip" style="margin:0">'+PATH.length+' Stufen</span><span class="arr">▾</span></span></div><div class="bd"><div class="tsa">'+PATH.map(function(p,i){
       var chips=p[2].map(function(k){ var L=null; LEGENDS.forEach(function(x){ if(x.k===k)L=x; }); return L?'<button class="rchip" data-go="'+k+'" style="cursor:pointer">'+L.name+'</button>':''; }).join('');
       return '<div class="tsab t"><h4>'+(i+1)+'. '+p[0]+'</h4><p>'+p[1]+'</p>'+chips+'</div>';
-    }).join('')+'</div>';
+    }).join('')+'</div></div></div>';
+    bindAccordions();
     if(!el._b){ el._b=1; el.addEventListener('click',function(e){ var b=e.target.closest('[data-go]'); if(!b) return; selLeg=b.dataset.go; renderLegendSel(); renderLegendDetail(); window.scrollTo({top:0,behavior:'smooth'}); }); }
   }
 
@@ -3261,7 +3271,7 @@
         '<div class="inrow" style="margin-top:10px"><button class="btn ghost" id="lock-remove">Sperre entfernen</button></div>';
       var rm=document.getElementById('lock-remove'); if(rm) rm.addEventListener('click',function(){ lockClear(); renderLockSettings(); });
     } else {
-      el.innerHTML='<div class="bgrid"><div class="bf" style="grid-column:1/-1"><label>Neues Passwort (min. 4 Zeichen)</label><input type="password" id="lock-new" autocomplete="new-password"></div><div class="bf" style="grid-column:1/-1"><label>Wiederholen</label><input type="password" id="lock-new2" autocomplete="new-password"></div></div>'+
+      el.innerHTML='<div class="bgrid"><div class="bf" style="grid-column:1/-1"><label for="lock-new">Neues Passwort (min. 4 Zeichen)</label><input type="password" id="lock-new" autocomplete="new-password"></div><div class="bf" style="grid-column:1/-1"><label for="lock-new2">Wiederholen</label><input type="password" id="lock-new2" autocomplete="new-password"></div></div>'+
         '<div class="inrow" style="margin-top:10px"><button class="btn" id="lock-save">Sperre aktivieren</button></div>'+
         '<div class="note" id="lock-set-msg" style="margin-top:8px;display:none"></div>';
       var sv2=document.getElementById('lock-save'); if(sv2) sv2.addEventListener('click',async function(){
@@ -3434,6 +3444,10 @@
     ok('nextAction: Taper-Deckel', /Taper-Deckel/.test(NA({taperOver:true}).t));
     ok('nextAction: abends ohne Log → Session loggen', /loggen/.test(NA({sessLogged:false,hour:19}).t));
     ok('nextAction: alles erledigt → Plan fahren', /Plan fahren: BJJ Gi/.test(NA({}).t));
+    /* Tageszeit-Layout */
+    ok('eveningLayout: 8 Uhr → morgens', eveningLayout(8)===false);
+    ok('eveningLayout: 17 Uhr → noch nicht abends', eveningLayout(17)===false);
+    ok('eveningLayout: 18 Uhr → abends', eveningLayout(18)===true);
     var pass=n-fails.length;
     var msg='Alter Schwede Selbsttest: '+pass+'/'+n+' OK'+(fails.length?(' · FEHLER: '+fails.join(', ')):'');
     try{ (fails.length?console.error:console.log)(msg); }catch(e){}
@@ -3588,7 +3602,7 @@
   }
   function gbCalibHTML(cur){
     var opts=''; for(var i=1;i<=16;i++){ opts+='<option value="'+i+'"'+((cur||1)===i?' selected':'')+'>Woche '+i+' — '+gbEsc(gbWeek(i).theme)+'</option>'; }
-    return '<div class="bgrid"><div class="bf" style="grid-column:1/-1"><label>Welche Zyklus-Woche unterrichtet deine Schule <b>diese Woche</b>?</label>'
+    return '<div class="bgrid"><div class="bf" style="grid-column:1/-1"><label for="gb-cal-week">Welche Zyklus-Woche unterrichtet deine Schule <b>diese Woche</b>?</label>'
       +'<select id="gb-cal-week">'+opts+'</select></div></div>'
       +'<div class="inrow" style="margin-top:8px"><button class="btn" id="gb-cal-set">Diese Kalenderwoche = ausgewählte</button>'
       +(cur?'<button class="btn ghost" id="gb-cal-reset">Kalibrierung löschen</button>':'')+'</div>'
@@ -3706,7 +3720,7 @@
     await loadDB();
     applyTarget();
     await initLock();
-    tickCountdown(); bindAccordions(); bind(); renderAll(); renderBlood(); renderShop(); applyNutriPhase();
+    tickCountdown(); bindAccordions(); bind(); renderAll(); orderHeuteCards(); renderBlood(); renderShop(); applyNutriPhase();
     drawGuides(document.getElementById('w-chart'),nutriPhase(dToComp).bulk);
     updateNavFades();
     /* Wettkampftag-Timer: minütlich nachführen (nur wenn aktiv & kein Input fokussiert) */
