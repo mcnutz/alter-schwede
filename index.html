@@ -376,7 +376,7 @@
   </header>
 
   <div class="cd">
-    <div class="ev">Zielturnier<b>Grappling Industries Hamburg · 15.08.2026</b></div>
+    <div class="ev">Zielturnier<b id="cd-event">Grappling Industries Hamburg · 15.08.2026</b></div>
     <div class="num"><span class="big" id="cd-num">–</span><span class="lbl" id="cd-lbl">Tage</span></div>
   </div>
 
@@ -697,6 +697,17 @@
 
   <!-- ===================== DATEN ===================== -->
   <section id="s-daten" role="tabpanel" aria-labelledby="tab-daten" tabindex="0">
+    <div class="card">
+      <h2><span class="dot"></span>🎯 Nächstes Ziel</h2>
+      <div class="role">Wettkampf-Ziel setzen — Countdown, Phasen, Taper &amp; Timer rechnen automatisch darauf</div>
+      <div class="lead">Nach einem Turnier hier das nächste Ziel eintragen, damit das Camp weiterläuft (Camp-Start = Ziel − ~11 Wochen). Fließt ins Backup, kein extra Speicher.</div>
+      <div class="bgrid">
+        <div class="bf" style="grid-column:1/-1"><label for="tgt-name">Turnier / Ziel</label><input id="tgt-name" placeholder="z. B. Grappling Industries Berlin"></div>
+        <div class="bf"><label for="tgt-date">Datum</label><input type="date" id="tgt-date"></div>
+      </div>
+      <div class="inrow" style="margin-top:10px"><button class="btn" id="tgt-save">Ziel setzen</button><button class="btn ghost" id="tgt-reset">Standard (GI Hamburg)</button></div>
+      <div class="note" id="tgt-status"></div>
+    </div>
     <div class="card">
       <h2><span class="dot"></span>Wochen-Dashboard</h2>
       <div class="role">Digitale Strategie</div>
@@ -1066,6 +1077,17 @@
   function daysBetween(a,b){ return Math.round((midnight(b)-midnight(a))/MS); }
   var NOW=midnight(new Date()), TODAY=key(NOW);
   var dToComp=daysBetween(NOW,COMP), dToStart=daysBetween(NOW,START);
+  // Konfigurierbares Ziel: setzt COMP/START (Camp-Start = Ziel − 75 Tage ≈ 11 Wochen) aus DB.profile.
+  // Default = GI Hamburg 15.08.2026 → rückwärtskompatibel (kein neuer Storage-Key, liegt in as_profile).
+  function applyTarget(){
+    var p=DB.profile||{};
+    COMP=new Date(2026,7,15); START=new Date(2026,5,1);
+    var td=p.targetDate;
+    if(td&&/^\d{4}-\d{2}-\d{2}$/.test(td)){ var c=keyToDate(td); if(c&&!isNaN(c.getTime())){ COMP=midnight(c); START=midnight(new Date(COMP.getFullYear(),COMP.getMonth(),COMP.getDate()-75)); } }
+    dToComp=daysBetween(NOW,COMP); dToStart=daysBetween(NOW,START);
+    var ev=document.getElementById('cd-event');
+    if(ev){ var nm=(p.targetName&&(''+p.targetName).trim())||'Grappling Industries Hamburg'; ev.textContent=nm+' · '+fmtD(key(COMP)); }
+  }
   var LOC=(NOW<JULY)?{gym:'Gracie Barra Sternschanze',equip:'ESN Primetime',yoga:'Innersmile Yoga',pool:'Hamburger Bäder',variant:'esn',schedKey:'gb'}
                     :{gym:'Berserker Buchholz (Blau-Weiss, BW Plaza)',equip:'Heim-Setup (KB + Rack)',yoga:'Heim-Yoga',pool:'Pool / See',variant:'home',schedKey:'ber'};
   var WDlong=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
@@ -1911,7 +1933,7 @@
       if(b.dataset.t==='turniere'){ renderTurniere(); renderDebrief(); }
       if(b.dataset.t==='koerper'){ renderNiggles(); renderHRzones(); renderBlood(); renderAppts(); }
       if(b.dataset.t==='ernaehrung'){ renderShop(); renderMealLog(); }
-      if(b.dataset.t==='daten'){ renderDash(); renderW(); renderTrends(); renderBackupStatus(); renderLockSettings(); document.getElementById('p-name').value=DB.profile.name||''; document.getElementById('p-kg').value=DB.profile.startKg||''; document.getElementById('p-hr').value=DB.profile.maxHR||''; }
+      if(b.dataset.t==='daten'){ renderTarget(); renderDash(); renderW(); renderTrends(); renderBackupStatus(); renderLockSettings(); document.getElementById('p-name').value=DB.profile.name||''; document.getElementById('p-kg').value=DB.profile.startKg||''; document.getElementById('p-hr').value=DB.profile.maxHR||''; }
     });
     var navEl=document.getElementById('tabs');
     if(navEl){
@@ -3579,11 +3601,35 @@
     if(kb) kb.innerHTML=GBSYS_KIDS.map(function(b){return '<span class="chip" style="background:'+b.c+';color:'+b.t+';border-color:rgba(0,0,0,.3)">'+b.n+'</span>';}).join('');
   }
 
+  /* ---------- Konfigurierbares Ziel (Setter im Daten-Tab) ---------- */
+  function recalcTarget(){ applyTarget(); tickCountdown(); renderAll(); renderDash(); renderW(); renderTarget(); }
+  function renderTarget(){
+    var p=DB.profile||{};
+    svNF('tgt-name',p.targetName||''); svNF('tgt-date',p.targetDate||'');
+    var st=document.getElementById('tgt-status');
+    if(st){ var nm=(p.targetName&&(''+p.targetName).trim())||'Grappling Industries Hamburg';
+      st.innerHTML=(dToComp>=0)
+        ? ('Aktives Ziel: <b>'+esc(nm)+'</b> am '+fmtD(key(COMP))+' · noch <b>'+dToComp+'</b> Tag'+(dToComp===1?'':'e')+'.'+(p.targetDate?'':' (Standard)'))
+        : ('Aktives Ziel liegt in der Vergangenheit ('+fmtD(key(COMP))+') — trag dein nächstes Turnier ein, dann läuft das Camp weiter.'); }
+    var sb=document.getElementById('tgt-save');
+    if(sb&&!sb._b){ sb._b=1; sb.addEventListener('click',function(){
+      var d=pv('tgt-date'), stx=document.getElementById('tgt-status');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){ if(stx) stx.textContent='Bitte ein gültiges Datum wählen.'; return; }
+      DB.profile.targetName=pv('tgt-name').trim(); DB.profile.targetDate=d; save('as_profile',DB.profile);
+      recalcTarget(); if(stx) stx.innerHTML='✓ Ziel gesetzt — Countdown, Phasen &amp; Timer neu berechnet.';
+    }); }
+    var rb=document.getElementById('tgt-reset');
+    if(rb&&!rb._b){ rb._b=1; rb.addEventListener('click',function(){
+      delete DB.profile.targetName; delete DB.profile.targetDate; save('as_profile',DB.profile);
+      recalcTarget(); var stx=document.getElementById('tgt-status'); if(stx) stx.textContent='Zurück auf Standard: GI Hamburg, 15.08.2026.';
+    }); }
+  }
   function renderAll(){ renderReadiness(); renderCoach(); renderHeute(); renderTaperGuard(); renderIllness(); renderCompTimer(); renderGoCheck(); renderNiggleAlert(); renderLoopAlerts(); renderCompProtocol(); renderHRzones(); renderOnboard(); renderGBToday(); }
 
   /* ---------- init ---------- */
   (async function(){
     await loadDB();
+    applyTarget();
     await initLock();
     tickCountdown(); bindAccordions(); bind(); renderAll(); renderBlood(); renderShop(); applyNutriPhase();
     drawGuides(document.getElementById('w-chart'),nutriPhase(dToComp).bulk);
