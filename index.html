@@ -1683,15 +1683,24 @@
       var sb=document.getElementById('db-save');
       if(sb) sb.addEventListener('click',function(){
         DB.profile.debriefs=DB.profile.debriefs||{};
-        DB.profile.debriefs[s.value]={date:TODAY,good:pv('db-good').trim(),bad:pv('db-bad').trim(),games:pv('db-games').trim(),p1:pv('db-p1').trim(),p2:pv('db-p2').trim(),p3:pv('db-p3').trim()};
-        save('as_profile',DB.profile);
-        var st=document.getElementById('db-status'); if(st) st.textContent='✓ Debrief gespeichert. Die Prioritäten sind dein nächster Technik-Fokus.';
-        renderDebriefList(); renderLoopAlerts();
+        var dbo={date:TODAY,good:pv('db-good').trim(),bad:pv('db-bad').trim(),games:pv('db-games').trim(),p1:pv('db-p1').trim(),p2:pv('db-p2').trim(),p3:pv('db-p3').trim()};
+        DB.profile.debriefs[s.value]=dbo; save('as_profile',DB.profile);
+        // Feature 3 — Schleife schließen: Prioritäten als Technik-Fokus mit Re-Test in 14 Tagen in die coachlog-Schleife übernehmen
+        var _t=(TOURN||[]).filter(function(x){return x.id===s.value;})[0], _nm=_t?_t.name:s.value;
+        DB.coachlog=(DB.coachlog||[]).filter(function(e){ return !(e.src==='debrief'&&e.tid===s.value); });
+        var _rd=new Date(NOW); _rd.setDate(_rd.getDate()+14); var _rk=key(_rd);
+        [dbo.p3,dbo.p2,dbo.p1].forEach(function(pt,i){ if(!pt) return;
+          DB.coachlog.unshift({id:'dbf'+Date.now()+'_'+i+'_'+Math.floor(Math.random()*1e4),date:TODAY,cat:pt,prob:'aus Wettkampf-Debrief · '+_nm,k:'',drill:'',retest:_rk,done:false,src:'debrief',tid:s.value,vid:'',prompt:'Technik-Fokus aus dem Debrief zu '+_nm+': '+pt+'. Zwei Wochen gezielt drillen, dann Re-Test in 2 wettkampfnahen Runden.'}); });
+        if(DB.coachlog.length>30) DB.coachlog=DB.coachlog.slice(0,30);
+        save('as_coachlog',DB.coachlog);
+        var _n=[dbo.p1,dbo.p2,dbo.p3].filter(Boolean).length;
+        var st=document.getElementById('db-status'); if(st) st.textContent='✓ Debrief gespeichert. '+_n+' Priorität'+(_n===1?'':'en')+' als Technik-Fokus mit Re-Test in 14 Tagen angelegt (Technik-Tab · Heute-Alarm bei Fälligkeit).';
+        renderDebriefList(); renderLoopAlerts(); renderCoachLog();
       });
       var dl=document.getElementById('debrief-list');
       if(dl) dl.addEventListener('click',function(e){
         var x=e.target.closest('[data-dbdel]'); if(!x) return;
-        if(DB.profile.debriefs){ delete DB.profile.debriefs[x.dataset.dbdel]; save('as_profile',DB.profile); renderDebriefList(); renderLoopAlerts(); }
+        if(DB.profile.debriefs){ delete DB.profile.debriefs[x.dataset.dbdel]; save('as_profile',DB.profile); DB.coachlog=(DB.coachlog||[]).filter(function(e2){ return !(e2.src==='debrief'&&e2.tid===x.dataset.dbdel); }); save('as_coachlog',DB.coachlog); renderDebriefList(); renderLoopAlerts(); renderCoachLog(); }
       });
       dbFill(s.value);
     }
