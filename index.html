@@ -3079,7 +3079,7 @@
   var MOshort=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   function daysToISO(iso){ var p=iso.split('-'); return Math.ceil((new Date(+p[0],+p[1]-1,+p[2])-NOW)/MS); }
   /* Regionen: Nord = SH·HH·HB·NI·MV·BE·BB · Mitte = NRW·HE·RLP·SL·TH·SN·ST · Süd = BY·BW.
-     Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 15.08.2026. */
+     Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 24.08.2026. */
   var TREGION={alle:'Alle',nord:'Nord',mitte:'Mitte',sued:'Süd',intl:'International'};
   var tournRegion='alle';
   var TOURN=[
@@ -3087,6 +3087,8 @@
       info:'No-Gi · Kids & Adults.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('Combattle No-Gi Grappling Tournament Lüneburg 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'tmiyc-hannover-aug',date:'2026-08-29',name:'TMIYC – Tap Me If You Can (Submission Only)',loc:'Hannover',region:'nord',
       info:'Gi & No-Gi · Submission-Only-Format.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('TMIYC Tap Me If You Can Hannover 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'summer-camp-germany-bremen',date:'2026-08-29',name:'Summer Camp Germany (CLA)',loc:'Bremen',region:'nord',
+      info:'Mehrtägiges Trainingscamp (Constraints-Led Approach) · 29.–31.08. · kein Turnier, sondern Seminar-/Camp-Format.',reg:'Direkt beim Veranstalter — Termine/Plätze prüfen.',link:gURL('Summer Camp Germany 2026 Bremen CLA Jiu-Jitsu Camp'),linkLabel:'Camp-Info suchen'},
     {id:'gi-berlin-sep',date:'2026-09-05',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
       info:'Gi & No-Gi · alle Level.',reg:'Auf Smoothcomp anmelden.',link:gURL('Grappling Industries Berlin September 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'ajp-hamburg-sep',date:'2026-09-12',name:'AJP Tour Germany National',loc:'Hamburg',region:'nord',
