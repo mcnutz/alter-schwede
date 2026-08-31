@@ -3079,16 +3079,10 @@
   var MOshort=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   function daysToISO(iso){ var p=iso.split('-'); return Math.ceil((new Date(+p[0],+p[1]-1,+p[2])-NOW)/MS); }
   /* Regionen: Nord = SH·HH·HB·NI·MV·BE·BB · Mitte = NRW·HE·RLP·SL·TH·SN·ST · Süd = BY·BW.
-     Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 24.08.2026. */
+     Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 31.08.2026. */
   var TREGION={alle:'Alle',nord:'Nord',mitte:'Mitte',sued:'Süd',intl:'International'};
   var tournRegion='alle';
   var TOURN=[
-    {id:'combattle-lueneburg',date:'2026-08-29',name:'Combattle No-Gi Grappling Tournament',loc:'Lüneburg',region:'nord',
-      info:'No-Gi · Kids & Adults.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('Combattle No-Gi Grappling Tournament Lüneburg 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
-    {id:'tmiyc-hannover-aug',date:'2026-08-29',name:'TMIYC – Tap Me If You Can (Submission Only)',loc:'Hannover',region:'nord',
-      info:'Gi & No-Gi · Submission-Only-Format.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('TMIYC Tap Me If You Can Hannover 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
-    {id:'summer-camp-germany-bremen',date:'2026-08-29',name:'Summer Camp Germany (CLA)',loc:'Bremen',region:'nord',
-      info:'Mehrtägiges Trainingscamp (Constraints-Led Approach) · 29.–31.08. · kein Turnier, sondern Seminar-/Camp-Format.',reg:'Direkt beim Veranstalter — Termine/Plätze prüfen.',link:gURL('Summer Camp Germany 2026 Bremen CLA Jiu-Jitsu Camp'),linkLabel:'Camp-Info suchen'},
     {id:'gi-berlin-sep',date:'2026-09-05',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
       info:'Gi & No-Gi · alle Level.',reg:'Auf Smoothcomp anmelden.',link:gURL('Grappling Industries Berlin September 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'ajp-hamburg-sep',date:'2026-09-12',name:'AJP Tour Germany National',loc:'Hamburg',region:'nord',
@@ -3107,18 +3101,22 @@
       info:'Gi, No-Gi & Kids.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('Frankfurt Fall Open Championship 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'nuernberg-okt',date:'2026-10-10',name:'Grappling Industries Nürnberg (2 Tage)',loc:'Nürnberg',region:'sued',
       info:'Gi & No-Gi · Round Robin, 10.–11.10.',reg:'Auf Smoothcomp anmelden.',link:gURL('Grappling Industries Nürnberg Oktober 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'ibjjf-euro-nogi-ostia',date:'2026-10-28',name:'IBJJF European No-Gi Championship 2026',loc:'PalaPellicone, Lido di Ostia (Rom), Italien',region:'intl',
+      info:'No-Gi · Weltklasse-Feld · 28.10.–01.11. · internationales Highlight, auch für deutsche Starter relevant.',reg:'Anmeldung über ibjjf.com — Fristen prüfen.',link:'https://ibjjf.com/events/european-ibjjf-jiu-jitsu-no-gi-championship-2026',linkLabel:'IBJJF-Event-Seite'},
     {id:'only-sub-hamburg',date:'2026-11-07',name:'Only Submission Series 5',loc:'Hamburg',region:'nord',
       info:'No-Gi · Submission-Only.',reg:'Anmeldung/Termin prüfen.',link:gURL('Only Submission Series 5 Hamburg 2026'),linkLabel:'Suchen'},
     {id:'cologne-fall',date:'2026-11-14',name:'Cologne Fall Open · European Cup',loc:'Köln',region:'mitte',
       info:'Gi, No-Gi & Kids · European-Cup-Wertung.',reg:'Auf Smoothcomp anmelden.',link:gURL('Cologne Fall Open Championship 2026 European Cup smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'gi-berlin-nov',date:'2026-11-21',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
       info:'Gi & No-Gi · alle Level.',reg:'Sollte offen sein (~3,5 Mon. vorher) — Smoothcomp prüfen.',link:gURL('Grappling Industries Berlin November 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'king-tatami-celle',date:'2026-11-28',name:'King Tatami – BJJ Kids Pro',loc:'Celle',region:'nord',
+      info:'Gi & No-Gi · Kids-fokussiertes Turnier.',reg:'Termin/Anmeldung prüfen.',link:gURL('King Tatami BJJ Kids Pro Celle 2026'),linkLabel:'Suchen'},
     {id:'tmiyc-hannover-dec',date:'2026-12-05',name:'TMIYC – Tap Me If You Can (Submission Only)',loc:'Hannover',region:'nord',
       info:'Gi & No-Gi · Submission-Only-Format.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('TMIYC Tap Me If You Can Hannover Dezember 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'gi-hamburg-dec',date:'2026-12-12',name:'Grappling Industries Hamburg',loc:'Hamburg',region:'nord',
       info:'Gi & No-Gi · Round Robin.',reg:'Sollte offen sein (~3 Mon. vorher) — Smoothcomp prüfen.',link:gURL('Grappling Industries Hamburg Dezember 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
-    {id:'ibjjf-euros-2027',date:'2027-01-17',name:'IBJJF European Championship 2027',loc:'Odivelas, Lissabon (Portugal) — Termin/Ort unbestätigt',region:'intl',
-      info:'Größtes internationales Highlight für europäische Wettkämpfer · Gi. 2026 fand die Austragung im Januar in Odivelas (Lissabon) statt; Termin/Ort 2027 vom IBJJF noch nicht offiziell bestätigt — Datum hier ist eine Schätzung nach bisherigem Muster.',reg:'Termin & Anmeldung prüfen (ibjjf.com).',link:gURL('IBJJF European Championship 2027 Lisbon dates ibjjf'),linkLabel:'IBJJF-Kalender suchen'},
+    {id:'ibjjf-euros-2027',date:'2027-01-13',name:'IBJJF European Championship 2027',loc:'Pavilhão Multiusos de Odivelas, Lissabon (Portugal)',region:'intl',
+      info:'Größtes internationales Highlight für europäische Wettkämpfer · Gi · 13.–23.01. (mehrere Alters-/Gewichtsklassen an unterschiedlichen Tagen).',reg:'Anmeldung über ibjjf.com — Fristen prüfen.',link:'https://ibjjf.com/events/european-ibjjf-jiu-jitsu-championship-2027',linkLabel:'IBJJF-Event-Seite'},
     {id:'gi-berlin-feb27',date:'2027-02-20',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
       info:'Gi & No-Gi · alle Level.',reg:'Anmeldung startet i. d. R. ~3 Mon. vorher — Smoothcomp prüfen.',link:gURL('Grappling Industries Berlin Februar 2027 smoothcomp'),linkLabel:'Smoothcomp suchen'}
   ];
