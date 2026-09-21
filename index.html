@@ -3079,30 +3079,28 @@
   var MOshort=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   function daysToISO(iso){ var p=iso.split('-'); return Math.ceil((new Date(+p[0],+p[1]-1,+p[2])-NOW)/MS); }
   /* Regionen: Nord = SH·HH·HB·NI·MV·BE·BB · Mitte = NRW·HE·RLP·SL·TH·SN·ST · Süd = BY·BW.
-     Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 14.09.2026. */
+     Wird von der wöchentlichen Recherche aktuell gehalten. Stand: 21.09.2026. */
   var TREGION={alle:'Alle',nord:'Nord',mitte:'Mitte',sued:'Süd',intl:'International'};
   var tournRegion='alle';
   var TOURN=[
-    {id:'cauliflower-luebeck',date:'2026-09-19',name:'Grappling Open Lübeck („Cauliflower"-Serie)',loc:'Lübeck',region:'nord',
-      info:'No-Gi · Termin laut bjjcompfinder bestätigt (dort als „Candidate of Cauliflower" geführt) — exakter Eventname/Anmeldelink unsicher, bitte auf Smoothcomp gegenchecken.',reg:'prüfen',link:gURL('Cauliflower Grappling Open Lübeck September 2026 smoothcomp'),linkLabel:'Suchen'},
     {id:'agf-bremen',date:'2026-09-26',name:'AGF Bremen Open 2026',loc:'Bremen',region:'nord',
       info:'Gi, No-Gi & Kids.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('AGF Bremen Open 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'herrenberg',date:'2026-10-03',name:'ADCC German Nationals 2026',loc:'German Top Team, Daimlerstraße 13, Herrenberg',region:'sued',
-      info:'ADCC-Format (Submission-Only, kein Gi) · nur Teams mit Sitz in Deutschland.',reg:'Anmeldeschluss 25.09.2026 · über Smoothcomp.',link:'https://adcombat.com/adcc-events/adcc-germany-nationals-2026/',linkLabel:'ADCC News · Info'},
-    {id:'frankfurt-fall',date:'2026-10-03',name:'Frankfurt Fall Open Championship',loc:'Frankfurt am Main',region:'mitte',
+      info:'ADCC-Format (Submission-Only, kein Gi) · nur Teams mit Sitz in Deutschland.',reg:'Anmeldeschluss 25.09.2026 · über Smoothcomp — läuft bald ab, ggf. schon geschlossen.',link:'https://adcombat.com/adcc-events/adcc-germany-nationals-2026/',linkLabel:'ADCC News · Info'},
+    {id:'frankfurt-fall',date:'2026-10-03',name:'Frankfurt Fall Open Championship · European Cup',loc:'Frankfurt am Main',region:'mitte',
       info:'Gi, No-Gi & Kids · European-Cup-Wertung.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('Frankfurt Fall Open Championship 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'nuernberg-okt',date:'2026-10-10',name:'Grappling Industries Nürnberg (2 Tage)',loc:'Nürnberg',region:'sued',
       info:'Gi & No-Gi · Round Robin, 10.–11.10.',reg:'Auf Smoothcomp anmelden.',link:gURL('Grappling Industries Nürnberg Oktober 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+    {id:'mma-berlin-nov',date:'2026-10-17',name:'MMA Berlin #74 · Grappling-Turnier #15',loc:'Berlin',region:'nord',
+      info:'No-Gi (Submission Wrestling) · Frauen/U18/Männer · Wiegen 9:30, Start 11:00 (Termin lt. mma-berlin.de korrigiert).',reg:'Über mma-berlin.de anmelden — Status prüfen.',link:'https://www.mma-berlin.de/turniere',linkLabel:'mma-berlin.de · Turniere'},
     {id:'berlin-fall-open',date:'2026-10-24',name:'Berlin Fall Open Championship · European Cup',loc:'Berlin',region:'nord',
       info:'Gi, No-Gi & Kids · European-Cup-Wertung — laut bjjcompfinder bestätigt, Anmeldelink noch gegenchecken.',reg:'prüfen',link:gURL('Berlin Fall Open Championship 2026 European Cup smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'ibjjf-euro-nogi-ostia',date:'2026-10-28',name:'IBJJF European No-Gi Championship 2026',loc:'PalaPellicone, Lido di Ostia (Rom), Italien',region:'intl',
       info:'No-Gi · Weltklasse-Feld · 28.10.–01.11. · internationales Highlight, auch für deutsche Starter relevant.',reg:'Anmeldung über ibjjf.com — Fristen prüfen.',link:'https://ibjjf.com/events/european-ibjjf-jiu-jitsu-no-gi-championship-2026',linkLabel:'IBJJF-Event-Seite'},
     {id:'only-sub-hamburg',date:'2026-11-07',name:'Only Submission Series 5',loc:'Hamburg',region:'nord',
       info:'No-Gi · Submission-Only.',reg:'Anmeldung/Termin prüfen.',link:gURL('Only Submission Series 5 Hamburg 2026'),linkLabel:'Suchen'},
-    {id:'cologne-fall',date:'2026-11-14',name:'Cologne Fall Open · European Cup',loc:'Köln',region:'mitte',
-      info:'Gi, No-Gi & Kids · European-Cup-Wertung.',reg:'Auf Smoothcomp anmelden.',link:gURL('Cologne Fall Open Championship 2026 European Cup smoothcomp'),linkLabel:'Smoothcomp suchen'},
-    {id:'mma-berlin-nov',date:'2026-11-14',name:'MMA Berlin #74 · Grappling-Turnier #15',loc:'Berlin',region:'nord',
-      info:'No-Gi (Submission Wrestling) · Frauen/U18/Männer.',reg:'Über mma-berlin.de anmelden — Status prüfen.',link:'https://www.mma-berlin.de/turniere',linkLabel:'mma-berlin.de · Turniere'},
+    {id:'cologne-fall',date:'2026-11-14',name:'Cologne Winter Open Championship · European Cup',loc:'Köln',region:'mitte',
+      info:'Gi, No-Gi & Kids · European-Cup-Wertung — Eventname laut JJLG/Smoothcomp bestätigt (früherer „Fall"-Name existiert 2026 nicht mehr), exaktes Datum nicht unabhängig verifizierbar (Smoothcomp-Abruf blockiert) — bitte gegenchecken.',reg:'prüfen',link:gURL('Cologne Winter Open Championship 2026 European Cup smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'gi-berlin-nov',date:'2026-11-21',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
       info:'Gi & No-Gi · alle Level.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('Grappling Industries Berlin November 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'king-tatami-celle',date:'2026-11-28',name:'King Tatami – BJJ Kids Pro',loc:'Celle',region:'nord',
@@ -3110,15 +3108,15 @@
     {id:'tmiyc-hannover-dec',date:'2026-12-05',name:'TMIYC – Tap Me If You Can (Submission Only)',loc:'Fightschool Hannover, Hannover',region:'nord',
       info:'Gi & No-Gi · Submission-Only-Format.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('TMIYC Tap Me If You Can Hannover Dezember 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'gi-hamburg-dec',date:'2026-12-12',name:'Grappling Industries Hamburg',loc:'Hamburg',region:'nord',
-      info:'Gi & No-Gi · Round Robin.',reg:'Sollte bald öffnen (~3 Mon. vorher) — Smoothcomp prüfen.',link:gURL('Grappling Industries Hamburg Dezember 2026 smoothcomp'),linkLabel:'Smoothcomp suchen'},
+      info:'Gi & No-Gi · Round Robin.',reg:'Anmeldung auf Smoothcomp bestätigt offen — Preise/Deadlines dort prüfen.',link:'https://grapplingindustries.smoothcomp.com/en/event/28730',linkLabel:'Smoothcomp · Anmeldung'},
     {id:'frankfurt-winter',date:'2026-12-19',name:'Frankfurt Winter Open Championship · European Cup',loc:'Frankfurt am Main',region:'mitte',
-      info:'Gi, No-Gi & Kids · European-Cup-Wertung.',reg:'Auf Smoothcomp anmelden — Status prüfen.',link:gURL('Frankfurt Winter Open Championship 2026 European Cup smoothcomp'),linkLabel:'Smoothcomp suchen'},
+      info:'Gi, No-Gi & Kids · European-Cup-Wertung — für 2026 nicht unabhängig bestätigt (bekannt sind Frankfurt Fall/Spring 2026, kein „Winter"-Termin gefunden), bitte auf Smoothcomp/JJLG gegenchecken.',reg:'prüfen',link:gURL('Frankfurt Winter Open Championship 2026 European Cup smoothcomp'),linkLabel:'Smoothcomp suchen'},
     {id:'ibjjf-euros-2027',date:'2027-01-13',name:'IBJJF European Championship 2027',loc:'Pavilhão Multiusos de Odivelas, Lissabon (Portugal)',region:'intl',
       info:'Größtes internationales Highlight für europäische Wettkämpfer · Gi · 13.–23.01. (mehrere Alters-/Gewichtsklassen an unterschiedlichen Tagen).',reg:'Anmeldung über ibjjf.com — Fristen prüfen.',link:'https://ibjjf.com/events/european-ibjjf-jiu-jitsu-championship-2027',linkLabel:'IBJJF-Event-Seite'},
     {id:'ajp-grandslam-rome',date:'2027-02-12',name:'AJP Grand Slam Jiu-Jitsu World Tour – Rom',loc:'Centro Olimpico Matteo Pellicone (PalaFijlkam), Rom, Italien',region:'intl',
       info:'Gi & No-Gi · 12.–14.02. · internationales AJP-Highlight (gleiche Serie wie AJP Tour Germany) — Datum laut Recherche, bitte auf ajptour.com gegenchecken.',reg:'prüfen',link:gURL('AJP Grand Slam Rome 2027 ajptour'),linkLabel:'AJP Tour suchen'},
     {id:'gi-berlin-feb27',date:'2027-02-20',name:'Grappling Industries Berlin',loc:'Berlin',region:'nord',
-      info:'Gi & No-Gi · alle Level.',reg:'Anmeldung startet i. d. R. ~3 Mon. vorher — Smoothcomp prüfen.',link:gURL('Grappling Industries Berlin Februar 2027 smoothcomp'),linkLabel:'Smoothcomp suchen'}
+      info:'Gi & No-Gi · alle Level — Termin laut BJJCompFinder bestätigt.',reg:'Anmeldung startet i. d. R. ~3 Mon. vorher — Smoothcomp prüfen.',link:gURL('Grappling Industries Berlin Februar 2027 smoothcomp'),linkLabel:'Smoothcomp suchen'}
   ];
   function tnToCalendar(t){
     DB.appts=DB.appts||[]; var id='tn-'+t.id;
